@@ -1,17 +1,13 @@
 import { expect, test } from '@playwright/test';
 
-test('home stage is visible and the development puppet reacts', async ({
-  page,
-}) => {
+test('home page presents the KAF Observatory identity', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.getByRole('heading', { name: /花譜/ })).toBeVisible();
-
-  const puppet = page.getByRole('button', {
-    name: '与开发中的花谱 2D 角色互动',
-  });
-
-  await expect(puppet).toBeVisible();
-  await puppet.click();
-  await expect(page.getByText('01 SIGNALS')).toBeVisible();
+  await expect(page.getByText('UNOFFICIAL FAN PROJECT · 2026')).toBeVisible();
+  await expect(
+    page.getByText(
+      '一个正在形成中的数字观测站。音乐、时间与视觉将逐层进入这个空间。',
+    ),
+  ).toBeVisible();
 });

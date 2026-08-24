@@ -6,16 +6,15 @@
 
 ## Overview
 
-The frontend is a single Vite + React application. Code is grouped by application shell, domain feature, route page, shared global styles, and tests.
+The frontend is a single Vite + React application. Code is grouped by application shell, route page, shared global styles, and tests.
 
-The current project does **not** use a generic `components/` bucket. Feature-specific UI stays with the feature that owns it, while route composition stays under `pages/`.
+The current project does **not** use generic `components/` or `features/` buckets. Route composition stays under `pages/`, and code should remain with the narrowest owner that actually exists.
 
 The current top-level source layout is:
 
 ```text
 src/
 ├── app/                 # Application shell and route composition
-├── features/            # Domain or capability modules
 ├── pages/               # Route-level page composition
 │   └── HomePage/
 ├── styles/              # Global reset, design tokens, and base styles
@@ -38,7 +37,7 @@ tests/
 
 ### `src/app/`
 
-Owns application-level composition such as routing. It should not contain feature implementation details.
+Owns application-level composition such as routing. It should not contain page implementation details.
 
 Current example: `src/app/App.tsx` defines the route table and fallback route:
 
@@ -48,12 +47,6 @@ Current example: `src/app/App.tsx` defines the route table and fallback route:
   <Route path="*" element={<Navigate to="/" replace />} />
 </Routes>
 ```
-
-### `src/features/<feature>/`
-
-Owns capability-specific components, styles, and runtime abstractions.
-
-Feature code should remain self-contained. Keep implementation-specific runtime/vendor details inside the owning feature rather than exposing them to route pages.
 
 ### `src/pages/<PageName>/`
 
@@ -67,7 +60,7 @@ src/pages/HomePage/
 └── HomePage.module.css
 ```
 
-Pages compose features, presentation, and page-level motion. They do not contain the feature's low-level runtime implementation.
+Pages currently own the user-visible presentation for their route. Extract a separate module only after a real capability has an independent ownership boundary.
 
 ### `src/styles/`
 
@@ -77,7 +70,7 @@ Owns only truly global CSS:
 - `tokens.css` — project-wide CSS custom properties for typography, color, spacing, radii, and motion constants.
 - `base.css` — global document/body/root defaults.
 
-Component- and page-specific visual rules belong in colocated `*.module.css` files.
+Page-specific visual rules belong in colocated `*.module.css` files.
 
 ---
 
@@ -85,9 +78,8 @@ Component- and page-specific visual rules belong in colocated `*.module.css` fil
 
 1. Put code in the narrowest domain that owns it.
 2. Colocate a React component with its CSS Module when the styles are local to that component or page.
-3. Keep runtime/vendor boundaries in a dedicated subdirectory such as `runtime/` rather than leaking SDK objects into React pages.
-4. Keep application routing and provider composition under `src/app/` or `src/main.tsx`.
-5. Do not create broad shared directories until code is genuinely reused across more than one feature/page.
+3. Keep application routing and provider composition under `src/app/` or `src/main.tsx`.
+4. Do not create broad shared directories until code is genuinely reused across more than one owner.
 
 ---
 
@@ -96,7 +88,6 @@ Component- and page-specific visual rules belong in colocated `*.module.css` fil
 - React component and page files use `PascalCase.tsx`.
 - Component/page directories use `PascalCase` when named after a component (`HomePage/`).
 - CSS Modules mirror the component name: `HomePage.module.css`.
-- Runtime/interface files use `PascalCase.ts` when exporting a primary named type or contract.
 - Global stylesheet filenames use lowercase descriptive names (`tokens.css`, `base.css`).
 - Tests use `*.test.tsx`; Playwright specs live under `tests/e2e/` and use `*.spec.ts`.
 
@@ -107,4 +98,3 @@ Component- and page-specific visual rules belong in colocated `*.module.css` fil
 - `src/main.tsx` — browser entry point, global CSS imports, `BrowserRouter`, and `StrictMode`.
 - `src/app/App.tsx` — route composition only.
 - `src/pages/HomePage/HomePage.tsx` — route-level composition and page-local presentation.
-

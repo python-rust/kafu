@@ -6,9 +6,9 @@
 
 ## Overview
 
-This project is a Vite + React + TypeScript frontend. The current architecture emphasizes explicit feature ownership, native CSS/CSS Modules, small React state boundaries, isolated imperative runtime code, and mise-managed development commands.
+This project is a Vite + React + TypeScript frontend. The current architecture emphasizes explicit page ownership, native CSS/CSS Modules, small React state boundaries, and mise-managed development commands.
 
-These files document the codebase as it exists now. Do not treat future possibilities (a state library, server state, another renderer, etc.) as established conventions until they are actually adopted.
+These files document the codebase as it exists now. Do not treat future possibilities (a state library, server state, feature modules, etc.) as established conventions until they are actually adopted.
 
 ---
 
@@ -16,12 +16,12 @@ These files document the codebase as it exists now. Do not treat future possibil
 
 | Guide | Description | Status |
 |-------|-------------|--------|
-| [Directory Structure](./directory-structure.md) | `app` / `pages` / `features` / styles and test ownership | Active |
+| [Directory Structure](./directory-structure.md) | `app` / `pages` / styles and test ownership | Active |
 | [Component Guidelines](./component-guidelines.md) | Function components, props, CSS Modules, accessibility | Active |
 | [Hook Guidelines](./hook-guidelines.md) | Built-in hooks, cleanup, extraction threshold | Active |
-| [State Management](./state-management.md) | Local React state and imperative runtime separation | Active |
+| [State Management](./state-management.md) | Local React state ownership and escalation rules | Active |
 | [Quality Guidelines](./quality-guidelines.md) | mise workflow, lint/type/test/build requirements | Active |
-| [Type Safety](./type-safety.md) | Local types, stable adapter contracts, assertion rules | Active |
+| [Type Safety](./type-safety.md) | Local types, stable contracts, assertion rules | Active |
 
 ---
 
@@ -30,9 +30,9 @@ These files document the codebase as it exists now. Do not treat future possibil
 Before changing frontend code:
 
 1. Read the guideline file(s) relevant to the layer being changed.
-2. Identify the current owner of the behavior: application shell, route page, feature, runtime adapter, or global style.
+2. Identify the current owner of the behavior: application shell, route page, or global style.
 3. Check whether a real existing pattern already solves the problem before creating a new abstraction/dependency.
-4. Keep imperative renderer/runtime objects behind feature-owned runtime boundaries instead of leaking them into route/page state.
+4. Keep implementation details in the narrowest owner instead of leaking them into unrelated route/page state.
 5. Use `mise run ...` tasks for project commands so the pinned Node/pnpm toolchain is used.
 
 ---
@@ -58,4 +58,3 @@ Review the more detailed checklist in [quality-guidelines.md](./quality-guidelin
 ---
 
 **Language**: Trellis spec documentation is written in English. User-facing project communication may remain Chinese.
-

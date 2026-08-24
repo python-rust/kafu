@@ -6,7 +6,7 @@
 
 ## Overview
 
-The project currently uses React built-in hooks directly and has **no custom hooks yet**. Stateful behavior remains inside the owning component until there is a demonstrated reuse or complexity reason to extract it.
+The project currently uses no custom hooks. Stateful behavior should remain inside the owning component until there is a demonstrated reuse or complexity reason to extract it.
 
 This is intentional current-state documentation: do not create a custom hook merely to shorten a component.
 
@@ -22,7 +22,7 @@ If a future hook is introduced, extract it only when at least one of these is tr
 
 - the stateful behavior is reused by more than one component,
 - the lifecycle is independently testable and materially obscures the owning component,
-- a browser/runtime integration needs a stable React-facing boundary.
+- a browser integration needs a stable React-facing boundary.
 
 Until then, keep behavior colocated.
 
@@ -41,7 +41,7 @@ useEffect(() => {
 }, [delay, onTimeout]);
 ```
 
-The same rule applies to event listeners, animation frames, observers, and external runtime resources.
+The same rule applies to event listeners, animation frames, observers, and other externally managed resources.
 
 ---
 
@@ -66,7 +66,6 @@ Static project content should remain local/typed until requirements change.
 ## Common Mistakes
 
 - Do not extract a one-use event handler into a custom hook without a lifecycle or reuse benefit.
-- Do not omit cleanup for timers, observers, event listeners, animation frames, or imperative runtimes.
-- Do not put per-frame animation values through React state when CSS or the imperative runtime can own them more efficiently.
+- Do not omit cleanup for timers, observers, event listeners, animation frames, or other external resources.
+- Do not put high-frequency animation values through React state when CSS can own them more efficiently.
 - Do not add a data-fetching library while the project has no server-state problem to solve.
-

@@ -1,6 +1,5 @@
 import { motion } from 'motion/react';
 
-import { Live2DStage } from '../../features/live2d/Live2DStage';
 import styles from './HomePage.module.css';
 
 const reveal = {
@@ -29,35 +28,10 @@ export function HomePage() {
             <span>KAF</span>
           </h1>
           <p className={styles.lede}>
-            一个正在形成中的数字观测站。现在先让角色活起来，再让音乐、时间与视觉逐层进入这个空间。
+            一个正在形成中的数字观测站。音乐、时间与视觉将逐层进入这个空间。
           </p>
-
-          <div className={styles.statusRow}>
-            <span className={styles.statusDot} aria-hidden="true" />
-            <span>2D INTERACTION ONLINE</span>
-          </div>
         </motion.div>
-
-        <motion.div
-          className={styles.character}
-          initial={{ opacity: 0, scale: 0.985 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <Live2DStage />
-        </motion.div>
-
-        <aside className={styles.annotation}>
-          <span>POINTER TRACKING</span>
-          <span>BLINK / BREATH</span>
-          <span>CLICK REACTION</span>
-        </aside>
       </section>
-
-      <footer className={styles.footer}>
-        <span>Prototype runtime: development puppet</span>
-        <span>Formal Cubism R5 adapter boundary reserved</span>
-      </footer>
     </main>
   );
 }

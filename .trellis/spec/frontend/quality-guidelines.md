@@ -52,9 +52,8 @@ Do not document `pnpm run ...` as the normal project workflow. The package manag
 - Do not bypass `mise` for normal development commands when a mise task exists.
 - Do not suppress TypeScript errors with `any` or broad assertions.
 - Do not put E2E specs into the Vitest test glob; Vitest and Playwright suites are intentionally separated.
-- Do not rely solely on visual/manual verification for user-visible interaction changes when an automated test can cover the behavior.
+- Do not rely solely on visual/manual verification for user-visible behavior changes when an automated test can cover the behavior.
 - Do not make interactive UI with non-semantic click targets when native HTML provides the behavior/accessibility.
-- Do not let third-party renderer/runtime types leak through the application boundary.
 
 ---
 
@@ -86,27 +85,17 @@ run = [
 
 ### Vitest + Testing Library
 
-Use for React behavior that can be verified in the DOM without needing a real browser/GPU.
+Use for React behavior that can be verified in the DOM without needing a real browser.
 
-Current reference: `tests/HomePage.test.tsx` verifies the fan-project identity through user-visible text:
-
-```tsx
-expect(
-  screen.getByText('UNOFFICIAL FAN PROJECT · 2026'),
-).toBeInTheDocument();
-```
+Current reference: `tests/HomePage.test.tsx` verifies the fan-project identity, heading, and introductory copy through user-visible content.
 
 Prefer role/name queries over class selectors or implementation details.
 
 ### Playwright
 
-Use for browser-level smoke behavior, routing, and interactions whose environment matters.
+Use for browser-level smoke behavior and routing whose environment matters.
 
-Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies the page heading before exercising page interactions.
-
-### Imperative runtime testing boundary
-
-If a feature owns an imperative renderer/runtime, most application tests should verify calls and observable behavior at that boundary rather than depending on GPU-specific internals. Keep true graphics-runtime smoke tests narrow to avoid flaky platform-specific assertions.
+Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies the public home-page identity and introduction.
 
 ---
 
@@ -115,20 +104,18 @@ If a feature owns an imperative renderer/runtime, most application tests should 
 - Keep semantic controls and labels intact.
 - Test important interactive controls through accessible roles/names.
 - Decorative elements must not pollute the accessibility tree.
-- Dynamic, non-critical status updates should use an appropriate live region when users need them announced.
+- Dynamic status updates should use an appropriate live region when users need them announced.
 - Respect reduced-motion behavior in visual/animation work when applicable.
 
 ---
 
 ## Code Review Checklist
 
-- Does the change belong in `app`, `pages`, `features`, or global `styles` according to current ownership?
-- Is feature-specific CSS colocated in a CSS Module instead of becoming global CSS?
+- Does the change belong in `app`, `pages`, or global `styles` according to current ownership?
+- Is page-specific CSS colocated in a CSS Module instead of becoming global CSS?
 - Are existing CSS custom-property tokens reused where appropriate?
-- Does React own UI state while imperative renderer/runtime state remains outside React state?
 - Are props/types narrow and explicit?
 - Are user interactions semantic and keyboard accessible?
 - Were affected tests added or updated?
 - Does `mise run check` pass?
 - If browser behavior changed, does `mise run e2e` pass?
-

@@ -6,11 +6,7 @@
 
 ## Overview
 
-Components are function components written in TypeScript. The current codebase favors small components with explicit ownership boundaries:
-
-- route composition in page components,
-- feature behavior in feature components,
-- imperative third-party runtime details outside React components.
+Components are function components written in TypeScript. The current codebase favors small components with explicit ownership boundaries: application routing in `app`, route presentation in `pages`, and global visual foundations in `styles`.
 
 Components use semantic HTML and accessibility attributes directly instead of wrapping every primitive in a design-system abstraction.
 
@@ -22,7 +18,7 @@ The existing component structure is:
 
 1. External imports.
 2. Internal imports.
-3. Local type/interface declarations.
+3. Local type/interface declarations when needed.
 4. Local constants.
 5. Exported function component.
 6. Event handlers/effects kept close to the state they operate on.
@@ -36,7 +32,7 @@ Do not introduce class components or default exports unless an external integrat
 - Define component props as a named local `interface` when the component has props.
 - Keep props narrow and behavior-oriented.
 - Optional callbacks use optional function props rather than no-op defaults.
-- Avoid passing third-party runtime objects through page/component props when an adapter boundary can contain them.
+- Keep a value in its narrowest owner instead of threading it through unrelated components.
 
 ---
 
@@ -66,19 +62,13 @@ Current patterns include:
 
 - Use semantic interactive elements instead of clickable generic containers.
 - Give interactive controls an explicit accessible name.
-- Mark purely decorative geometry with `aria-hidden="true"`.
-- Use `aria-live="polite"` for non-critical interaction feedback that changes after user input.
-- SVG artwork with meaningful content uses `role="img"` plus `<title>` and `<desc>`.
+- Mark purely decorative geometry with `aria-hidden="true"` when it exists.
 - Preserve native keyboard interaction whenever possible by using semantic elements.
 
-Examples:
+Current example:
 
 ```tsx
 <a className={styles.brand} href="/" aria-label="KAF Observatory 首页">
-```
-
-```tsx
-<span className={styles.statusDot} aria-hidden="true" />
 ```
 
 ---
@@ -86,8 +76,6 @@ Examples:
 ## Common Mistakes
 
 - Do not make a non-semantic element clickable when a native button/link fits.
-- Do not leak renderer/runtime implementation objects into route/page component props.
 - Do not create a global component abstraction for code that currently has only one owner.
 - Do not duplicate project-wide constants inside component CSS if an existing token already represents the value.
-- Do not use React state for per-frame rendering/runtime objects; keep imperative runtime state behind the adapter boundary.
-
+- Do not move static styling into JSX just because inline styles are convenient.
