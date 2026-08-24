@@ -26,3 +26,25 @@ Initialized the KAF frontend baseline, documented project-specific frontend conv
 ### Status
 
 [OK] **Completed**
+
+
+## Session 2: KAF editorial fan homepage
+
+**Date**: 2026-08-24
+**Task**: KAF editorial fan homepage
+**Branch**: `main`
+
+### Summary
+
+Designed and implemented the first illustration-led KAF fan homepage, added rights-cleared local visuals with provenance, responsive editorial sections, accessibility/performance coverage, viewport/reduced-motion E2E tests, and updated frontend media conventions.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `92d9049` | (see git log) |
+| `c29033c` | (see git log) |
+
+### Status
+
+[OK] **Completed**
