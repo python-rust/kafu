@@ -1,0 +1,86 @@
+[tools]
+node = "24.19.0"
+pnpm = "11.21.0"
+
+[env]
+_.path = ["{{config_root}}/node_modules/.bin"]
+
+[tasks.install]
+description = "Install project dependencies in the mise-managed toolchain"
+run = "pnpm install"
+sources = ["package.json", "pnpm-lock.yaml", "mise.toml"]
+outputs = ["node_modules/.pnpm/lock.yaml"]
+
+[tasks.dev]
+description = "Start the Vite development server"
+depends = ["install"]
+run = "vite"
+
+[tasks.env]
+description = "Show the mise-managed Node.js and pnpm versions"
+run = '''
+printf 'node=' && node --version
+printf 'pnpm=' && pnpm --version
+'''
+
+[tasks.build]
+description = "Type-check and build the production bundle"
+depends = ["install"]
+run = [
+  { task = "typecheck" },
+  "vite build",
+]
+
+[tasks.preview]
+description = "Preview the production bundle locally"
+depends = ["build"]
+run = "vite preview"
+
+[tasks.typecheck]
+description = "Run authoritative TypeScript checking"
+depends = ["install"]
+run = "tsc -b --pretty false"
+
+[tasks.lint]
+description = "Lint source and configuration files with Oxlint"
+depends = ["install"]
+run = "oxlint src tests vite.config.ts playwright.config.ts"
+
+[tasks.format]
+description = "Format project files with Prettier"
+depends = ["install"]
+run = "prettier --write ."
+
+[tasks.format-check]
+description = "Check formatting without modifying files"
+depends = ["install"]
+run = "prettier --check ."
+
+[tasks.test]
+description = "Run the Vitest suite once"
+depends = ["install"]
+run = "vitest run"
+
+[tasks.test-watch]
+description = "Run Vitest in watch mode"
+depends = ["install"]
+run = "vitest"
+
+[tasks.e2e-install]
+description = "Install the Playwright Chromium browser used by smoke tests"
+depends = ["install"]
+run = "playwright install chromium"
+
+[tasks.e2e]
+description = "Run Playwright end-to-end smoke tests"
+depends = ["install"]
+run = "playwright test"
+
+[tasks.check]
+description = "Run the local CI-quality validation suite"
+run = [
+  { task = "format-check" },
+  { task = "lint" },
+  { task = "test" },
+  { task = "build" },
+]

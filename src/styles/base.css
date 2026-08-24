@@ -1,0 +1,20 @@
+body {
+  background:
+    radial-gradient(circle at 18% 16%, rgb(187 53 94 / 7%), transparent 32rem),
+    radial-gradient(circle at 86% 70%, rgb(100 82 130 / 8%), transparent 34rem),
+    var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+a {
+  outline-offset: 4px;
+}
+
+::selection {
+  background: rgb(187 53 94 / 18%);
+}

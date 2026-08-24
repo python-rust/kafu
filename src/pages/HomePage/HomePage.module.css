@@ -1,0 +1,216 @@
+.page {
+  min-height: 100vh;
+  overflow: clip;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 49.94%,
+      var(--color-line) 50%,
+      transparent 50.06%
+    ),
+    linear-gradient(
+      0deg,
+      transparent 49.94%,
+      rgb(23 23 26 / 4%) 50%,
+      transparent 50.06%
+    );
+  background-size:
+    100% 100%,
+    100% 100%;
+}
+
+.topbar {
+  display: flex;
+  min-height: 5rem;
+  padding: 1.5rem clamp(1.25rem, 4vw, 4rem);
+  border-bottom: 1px solid var(--color-line);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: inline-flex;
+  gap: 0.65rem;
+  align-items: baseline;
+  color: inherit;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+
+.brand span {
+  color: var(--color-ink-soft);
+  font-family: var(--font-sans);
+  font-size: 0.58rem;
+  font-weight: 650;
+  letter-spacing: 0.17em;
+}
+
+.fanLabel {
+  color: var(--color-ink-soft);
+  font-size: 0.63rem;
+  font-weight: 620;
+  letter-spacing: 0.12em;
+}
+
+.hero {
+  position: relative;
+  display: grid;
+  min-height: calc(100vh - 8.5rem);
+  grid-template-columns: minmax(18rem, 0.86fr) minmax(28rem, 1.14fr);
+  align-items: center;
+  padding: clamp(2rem, 5vw, 5.2rem) clamp(1.25rem, 4vw, 4rem) 3rem;
+}
+
+.copy {
+  z-index: 2;
+  max-width: 38rem;
+  padding-left: clamp(0rem, 2vw, 2rem);
+}
+
+.index {
+  margin: 0 0 1.5rem;
+  color: var(--color-kaf);
+  font-size: 0.68rem;
+  font-weight: 720;
+  letter-spacing: 0.2em;
+}
+
+.copy h1 {
+  display: flex;
+  margin: 0;
+  flex-direction: column;
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 11vw, 10.5rem);
+  font-weight: 500;
+  letter-spacing: -0.09em;
+  line-height: 0.8;
+}
+
+.copy h1 span {
+  margin-top: 0.28em;
+  color: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.42em;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  -webkit-text-stroke: 1px rgb(23 23 26 / 46%);
+}
+
+.lede {
+  max-width: 31rem;
+  margin: 2.6rem 0 0;
+  color: var(--color-ink-soft);
+  font-size: clamp(0.9rem, 1.2vw, 1.06rem);
+  line-height: 1.85;
+}
+
+.statusRow {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  margin-top: 2.2rem;
+  color: var(--color-ink-soft);
+  font-size: 0.63rem;
+  font-weight: 680;
+  letter-spacing: 0.14em;
+}
+
+.statusDot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--color-kaf);
+  box-shadow: 0 0 0 0.28rem rgb(187 53 94 / 12%);
+}
+
+.character {
+  min-width: 0;
+  margin-left: -7vw;
+}
+
+.annotation {
+  position: absolute;
+  right: clamp(1.25rem, 4vw, 4rem);
+  top: 50%;
+  display: flex;
+  gap: 0.7rem;
+  flex-direction: column;
+  color: var(--color-ink-soft);
+  font-size: 0.56rem;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  opacity: 0.72;
+  writing-mode: vertical-rl;
+  transform: translateY(-50%);
+}
+
+.footer {
+  display: flex;
+  min-height: 3.5rem;
+  padding: 1rem clamp(1.25rem, 4vw, 4rem);
+  border-top: 1px solid var(--color-line);
+  justify-content: space-between;
+  color: var(--color-ink-soft);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .character {
+    margin-left: -14vw;
+  }
+
+  .annotation {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    min-height: 100vh;
+  }
+
+  .topbar {
+    min-height: 4.25rem;
+    padding-block: 1rem;
+  }
+
+  .fanLabel {
+    max-width: 10rem;
+    text-align: right;
+  }
+
+  .hero {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    padding-top: 3.2rem;
+  }
+
+  .copy {
+    padding-left: 0;
+  }
+
+  .copy h1 {
+    font-size: clamp(5.8rem, 30vw, 8.5rem);
+  }
+
+  .lede {
+    margin-top: 2rem;
+  }
+
+  .character {
+    margin: -2.4rem -10vw 0;
+  }
+
+  .footer {
+    gap: 0.45rem;
+    flex-direction: column;
+  }
+}
