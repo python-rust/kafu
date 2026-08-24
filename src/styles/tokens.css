@@ -8,14 +8,21 @@
     'Hiragino Sans', 'Noto Sans CJK JP', sans-serif;
 
   --color-paper: #f3efe8;
-  --color-paper-soft: #eae3dc;
-  --color-ink: #17171a;
-  --color-ink-soft: #4f4d55;
+  --color-paper-soft: #ebe4df;
+  --color-paper-deep: #ded5d0;
+  --color-paper-clean: #faf7f2;
+  --color-ink: #18161d;
+  --color-ink-soft: #5c5661;
+  --color-ink-faint: #87808b;
   --color-line: rgb(23 23 26 / 14%);
-  --color-kaf: #bb355e;
-  --color-kaf-soft: #e7a1b7;
-  --color-violet: #645282;
-  --color-night: #22202a;
+  --color-kaf: #bc315f;
+  --color-kaf-deep: #8f2147;
+  --color-kaf-soft: #e8a5ba;
+  --color-violet: #6b5989;
+  --color-lavender: #d8d0e5;
+  --color-blue: #496b8f;
+  --color-night: #211d27;
+  --color-night-soft: #2f2937;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -25,6 +32,12 @@
   --space-6: 2rem;
   --space-7: 3rem;
   --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+
+  --page-gutter: clamp(1.25rem, 4vw, 4rem);
+  --page-max: 90rem;
+  --section-space: clamp(5.5rem, 10vw, 10rem);
 
   --radius-sm: 0.75rem;
   --radius-md: 1.5rem;
@@ -32,5 +45,6 @@
 
   --duration-fast: 160ms;
   --duration-normal: 360ms;
+  --duration-slow: 720ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
