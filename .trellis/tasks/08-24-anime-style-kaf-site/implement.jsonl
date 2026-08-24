@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend ownership and quality entry point"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Homepage component and accessibility conventions"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Placement and colocation rules for homepage sections/assets"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Required mise validation and testing conventions"}
+{"file": ".trellis/tasks/08-24-anime-style-kaf-site/research.md", "reason": "External visual and media-rights research that constrains implementation"}

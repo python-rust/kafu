@@ -6,7 +6,7 @@
 
 ## Overview
 
-This project is a Vite + React + TypeScript frontend. The current architecture emphasizes explicit page ownership, native CSS/CSS Modules, small React state boundaries, and mise-managed development commands.
+This project is a Vite + React + TypeScript frontend. The current architecture emphasizes explicit page ownership, native CSS/CSS Modules, typed static content, rights-tracked local media, small React state boundaries, and mise-managed development commands.
 
 These files document the codebase as it exists now. Do not treat future possibilities (a state library, server state, feature modules, etc.) as established conventions until they are actually adopted.
 
@@ -30,10 +30,11 @@ These files document the codebase as it exists now. Do not treat future possibil
 Before changing frontend code:
 
 1. Read the guideline file(s) relevant to the layer being changed.
-2. Identify the current owner of the behavior: application shell, route page, or global style.
+2. Identify the current owner of the behavior: application shell, route page, typed static content, local media, or global style.
 3. Check whether a real existing pattern already solves the problem before creating a new abstraction/dependency.
 4. Keep implementation details in the narrowest owner instead of leaking them into unrelated route/page state.
 5. Use `mise run ...` tasks for project commands so the pinned Node/pnpm toolchain is used.
+6. Before adding third-party media, verify its usage terms and add durable provenance metadata alongside the asset set.
 
 ---
 

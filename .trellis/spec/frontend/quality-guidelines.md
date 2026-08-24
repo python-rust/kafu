@@ -54,6 +54,7 @@ Do not document `pnpm run ...` as the normal project workflow. The package manag
 - Do not put E2E specs into the Vitest test glob; Vitest and Playwright suites are intentionally separated.
 - Do not rely solely on visual/manual verification for user-visible behavior changes when an automated test can cover the behavior.
 - Do not make interactive UI with non-semantic click targets when native HTML provides the behavior/accessibility.
+- Do not commit third-party images merely because they are publicly reachable; a shipping asset needs a verified reuse basis and provenance record.
 
 ---
 
@@ -66,6 +67,7 @@ Do not document `pnpm run ...` as the normal project workflow. The package manag
 - Run `mise run e2e` when changes affect navigation, browser-only behavior, or a user-visible interaction covered by Playwright.
 - Add or update automated tests when changing observable behavior.
 - Preserve accessibility semantics and names used by tests unless the product behavior intentionally changes.
+- Keep third-party media provenance synchronized with the actual files under the owning asset directory.
 
 The current aggregate local gate in `mise.toml` is:
 
@@ -95,7 +97,31 @@ Prefer role/name queries over class selectors or implementation details.
 
 Use for browser-level smoke behavior and routing whose environment matters.
 
-Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies the public home-page identity and introduction.
+Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies desktop/mobile identity, anchor navigation, reduced-motion behavior, and horizontal-overflow safety across the supported viewport matrix.
+
+### Third-party media provenance
+
+When a frontend change adds third-party media, review the usage terms before acquisition and keep the evidence in the repository. The current KAF asset contract is `src/assets/kaf/ATTRIBUTION.md`.
+
+At minimum, a provenance entry records:
+
+- local filename;
+- original source page and/or asset URL;
+- creator/rightsholder or publishing account;
+- the usage/license condition relied upon;
+- required credit if any;
+- retrieval date.
+
+Example:
+
+```text
+hero-kaihou.jpg
+source: https://piapro.jp/t/N-95
+usage basis: non-commercial use only
+retrieved: 2026-08-24
+```
+
+The provenance document is evidence for this project context, not a blanket license for other assets or future commercial use. Re-check the source when the distribution context materially changes.
 
 ---
 
@@ -111,9 +137,10 @@ Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies the public ho
 
 ## Code Review Checklist
 
-- Does the change belong in `app`, `pages`, or global `styles` according to current ownership?
+- Does the change belong in `app`, `pages`, `content`, `assets`, or global `styles` according to current ownership?
 - Is page-specific CSS colocated in a CSS Module instead of becoming global CSS?
 - Are existing CSS custom-property tokens reused where appropriate?
+- Does every added third-party media file have a verified provenance entry and compatible usage basis?
 - Are props/types narrow and explicit?
 - Are user interactions semantic and keyboard accessible?
 - Were affected tests added or updated?
