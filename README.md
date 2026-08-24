@@ -25,12 +25,6 @@ mise run e2e-install
 mise run e2e
 ```
 
-## Live2D 边界
-
-当前首页使用项目自制的开发用 2D puppet，用于先验证角色常驻舞台、呼吸、眨眼、视线追踪、点击反馈、响应式和 reduced-motion 行为。
-
-正式 Cubism 接入会遵循 `src/features/live2d/runtime/Live2DAdapter.ts` 的接口边界。这样后续替换为合法取得的 `.moc3` / `model3.json` 资产时，不需要让页面组件依赖 Cubism 内部对象。
-
 ## 版权说明
 
-本仓库定位为非商业粉丝项目。当前开发 puppet 并非官方 Live2D 模型，也不包含从官方应用或页面提取的模型资源。
+本仓库定位为非商业粉丝项目，不包含从官方应用或页面提取的模型资源。

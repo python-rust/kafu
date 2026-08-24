@@ -16,16 +16,7 @@ This is intentional current-state documentation: do not create a custom hook mer
 
 There is no established custom-hook API in the codebase yet.
 
-Current behavior stays local when it has a single owner. `DevelopmentPuppet` keeps pointer tracking and transient reaction state in the component:
-
-```tsx
-const [pointer, setPointer] = useState<Point>(NEUTRAL_POINT);
-const [isReacting, setIsReacting] = useState(false);
-
-const resetPointer = useCallback(() => {
-  setPointer(NEUTRAL_POINT);
-}, []);
-```
+Current behavior should stay local when it has a single owner.
 
 If a future hook is introduced, extract it only when at least one of these is true:
 
@@ -41,20 +32,16 @@ Until then, keep behavior colocated.
 
 Effects must clean up resources they create.
 
-Current example from `DevelopmentPuppet`:
+Pattern:
 
 ```tsx
 useEffect(() => {
-  if (!isReacting) {
-    return;
-  }
-
-  const timeout = window.setTimeout(() => setIsReacting(false), 720);
+  const timeout = window.setTimeout(onTimeout, delay);
   return () => window.clearTimeout(timeout);
-}, [isReacting]);
+}, [delay, onTimeout]);
 ```
 
-The same rule applies to future event listeners, animation frames, observers, and Live2D runtime resources.
+The same rule applies to event listeners, animation frames, observers, and external runtime resources.
 
 ---
 

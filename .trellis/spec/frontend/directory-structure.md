@@ -16,7 +16,6 @@ The current top-level source layout is:
 src/
 ├── app/                 # Application shell and route composition
 ├── features/            # Domain or capability modules
-│   └── live2d/          # 2D character stage and runtime boundary
 ├── pages/               # Route-level page composition
 │   └── HomePage/
 ├── styles/              # Global reset, design tokens, and base styles
@@ -54,19 +53,7 @@ Current example: `src/app/App.tsx` defines the route table and fallback route:
 
 Owns capability-specific components, styles, and runtime abstractions.
 
-Current example:
-
-```text
-src/features/live2d/
-├── DevelopmentPuppet.tsx
-├── DevelopmentPuppet.module.css
-├── Live2DStage.tsx
-├── Live2DStage.module.css
-└── runtime/
-    └── Live2DAdapter.ts
-```
-
-The `live2d` feature keeps the future imperative Cubism runtime behind `runtime/Live2DAdapter.ts`; page code does not depend on Cubism-specific types.
+Feature code should remain self-contained. Keep implementation-specific runtime/vendor details inside the owning feature rather than exposing them to route pages.
 
 ### `src/pages/<PageName>/`
 
@@ -102,23 +89,14 @@ Component- and page-specific visual rules belong in colocated `*.module.css` fil
 4. Keep application routing and provider composition under `src/app/` or `src/main.tsx`.
 5. Do not create broad shared directories until code is genuinely reused across more than one feature/page.
 
-The existing Live2D boundary is the reference pattern for vendor isolation:
-
-```text
-HomePage
-  -> Live2DStage
-     -> DevelopmentPuppet today
-     -> runtime/Live2DAdapter for future Cubism integration
-```
-
 ---
 
 ## Naming Conventions
 
 - React component and page files use `PascalCase.tsx`.
 - Component/page directories use `PascalCase` when named after a component (`HomePage/`).
-- CSS Modules mirror the component name: `HomePage.module.css`, `Live2DStage.module.css`.
-- Runtime/interface files use `PascalCase.ts` when exporting the primary named type (`Live2DAdapter.ts`).
+- CSS Modules mirror the component name: `HomePage.module.css`.
+- Runtime/interface files use `PascalCase.ts` when exporting a primary named type or contract.
 - Global stylesheet filenames use lowercase descriptive names (`tokens.css`, `base.css`).
 - Tests use `*.test.tsx`; Playwright specs live under `tests/e2e/` and use `*.spec.ts`.
 
@@ -128,7 +106,5 @@ HomePage
 
 - `src/main.tsx` — browser entry point, global CSS imports, `BrowserRouter`, and `StrictMode`.
 - `src/app/App.tsx` — route composition only.
-- `src/pages/HomePage/HomePage.tsx` — route-level composition using Motion and the Live2D feature.
-- `src/features/live2d/Live2DStage.tsx` — feature component that owns local interaction state.
-- `src/features/live2d/runtime/Live2DAdapter.ts` — stable boundary around an imperative third-party runtime.
+- `src/pages/HomePage/HomePage.tsx` — route-level composition and page-local presentation.
 

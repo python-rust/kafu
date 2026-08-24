@@ -6,9 +6,9 @@
 
 ## Overview
 
-This project is a Vite + React + TypeScript frontend. The current architecture emphasizes explicit feature ownership, native CSS/CSS Modules, small React state boundaries, an SDK-agnostic Live2D runtime adapter, and mise-managed development commands.
+This project is a Vite + React + TypeScript frontend. The current architecture emphasizes explicit feature ownership, native CSS/CSS Modules, small React state boundaries, isolated imperative runtime code, and mise-managed development commands.
 
-These files document the codebase as it exists now. Do not treat future possibilities (Cubism implementation details, a state library, server state, etc.) as established conventions until they are actually adopted.
+These files document the codebase as it exists now. Do not treat future possibilities (a state library, server state, another renderer, etc.) as established conventions until they are actually adopted.
 
 ---
 
@@ -32,7 +32,7 @@ Before changing frontend code:
 1. Read the guideline file(s) relevant to the layer being changed.
 2. Identify the current owner of the behavior: application shell, route page, feature, runtime adapter, or global style.
 3. Check whether a real existing pattern already solves the problem before creating a new abstraction/dependency.
-4. For Live2D/Cubism work, keep SDK/runtime objects behind `src/features/live2d/runtime/Live2DAdapter.ts`.
+4. Keep imperative renderer/runtime objects behind feature-owned runtime boundaries instead of leaking them into route/page state.
 5. Use `mise run ...` tasks for project commands so the pinned Node/pnpm toolchain is used.
 
 ---

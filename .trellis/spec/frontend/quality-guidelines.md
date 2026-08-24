@@ -54,7 +54,7 @@ Do not document `pnpm run ...` as the normal project workflow. The package manag
 - Do not put E2E specs into the Vitest test glob; Vitest and Playwright suites are intentionally separated.
 - Do not rely solely on visual/manual verification for user-visible interaction changes when an automated test can cover the behavior.
 - Do not make interactive UI with non-semantic click targets when native HTML provides the behavior/accessibility.
-- Do not let third-party Live2D/Cubism runtime types leak through the application boundary.
+- Do not let third-party renderer/runtime types leak through the application boundary.
 
 ---
 
@@ -88,16 +88,12 @@ run = [
 
 Use for React behavior that can be verified in the DOM without needing a real browser/GPU.
 
-Current reference: `tests/HomePage.test.tsx` verifies the fan-project identity and click interaction through accessible queries:
+Current reference: `tests/HomePage.test.tsx` verifies the fan-project identity through user-visible text:
 
 ```tsx
-const puppet = screen.getByRole('button', {
-  name: '与开发中的花谱 2D 角色互动',
-});
-
-await user.click(puppet);
-
-expect(screen.getByText('01 SIGNALS')).toBeInTheDocument();
+expect(
+  screen.getByText('UNOFFICIAL FAN PROJECT · 2026'),
+).toBeInTheDocument();
 ```
 
 Prefer role/name queries over class selectors or implementation details.
@@ -106,11 +102,11 @@ Prefer role/name queries over class selectors or implementation details.
 
 Use for browser-level smoke behavior, routing, and interactions whose environment matters.
 
-Current reference: `tests/e2e/home.spec.ts` loads `/`, verifies the page heading and interactive puppet, clicks it, and verifies the resulting signal count.
+Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies the page heading before exercising page interactions.
 
-### Live2D/runtime testing boundary
+### Imperative runtime testing boundary
 
-The future Cubism runtime should be testable through `Live2DAdapter`. Most application tests should verify calls/behavior at that boundary; keep true WebGL/model smoke tests narrow to avoid flaky GPU-specific assertions.
+If a feature owns an imperative renderer/runtime, most application tests should verify calls and observable behavior at that boundary rather than depending on GPU-specific internals. Keep true graphics-runtime smoke tests narrow to avoid flaky platform-specific assertions.
 
 ---
 
