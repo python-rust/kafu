@@ -90,3 +90,25 @@ Implemented and validated the prop-driven six-stage native-scroll JourneySection
 ### Status
 
 [OK] **Completed**
+
+
+## Session 5: Integrate immersive KAF homepage
+
+**Date**: 2026-08-25
+**Task**: Integrate immersive KAF homepage
+**Branch**: `feat/kaf-immersive-integration`
+
+### Summary
+
+Integrated Wave 1 sections and production media into the final KAF homepage, removed the legacy monolith, fixed mobile Gallery clipping and dark theme metadata, expanded responsive/accessibility/performance E2E coverage, reconciled provenance, and passed final check plus Chromium E2E.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7f280b4` | (see git log) |
+| `f532371` | (see git log) |
+
+### Status
+
+[OK] **Completed**

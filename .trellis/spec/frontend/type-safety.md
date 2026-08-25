@@ -42,16 +42,15 @@ if (!root) {
 
 ## Common Patterns
 
-### Use literal inference when a library configuration benefits from it
+### Use literal inference when a narrow component contract benefits from it
 
-`HomePage.tsx` uses `as const` on the Motion reveal configuration so tuple/literal values remain precise:
+`HomePage.tsx` keeps final anchor navigation literal and checks it against the section component's narrow contract without widening or asserting the values:
 
 ```ts
-const reveal = {
-  initial: { opacity: 0, y: 18 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
-} as const;
+const homeNavItems = [
+  { label: 'Journey', href: '#journey' },
+  { label: 'Works', href: '#works' },
+] as const satisfies readonly SiteHeaderNavItem[];
 ```
 
 ---

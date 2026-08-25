@@ -5,8 +5,7 @@ html {
 
 body {
   background: var(--color-void);
-  /* Keep legacy ink until Wave 2 removes the light HomePage shell. */
-  color: var(--color-ink);
+  color: var(--color-text);
   font-family: var(--font-sans);
   line-height: 1.5;
   text-rendering: optimizeLegibility;

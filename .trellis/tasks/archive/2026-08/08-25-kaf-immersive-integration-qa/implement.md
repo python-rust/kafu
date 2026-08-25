@@ -99,3 +99,18 @@ Capture the parent-required visual matrix:
 ## Rollback
 
 Keep integration changes in a distinct PR. Reverting the Wave 2 PR should restore the previous route composition while retaining the independently reviewed Wave 1 components/media for follow-up correction.
+
+## Completion evidence — 2026-08-25
+
+- Baseline confirmed at `50903df3540d81c58fd6b634bae014a1f081d956`, containing Wave 1 merge commits `a31a392`, `3d92811`, `f32e1ba`, and `50903df`; the pre-integration `mise run check` passed with 6 test files / 21 tests.
+- Final `/` composition is `SiteHeader` → `HeroSection` → `JourneySection` → `WorksSection` → `GallerySection` → `OfficialLinksSection` → `SiteFooter`, wired directly to `heroMedia`, `journeyChapters`, `selectedWorks`, `galleryVisuals`, and `officialLinks`.
+- Legacy `HomePage.module.css` was deleted in full, old inline markup/mount-only reveal code was removed, and the temporary global legacy body text color was switched to `--color-text`.
+- Browser QA found and fixed one real cross-owner mobile defect in `GallerySection.module.css`: `gap: 3.5rem` at ≤480px also enlarged the 12-column grid's column gap, producing 616px-wide clipped figures under `overflow: clip`; the rule is now `row-gap: 3.5rem`, with an E2E regression that checks essential element bounding boxes in addition to document scroll width.
+- The document `theme-color` was reconciled from the legacy paper `#f3efe8` to the final void `#060711` and is covered by E2E.
+- Responsive browser coverage passed at 360×800, 390×844, 768×1024, 1024×768, and 1440×900. The first two use 44px mobile navigation targets and linear Journey; 768×1024 is linear; 1024×768 and 1440×900 use the guarded sticky stage. Sticky release into Works is verified.
+- Accessibility review confirms one `h1`, semantic banner/main/contentinfo landmarks, stable anchors, visible keyboard focus, descriptive link names, meaningful media alt text, an aria-hidden desktop Journey stage, and complete reduced-motion content. Core dark semantic tokens have at least 5.29:1 contrast on `--color-surface` and at least 5.78:1 on `--color-void`.
+- Shipping media reconciliation: 9 local KAF visuals, 9 attribution sections, all SHA-256 values matched, all recorded local dimensions matched, and all 9 visuals are actually referenced by the final rendered page. Six files were introduced by the Wave 1 media PR. No orphan or unclear-rights shipping asset was found.
+- Loading audit: exactly one image (Hero) is `loading="eager"` + `fetchpriority="high"`; all other rendered images are `loading="lazy"` with intrinsic width/height. Final local media payload is 2.59 MiB, with the two largest below-fold PNGs remaining lazy-loaded.
+- Final `mise run check` passed: Prettier PASS; Oxlint 0 warnings / 0 errors; Vitest 6 files / 22 tests PASS; TypeScript PASS; Vite build PASS. Final build reports 45.46 kB CSS (9.52 kB gzip) and 389.11 kB JS (125.38 kB gzip).
+- Final `mise run e2e` passed 7/7 Chromium tests. Matching Chromium was already installed; no browser install command was needed.
+- Visual evidence is retained under `test-results/kaf-integration-visual-evidence/`: 1440×900 Hero, Journey early/middle/final, Works, Gallery, reduced-motion, plus 390×844 Hero and linear Journey.

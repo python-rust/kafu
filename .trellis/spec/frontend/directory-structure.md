@@ -59,10 +59,24 @@ Current example:
 ```text
 src/pages/HomePage/
 ├── HomePage.tsx
-└── HomePage.module.css
+└── sections/
+    ├── SiteHeader.tsx
+    ├── SiteHeader.module.css
+    ├── HeroSection.tsx
+    ├── HeroSection.module.css
+    ├── JourneySection.tsx
+    ├── JourneySection.module.css
+    ├── WorksSection.tsx
+    ├── WorksSection.module.css
+    ├── GallerySection.tsx
+    ├── GallerySection.module.css
+    ├── OfficialLinksSection.tsx
+    ├── OfficialLinksSection.module.css
+    ├── SiteFooter.tsx
+    └── SiteFooter.module.css
 ```
 
-Pages currently own the user-visible presentation for their route. Extract a separate module only after a real capability has an independent ownership boundary.
+`HomePage.tsx` owns declarative route composition and small production-data adapters. The independently owned homepage sections keep their presentation and responsive behavior in colocated CSS Modules under `sections/`. Extract a separate module only after a real capability has an independent ownership boundary; do not recreate a second page-wide monolith beside the section modules.
 
 ### `src/content/`
 
@@ -125,7 +139,7 @@ Page-specific visual rules belong in colocated `*.module.css` files.
 
 - React component and page files use `PascalCase.tsx`.
 - Component/page directories use `PascalCase` when named after a component (`HomePage/`).
-- CSS Modules mirror the component name: `HomePage.module.css`.
+- CSS Modules mirror the component name: `HeroSection.module.css`.
 - Global stylesheet filenames use lowercase descriptive names (`tokens.css`, `base.css`).
 - Tests use `*.test.tsx`; Playwright specs live under `tests/e2e/` and use `*.spec.ts`.
 

@@ -89,7 +89,7 @@ run = [
 
 Use for React behavior that can be verified in the DOM without needing a real browser.
 
-Current reference: `tests/HomePage.test.tsx` verifies the fan-project identity, heading, and introductory copy through user-visible content.
+Current reference: `tests/HomePage.test.tsx` verifies the final homepage section order, production chapter/work content, anchor contract, disclaimer semantics, and image loading invariants through user-visible content and DOM attributes.
 
 Prefer role/name queries over class selectors or implementation details.
 
@@ -97,7 +97,9 @@ Prefer role/name queries over class selectors or implementation details.
 
 Use for browser-level smoke behavior and routing whose environment matters.
 
-Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies desktop/mobile identity, anchor navigation, reduced-motion behavior, and horizontal-overflow safety across the supported viewport matrix.
+Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies desktop/mobile identity, final anchor navigation, desktop Journey progression/sticky release, linear/reduced-motion fallbacks, essential-content clipping, touch targets, image loading, and horizontal-overflow safety across the supported viewport matrix.
+
+> **Responsive clipping gotcha**: `document.documentElement.scrollWidth` is not sufficient by itself. A section using `overflow: clip` or `overflow: hidden` can conceal an oversized child while the document still reports no horizontal overflow. For critical responsive layouts, also assert the horizontal bounding boxes of user-visible headings, copy, links, credits, and other essential content. This catches over-constrained CSS Grid gaps/tracks and similar clipped-content defects.
 
 ### Third-party media provenance
 
