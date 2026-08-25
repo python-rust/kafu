@@ -129,21 +129,21 @@ It may make narrow changes to Wave 1 files only to resolve a demonstrated integr
 
 ## Acceptance Criteria
 
-- [ ] **AC-01**: The integration branch was created from `main` after all four Wave 1 PRs merged.
-- [ ] **AC-02**: `/` renders Header, Hero, six-stage Journey, Works, Gallery, Official Links, and Footer in the planned order using production typed content.
-- [ ] **AC-03**: The old monolithic page markup/reveal logic is removed and unused legacy HomePage CSS/imports are deleted.
-- [ ] **AC-04**: First viewport clearly communicates `花譜 / KAF`, unofficial/non-commercial status, official CTA, and journey continuation at 1440px and 390px.
-- [ ] **AC-05**: Desktop native scrolling produces distinct chapter/year/visual/atmosphere progression without wheel/touch interception or forced scroll snap.
-- [ ] **AC-06**: Mobile and reduced-motion modes show all six chapters in a stable readable sequence without a sticky trap.
-- [ ] **AC-07**: At least nine distinct local visuals are actually used across the page, with at least six from the new verified media set.
-- [ ] **AC-08**: Works and Gallery are materially image-rich, preserve visible credits/source links, and avoid generic uniform card treatment.
-- [ ] **AC-09**: No horizontal overflow or clipped essential content exists at 360, 390, 768, 1024, or 1440 target widths.
-- [ ] **AC-10**: Heading order, landmarks, focus, link names, contrast, alt text, decorative hiding, and unofficial disclaimer pass accessibility review.
-- [ ] **AC-11**: Only the hero-critical image is eager/high-priority; below-fold visuals are lazy-loaded with intrinsic dimensions.
-- [ ] **AC-12**: No unclear-rights asset, Live2D/3D runtime, scroll-jacking, autoplay media, runtime scraping, backend, or new animation framework is introduced.
-- [ ] **AC-13**: DOM/integration tests and Playwright cover the final structure, navigation, viewport matrix, reduced motion, and journey visibility.
-- [ ] **AC-14**: Required visual evidence is captured and reviewed against the parent design direction.
-- [ ] **AC-15**: `mise run check` and `mise run e2e` pass on the final branch.
+- [x] **AC-01**: The integration branch was created from `main` after all four Wave 1 PRs merged.
+- [x] **AC-02**: `/` renders Header, Hero, six-stage Journey, Works, Gallery, Official Links, and Footer in the planned order using production typed content.
+- [x] **AC-03**: The old monolithic page markup/reveal logic is removed and unused legacy HomePage CSS/imports are deleted.
+- [x] **AC-04**: First viewport clearly communicates `花譜 / KAF`, unofficial/non-commercial status, official CTA, and journey continuation at 1440px and 390px.
+- [x] **AC-05**: Desktop native scrolling produces distinct chapter/year/visual/atmosphere progression without wheel/touch interception or forced scroll snap.
+- [x] **AC-06**: Mobile and reduced-motion modes show all six chapters in a stable readable sequence without a sticky trap.
+- [x] **AC-07**: At least nine distinct local visuals are actually used across the page, with at least six from the new verified media set.
+- [x] **AC-08**: Works and Gallery are materially image-rich, preserve visible credits/source links, and avoid generic uniform card treatment.
+- [x] **AC-09**: No horizontal overflow or clipped essential content exists at 360, 390, 768, 1024, or 1440 target widths.
+- [x] **AC-10**: Heading order, landmarks, focus, link names, contrast, alt text, decorative hiding, and unofficial disclaimer pass accessibility review.
+- [x] **AC-11**: Only the hero-critical image is eager/high-priority; below-fold visuals are lazy-loaded with intrinsic dimensions.
+- [x] **AC-12**: No unclear-rights asset, Live2D/3D runtime, scroll-jacking, autoplay media, runtime scraping, backend, or new animation framework is introduced.
+- [x] **AC-13**: DOM/integration tests and Playwright cover the final structure, navigation, viewport matrix, reduced motion, and journey visibility.
+- [x] **AC-14**: Required visual evidence is captured and reviewed against the parent design direction.
+- [x] **AC-15**: `mise run check` and `mise run e2e` pass on the final branch.
 
 ## Out of Scope
 

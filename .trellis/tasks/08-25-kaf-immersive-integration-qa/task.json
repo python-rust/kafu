@@ -3,7 +3,7 @@
   "name": "kaf-immersive-integration-qa",
   "title": "Integrate and verify immersive KAF homepage",
   "description": "After Wave 1 merges, compose the homepage, remove legacy monolith styles, resolve contracts, and run responsive/accessibility/performance QA.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": "frontend-integration-qa",
   "package": null,

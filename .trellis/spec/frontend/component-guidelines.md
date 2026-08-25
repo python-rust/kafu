@@ -41,9 +41,9 @@ Do not introduce class components or default exports unless an external integrat
 Component and page styles use CSS Modules:
 
 ```tsx
-import styles from './HomePage.module.css';
+import styles from './HeroSection.module.css';
 
-<main className={styles.page}>
+<section className={styles.hero}>
 ```
 
 Global design tokens are CSS custom properties from `src/styles/tokens.css`. Components should consume those tokens instead of redefining common palette/spacing/motion constants when an existing token fits.
