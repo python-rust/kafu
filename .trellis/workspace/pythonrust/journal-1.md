@@ -48,3 +48,24 @@ Designed and implemented the first illustration-led KAF fan homepage, added righ
 ### Status
 
 [OK] **Completed**
+
+
+## Session 3: KAF six-stage scroll journey
+
+**Date**: 2026-08-25
+**Task**: KAF six-stage scroll journey
+**Branch**: `feat/kaf-scroll-journey`
+
+### Summary
+
+Implemented and validated the prop-driven six-stage native-scroll JourneySection with bounded desktop sticky visuals, linear mobile/reduced-motion fallbacks, focused DOM tests, and PR #2.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0481436a80eac088bfa89dab3d2004dc118ebf44` | (see git log) |
+
+### Status
+
+[OK] **Completed**
