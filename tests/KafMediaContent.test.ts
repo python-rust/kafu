@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { galleryMedia, journeyChapters, kafMedia } from '../src/content/kaf';
+import {
+  galleryMedia,
+  galleryVisuals,
+  journeyChapters,
+  kafMedia,
+  selectedWorks,
+} from '../src/content/kaf';
 
 const expectedChapterIds = [
   'origin-2018',
@@ -19,6 +25,16 @@ const expectedNewMediaIds = [
   'transcendent-ufo',
   'tori-portrait',
 ];
+
+const getChapter = (id: string) => {
+  const chapter = journeyChapters.find((candidate) => candidate.id === id);
+
+  if (!chapter) {
+    throw new Error(`Missing KAF journey chapter: ${id}`);
+  }
+
+  return chapter;
+};
 
 describe('KAF journey content', () => {
   it('keeps the six approved chapters in chronological order', () => {
@@ -60,6 +76,77 @@ describe('KAF journey content', () => {
         expect(source.protocol).toBe('https:');
         expect(source.hostname).toBe('kaf.kamitsubaki.jp');
       }
+    }
+  });
+
+  it('captures the required streamed-live, suite, and Kaika milestones', () => {
+    const rebuild = getChapter('magic-rebuilding-2020-2021');
+    const expansion = getChapter('expansion-2022-2023');
+    const fable = getChapter('fable-2024');
+
+    expect(
+      rebuild.milestones.some(
+        (milestone) =>
+          milestone.date === '2020-03-23' &&
+          milestone.label.includes('不可解(再)') &&
+          milestone.label.includes('直播'),
+      ),
+    ).toBe(true);
+    expect(
+      expansion.milestones.some(
+        (milestone) =>
+          milestone.label.includes('組曲') &&
+          milestone.label.includes('MIYAVI'),
+      ),
+    ).toBe(true);
+    expect(
+      fable.milestones.some((milestone) => milestone.label.includes('廻花')),
+    ).toBe(true);
+  });
+});
+
+describe('KAF production editorial data', () => {
+  it('provides stable unique work IDs and rights-cleared visuals', () => {
+    const workIds = selectedWorks.map((work) => work.id);
+
+    expect(new Set(workIds).size).toBe(selectedWorks.length);
+    expect(selectedWorks.filter((work) => work.featured)).toHaveLength(1);
+
+    for (const work of selectedWorks) {
+      expect(work.id.trim()).not.toBe('');
+      expect(work.releaseDateTime).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(work.visual).toBeDefined();
+
+      if (!work.visual) {
+        throw new Error(`Missing production visual for work: ${work.id}`);
+      }
+
+      expect(work.visual.src.trim()).not.toBe('');
+      expect(work.visual.alt.trim()).not.toBe('');
+      expect(work.visual.width).toBeGreaterThan(0);
+      expect(work.visual.height).toBeGreaterThan(0);
+      expect(work.visual.credit.trim()).not.toBe('');
+      expect(new URL(work.visual.sourceUrl).protocol).toBe('https:');
+      expect(kafMedia.some((media) => media.id === work.visual?.id)).toBe(true);
+    }
+  });
+
+  it('exports gallery records ready for GallerySection consumption', () => {
+    const galleryIds = galleryVisuals.map((visual) => visual.id);
+
+    expect(galleryVisuals).toHaveLength(galleryMedia.length);
+    expect(new Set(galleryIds).size).toBe(galleryVisuals.length);
+
+    for (const visual of galleryVisuals) {
+      expect(visual.id.trim()).not.toBe('');
+      expect(visual.title.trim()).not.toBe('');
+      expect(visual.src.trim()).not.toBe('');
+      expect(visual.alt.trim()).not.toBe('');
+      expect(visual.width).toBeGreaterThan(0);
+      expect(visual.height).toBeGreaterThan(0);
+      expect(visual.credit.trim()).not.toBe('');
+      expect(new URL(visual.sourceUrl).protocol).toBe('https:');
+      expect(kafMedia.some((media) => media.id === visual.id)).toBe(true);
     }
   });
 });

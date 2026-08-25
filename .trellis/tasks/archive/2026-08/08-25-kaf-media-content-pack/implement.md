@@ -56,3 +56,12 @@ git diff --check
 1. Reject a candidate before download when terms are unclear.
 2. Remove an asset, its import/content reference, and its provenance entry as one unit.
 3. Revert this additive PR without affecting the current homepage composition.
+
+## Wave 1 review fix
+
+- [x] Add stable work IDs and rights-cleared visuals to the production `selectedWorks` records while preserving the legacy homepage exports.
+- [x] Add a production `galleryVisuals` export structurally compatible with the Editorial `GallerySection` contract without changing the component branch.
+- [x] Add the verified 2020-03-23 no-audience streamed `不可解(再)` milestone.
+- [x] Add a verified `組曲` collaboration milestone in the 2022–2023 Expansion chapter.
+- [x] Add the verified `廻花` project milestone in the 2024 Fable / Second Chapter.
+- [x] Extend the focused content test to lock the review-required contracts and milestones.

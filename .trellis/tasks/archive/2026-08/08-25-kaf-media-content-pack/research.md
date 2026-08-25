@@ -23,6 +23,15 @@ Primary official sources used for the six journey chapters:
 - KAF official discography: https://kaf.kamitsubaki.jp/discography/
   - Confirms 5th Album `深愛` release on 2026-05-27.
 
+Wave 1 main-agent review rechecked the missing fixed narrative nodes against current official pages:
+
+- `不可解(再)`: https://kaf.kamitsubaki.jp/schedule/20200323/574/
+  - Confirms the 2020-03-23 Zepp DiverCity performance was changed to a no-audience streamed live, with paid streaming platforms and a limited YouTube Live stream.
+- `組曲`: https://kaf.kamitsubaki.jp/suite/ and https://kaf.kamitsubaki.jp/history/
+  - Confirms the collaboration series continued through 2022–2023; the Expansion chapter uses the 2022-05-11 eighth entry, KAF × MIYAVI `Beyond META`, as a concrete cross-boundary collaboration milestone.
+- `廻花`: https://kaf.kamitsubaki.jp/news/20240114/367/
+  - Confirms the `廻花` virtual singer-songwriter project was announced/started at the 2024-01-14 `怪歌` live, alongside the fourth-album announcement.
+
 All chapter summaries in `src/content/kaf.ts` are fan-authored synthesis rather than copied official promotional prose.
 
 ## Rights interpretation

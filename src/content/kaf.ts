@@ -12,12 +12,15 @@ const PIAPRO_LICENSE_URL = 'https://piapro.jp/license/pc/icon';
 const KAF_HISTORY_URL = 'https://kaf.kamitsubaki.jp/history/';
 
 export interface KafWork {
+  id: string;
   title: string;
   releaseDate: string;
+  releaseDateTime?: string;
   kind: string;
   description: string;
   sourceUrl: string;
   featured?: boolean;
+  visual?: KafMedia;
 }
 
 export interface KafVisual {
@@ -62,6 +65,17 @@ export interface KafJourneyChapter {
   readonly milestones: readonly KafJourneyMilestone[];
   readonly primaryVisual: KafMedia;
   readonly secondaryVisual?: KafMedia;
+}
+
+export interface KafGalleryVisual {
+  readonly id: string;
+  readonly title: string;
+  readonly src: string;
+  readonly alt: string;
+  readonly width: number;
+  readonly height: number;
+  readonly credit: string;
+  readonly sourceUrl: string;
 }
 
 export interface OfficialLink {
@@ -228,6 +242,28 @@ export const galleryMedia: readonly KafMedia[] = [
   transcendentUfoMedia,
 ];
 
+const toGalleryVisual = (title: string, media: KafMedia): KafGalleryVisual => ({
+  id: media.id,
+  title,
+  src: media.src,
+  alt: media.alt,
+  width: media.width,
+  height: media.height,
+  credit: media.credit,
+  sourceUrl: media.sourceUrl,
+});
+
+export const galleryVisuals: readonly KafGalleryVisual[] = [
+  toGalleryVisual('花譜ちゃん', toriPortraitMedia),
+  toGalleryVisual('忘れてしまえ', wasureteShimaeMedia),
+  toGalleryVisual('不可解', fukakaiMedia),
+  toGalleryVisual('糸', originItoMedia),
+  toGalleryVisual('過去を喰らう', observationPastMedia),
+  toGalleryVisual('景色', magicKeshikiMedia),
+  toGalleryVisual('チューイン・ディスコ', fableChewingDiscoMedia),
+  toGalleryVisual('ユーフォーを見にいこう', transcendentUfoMedia),
+];
+
 export const journeyChapters: readonly KafJourneyChapter[] = [
   {
     id: 'origin-2018',
@@ -288,6 +324,12 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
     theme: 'rebuild',
     milestones: [
       {
+        date: '2020-03-23',
+        label:
+          '在 Zepp DiverCity 以无观众网络直播形式举办 1st ONE-MAN LIVE「不可解(再)」',
+        sourceUrl: 'https://kaf.kamitsubaki.jp/schedule/20200323/574/',
+      },
+      {
         date: '2020-11-25',
         label: '发行 2nd Album「魔法α / 魔法β」',
         sourceUrl: KAF_HISTORY_URL,
@@ -317,6 +359,11 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
     theme: 'expansion',
     milestones: [
       {
+        date: '2022-05-11',
+        label: '「組曲」第八弾として花譜×MIYAVI「Beyond META」を发行',
+        sourceUrl: 'https://kaf.kamitsubaki.jp/suite/',
+      },
+      {
         date: '2022-08-24',
         label: '在日本武道館举办 3rd ONE-MAN LIVE「不可解参(狂)」',
         sourceUrl: KAF_HISTORY_URL,
@@ -344,6 +391,11 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
         date: '2024-01-14',
         label: '在代々木第一体育館举办 4th ONE-MAN LIVE「怪歌」',
         sourceUrl: KAF_HISTORY_URL,
+      },
+      {
+        date: '2024-01-14',
+        label: '在「怪歌」公演中公布并启动虚拟 Singer-songwriter「廻花」项目',
+        sourceUrl: 'https://kaf.kamitsubaki.jp/news/20240114/367/',
       },
       {
         date: '2024-12-25',
@@ -412,37 +464,49 @@ export const visualArchive: KafVisual[] = [
 
 export const selectedWorks: KafWork[] = [
   {
+    id: 'album-shinnai-2026',
     title: '深愛',
     releaseDate: '2026.05.27',
+    releaseDateTime: '2026-05-27',
     kind: '5TH ALBUM',
     description:
       '以音乐与故事彼此呼应为核心的第五张专辑，也是这一阶段最适合作为“现在进行时”观察入口的作品。',
     sourceUrl: 'https://kaf.kamitsubaki.jp/transcendent-love/',
     featured: true,
+    visual: transcendentUfoMedia,
   },
   {
+    id: 'album-guuwa-2024',
     title: '寓話',
     releaseDate: '2024.12.25',
+    releaseDateTime: '2024-12-25',
     kind: '4TH ALBUM',
     description:
       '在创作体制变化后重新展开的第四张专辑，以“丧失与获得”连接新的叙事阶段。',
     sourceUrl: 'https://kaf.kamitsubaki.jp/discography/20241115/857/',
+    visual: fableChewingDiscoMedia,
   },
   {
+    id: 'album-mahou-alpha-2020',
     title: '魔法α',
     releaseDate: '2020.11.25',
+    releaseDateTime: '2020-11-25',
     kind: '2ND ALBUM',
     description:
       '收录多首动画、影像与跨界企划相关作品，扩展了花譜早期声音与视觉的边界。',
     sourceUrl: 'https://kamitsubaki.jp/discography/kaf/366/',
+    visual: magicKeshikiMedia,
   },
   {
+    id: 'album-kansoku-alpha-2019',
     title: '観測α',
     releaseDate: '2019.09.11',
+    releaseDateTime: '2019-09-11',
     kind: '1ST ALBUM',
     description:
       '汇集活动初期的重要歌曲，也是“KAF Observatory / 观测”这一粉丝站概念的历史原点。',
     sourceUrl: 'https://kamitsubaki.jp/discography/kaf/337/',
+    visual: observationPastMedia,
   },
 ];
 
