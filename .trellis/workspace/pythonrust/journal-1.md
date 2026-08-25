@@ -48,3 +48,24 @@ Designed and implemented the first illustration-led KAF fan homepage, added righ
 ### Status
 
 [OK] **Completed**
+
+
+## Session 3: Curate KAF journey media content
+
+**Date**: 2026-08-25
+**Task**: Curate KAF journey media content
+**Branch**: `feat/kaf-media-content`
+
+### Summary
+
+Verified six-stage KAF chronology and per-asset reuse terms; added six rights-cleared local visuals, typed journey/media content, provenance, and focused invariants; mise run check passed.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `cde9961` | (see git log) |
+
+### Status
+
+[OK] **Completed**
