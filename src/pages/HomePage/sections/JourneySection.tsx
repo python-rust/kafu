@@ -147,7 +147,7 @@ function JourneyVisualLayer({
         alt=""
         width={chapter.primaryVisual.width}
         height={chapter.primaryVisual.height}
-        loading={index <= 1 ? 'eager' : 'lazy'}
+        loading="lazy"
         decoding="async"
         style={
           chapter.primaryVisual.objectPosition
@@ -233,13 +233,7 @@ function JourneyDesktopStage({
   );
 }
 
-function ChapterVisual({
-  visual,
-  eager,
-}: {
-  visual: JourneyVisual;
-  eager: boolean;
-}) {
+function ChapterVisual({ visual }: { visual: JourneyVisual }) {
   return (
     <figure className={styles.chapterFigure}>
       <img
@@ -247,7 +241,7 @@ function ChapterVisual({
         alt={visual.alt}
         width={visual.width}
         height={visual.height}
-        loading={eager ? 'eager' : 'lazy'}
+        loading="lazy"
         decoding="async"
         style={
           visual.objectPosition
@@ -416,11 +410,10 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                     </div>
 
                     <div className={styles.chapterMedia}>
-                      {visuals.map((visual, visualIndex) => (
+                      {visuals.map((visual) => (
                         <ChapterVisual
                           key={`${chapter.id}-${visual.src}`}
                           visual={visual}
-                          eager={index === 0 && visualIndex === 0}
                         />
                       ))}
                     </div>

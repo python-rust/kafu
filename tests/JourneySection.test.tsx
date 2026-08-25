@@ -209,7 +209,7 @@ describe('JourneySection', () => {
   });
 
   it('exposes chapter navigation, milestone sources, and visual metadata', () => {
-    render(<JourneySection chapters={chapters} />);
+    const { container } = render(<JourneySection chapters={chapters} />);
 
     const navigation = screen.getByRole('navigation', {
       name: 'KAF journey chapters',
@@ -223,7 +223,7 @@ describe('JourneySection', () => {
     const originVisual = screen.getByRole('img', { name: 'Origin visual' });
     expect(originVisual).toHaveAttribute('width', '1200');
     expect(originVisual).toHaveAttribute('height', '1600');
-    expect(originVisual).toHaveAttribute('loading', 'eager');
+    expect(originVisual).toHaveAttribute('loading', 'lazy');
 
     expect(
       screen.getByRole('link', { name: 'Visual source: Origin artist' }),
@@ -233,9 +233,15 @@ describe('JourneySection', () => {
         name: 'Milestone source: Origin milestone',
       }),
     ).toHaveAttribute('href', 'https://example.com/origin-milestone');
-    expect(
-      screen.getByRole('img', { name: 'Rebuild secondary visual' }),
-    ).toHaveAttribute('loading', 'lazy');
+    const rebuildSecondaryVisual = screen.getByRole('img', {
+      name: 'Rebuild secondary visual',
+    });
+    expect(rebuildSecondaryVisual).toHaveAttribute('loading', 'lazy');
+
+    for (const journeyImage of container.querySelectorAll('img')) {
+      expect(journeyImage).toHaveAttribute('loading', 'lazy');
+      expect(journeyImage).toHaveAttribute('decoding', 'async');
+    }
   });
 
   it('keeps the complete linear journey when reduced motion is requested', () => {
@@ -250,9 +256,11 @@ describe('JourneySection', () => {
     expect(
       screen.getByText('Fixture summary for the sixth journey chapter.'),
     ).toBeVisible();
-    expect(
-      screen.getByRole('img', { name: 'Transcendent visual' }),
-    ).toBeInTheDocument();
+    const transcendentVisual = screen.getByRole('img', {
+      name: 'Transcendent visual',
+    });
+    expect(transcendentVisual).toBeInTheDocument();
+    expect(transcendentVisual).toHaveAttribute('loading', 'lazy');
     expect(
       screen.getByRole('link', {
         name: 'Milestone source: Transcendent milestone',
