@@ -1,12 +1,47 @@
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
+  /* Wave 1 compatibility: the legacy HomePage still consumes these roles. */
   --font-display:
     'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', 'Songti SC', serif;
   --font-sans:
     Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     'Hiragino Sans', 'Noto Sans CJK JP', sans-serif;
+  --font-display-ja:
+    'Hiragino Sans', 'Yu Gothic', 'Noto Sans CJK JP', 'Microsoft YaHei',
+    sans-serif;
+  --font-display-latin:
+    'Avenir Next Condensed', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
 
+  /* KAF Phenomenon Chapters — dark/luminous semantic foundation. */
+  --color-void: #060711;
+  --color-midnight: #0b0d1b;
+  --color-surface: #101326;
+  --color-surface-raised: #171a31;
+  --color-text: #f7f7ff;
+  --color-text-muted: #b8b8ca;
+  --color-text-faint: #8688a1;
+  --color-coral: #ff6f7e;
+  --color-magenta: #f451a5;
+  --color-violet-signal: #9a7cff;
+  --color-cyan: #64e2f5;
+  --color-line-on-dark: rgb(247 247 255 / 16%);
+  --color-line-on-dark-strong: rgb(247 247 255 / 28%);
+  --color-grid-on-dark: rgb(247 247 255 / 4%);
+  --color-coral-glow: rgb(255 111 126 / 17%);
+  --color-magenta-glow: rgb(244 81 165 / 16%);
+  --color-cyan-glow: rgb(100 226 245 / 11%);
+  --focus-ring: #78e9ff;
+  --focus-width: 2px;
+  --focus-offset: 4px;
+  --shadow-glow-soft: 0 0 3.5rem rgb(244 81 165 / 18%);
+  --shadow-stage: 0 2rem 7rem rgb(0 0 0 / 36%);
+
+  /*
+   * Legacy paper/ink tokens stay stable until the Wave 2 route migration.
+   * Removing or remapping them here would make the still-live editorial page
+   * unreadable while the new sections are landing in parallel.
+   */
   --color-paper: #f3efe8;
   --color-paper-soft: #ebe4df;
   --color-paper-deep: #ded5d0;
@@ -47,4 +82,5 @@
   --duration-normal: 360ms;
   --duration-slow: 720ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-emphasis: cubic-bezier(0.16, 1, 0.3, 1);
 }
