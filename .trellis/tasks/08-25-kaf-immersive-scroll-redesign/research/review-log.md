@@ -110,8 +110,8 @@ None may edit final homepage composition or legacy HomePage CSS. Wave 2 starts o
 
 ### Required mitigations
 
-- Reopen and record every candidate's original page, license icons, creator/rightsholder, modification status, credit, dimensions, retrieval date, and hash.
-- Prefer a compatible practical derivative and document any file larger than 2 MiB.
+- Reopen and record every candidate's original page, license icons, creator/rightsholder, modification status, credit, dimensions, and retrieval date; record a checksum when it materially improves provenance review.
+- Prefer a compatible practical derivative and document any unusually large shipping file together with the reason it cannot be reduced safely.
 - Linear mobile and reduced-motion journeys; no scroll-jacking or mandatory snap.
 - Semantic content remains present without motion; alt text/focus/contrast are tested.
 - Only the integration branch composes the route and removes legacy CSS.
@@ -119,4 +119,4 @@ None may edit final homepage composition or legacy HomePage CSS. Wave 2 starts o
 
 ## Final review result
 
-The plan is approved for implementation as a parent coordination task with four parallel Wave 1 children and one dependent Wave 2 integration child. No product-code implementation is authorized in the parent planning Worktree.
+The plan is ready for user handoff as a parent coordination task with four parallel Wave 1 children and one dependent Wave 2 integration child. All tasks remain in `planning`; no product-code implementation is authorized until the relevant child task is reviewed and activated in its own Worktree.
