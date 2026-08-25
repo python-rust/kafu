@@ -2,47 +2,47 @@
 
 ## Phase A — Re-verify evidence
 
-- [ ] Reopen the parent media-rights research and every candidate's original page.
-- [ ] Recheck current KAMITSUBAKI secondary-creation guidance and Piapro license-icon meanings.
-- [ ] Verify the six chapter milestone set against current official KAF/KAMITSUBAKI pages.
-- [ ] Record rejected candidates when the rejection reason would prevent repeated investigation.
+- [x] Reopen the parent media-rights research and every selected candidate's original page.
+- [x] Recheck current KAMITSUBAKI secondary-creation guidance and Piapro license-icon meanings.
+- [x] Verify the six chapter milestone set against current official KAF/KAMITSUBAKI pages.
+- [x] Record rejected candidates when the rejection reason would prevent repeated investigation.
 
 **Gate:** no image is downloaded into the shipping tree before its per-work conditions are understood.
 
 ## Phase B — Select and acquire media
 
-- [ ] Map one primary visual to each chapter plus hero/gallery needs.
-- [ ] Reach at least nine total local visuals and at least six new acquisitions; prefer 10–12 when compatible.
-- [ ] Download the smallest compatible high-quality source/derivative.
-- [ ] Create optimized derivatives only where modification is allowed.
-- [ ] Capture source dimensions, local dimensions, retrieval date, transformation notes, and SHA-256.
-- [ ] Update `src/assets/kaf/ATTRIBUTION.md` in the same commit as each final asset set.
+- [x] Map one distinct primary visual to each chapter plus hero/gallery needs.
+- [x] Reach nine total local visuals and six new acquisitions; stop there rather than add unnecessary rights surface.
+- [x] Download the smallest compatible high-quality published derivative.
+- [x] Avoid repository-side derivatives; selected piapro display thumbnails require no further optimization.
+- [x] Capture source dimensions, local dimensions, retrieval date, transformation notes, and SHA-256.
+- [x] Update `src/assets/kaf/ATTRIBUTION.md` with the final asset set.
 
 ## Phase C — Extend typed content
 
-- [ ] Preserve current exports used by the existing homepage.
-- [ ] Add stable media records and the six journey chapters.
-- [ ] Add verified milestones and source links.
-- [ ] Ensure selected works/gallery/hero records can feed the parent-defined section props.
-- [ ] Keep layout and animation concerns out of content records.
+- [x] Preserve current exports used by the existing homepage.
+- [x] Add stable media records and the six journey chapters.
+- [x] Add verified milestones and source links.
+- [x] Ensure selected works/gallery/hero records can feed the parent-defined section props.
+- [x] Keep layout and animation concerns out of content records.
 
 ## Phase D — Focused validation
 
-- [ ] Add a uniquely named focused test for chronology/media invariants.
-- [ ] Confirm all asset imports resolve and the current homepage still renders.
-- [ ] Review the shipping asset directory against `ATTRIBUTION.md` one-for-one.
-- [ ] Run `mise run check`.
-- [ ] Run `git diff --check`.
-- [ ] Confirm the diff stays inside the task ownership boundary.
+- [x] Add a uniquely named focused test for chronology/media invariants.
+- [x] Confirm all asset imports resolve and the current homepage still renders.
+- [x] Review the shipping asset directory against `ATTRIBUTION.md` one-for-one.
+- [x] Run `mise run check`.
+- [x] Run `git diff --check`.
+- [x] Confirm the diff stays inside the task ownership boundary.
 
 ## Review checklist
 
-- [ ] No official-site image was copied merely because it was accessible.
-- [ ] No license icon or original-license text was omitted.
-- [ ] Required author credit is preserved exactly enough for display.
-- [ ] No asset prohibited from modification was incompatibly transformed.
-- [ ] No raw oversized source is committed without a documented reason.
-- [ ] No UI, global-style, homepage-composition, or E2E file changed.
+- [x] No official-site image was copied merely because it was accessible.
+- [x] No license icon or original-license text was omitted.
+- [x] Required author credit is preserved exactly enough for display.
+- [x] No asset prohibited from modification was incompatibly transformed.
+- [x] No raw oversized source is committed without a documented reason.
+- [x] No UI, global-style, homepage-composition, or E2E file changed.
 
 ## Validation commands
 

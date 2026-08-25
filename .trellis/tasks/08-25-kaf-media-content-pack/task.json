@@ -3,7 +3,7 @@
   "name": "kaf-media-content-pack",
   "title": "Curate KAF journey media and content",
   "description": "Verify facts and per-asset rights, acquire and optimize the local media pack, and define typed six-chapter journey content.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": "frontend-media-content",
   "package": null,

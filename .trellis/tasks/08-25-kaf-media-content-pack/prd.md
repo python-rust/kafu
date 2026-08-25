@@ -117,15 +117,15 @@ It must not edit:
 
 ## Acceptance Criteria
 
-- [ ] **AC-01**: Typed content defines all six parent-approved chapters in chronological order with unique IDs, labels, summaries, theme IDs, visuals, and official milestone sources.
-- [ ] **AC-02**: Every chapter has at least one primary local visual and at least two verified milestones unless the official record genuinely provides fewer, in which case the exception is documented.
-- [ ] **AC-03**: The repository contains at least nine distinct local KAF visuals, including at least six newly acquired files.
-- [ ] **AC-04**: Every shipping third-party image has a complete synchronized provenance entry including license conditions, modification status, dimensions, retrieval date, and SHA-256.
-- [ ] **AC-05**: No asset with unclear or incompatible reuse terms is committed; no arbitrary official-site/campaign/logo/social image is used as a substitute.
-- [ ] **AC-06**: Current `src/content/kaf.ts` exports remain compatible enough for the pre-integration homepage to build and its existing tests to run.
-- [ ] **AC-07**: A focused automated test verifies chapter count/order, unique IDs, required milestone/source fields, media metadata completeness, and visual references.
-- [ ] **AC-08**: Only files inside the documented ownership boundary are changed.
-- [ ] **AC-09**: `mise run check` passes in this Worktree.
+- [x] **AC-01**: Typed content defines all six parent-approved chapters in chronological order with unique IDs, labels, summaries, theme IDs, visuals, and official milestone sources.
+- [x] **AC-02**: Every chapter has at least one primary local visual and at least two verified milestones unless the official record genuinely provides fewer, in which case the exception is documented.
+- [x] **AC-03**: The repository contains at least nine distinct local KAF visuals, including at least six newly acquired files.
+- [x] **AC-04**: Every shipping third-party image has a complete synchronized provenance entry including license conditions, modification status, dimensions, retrieval date, and SHA-256.
+- [x] **AC-05**: No asset with unclear or incompatible reuse terms is committed; no arbitrary official-site/campaign/logo/social image is used as a substitute.
+- [x] **AC-06**: Current `src/content/kaf.ts` exports remain compatible enough for the pre-integration homepage to build and its existing tests to run.
+- [x] **AC-07**: A focused automated test verifies chapter count/order, unique IDs, required milestone/source fields, media metadata completeness, and visual references.
+- [x] **AC-08**: Only files inside the documented ownership boundary are changed.
+- [x] **AC-09**: `mise run check` passes in this Worktree.
 
 ## Out of Scope
 
