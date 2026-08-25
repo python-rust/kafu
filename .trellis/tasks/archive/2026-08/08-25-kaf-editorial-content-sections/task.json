@@ -3,7 +3,7 @@
   "name": "kaf-editorial-content-sections",
   "title": "Redesign KAF works and gallery sections",
   "description": "Create image-rich works, gallery, official-links, and footer sections using isolated page-local components.",
-  "status": "planning",
+  "status": "completed",
   "dev_type": null,
   "scope": "frontend-content-sections",
   "package": null,
@@ -11,12 +11,12 @@
   "creator": "pythonrust",
   "assignee": "pythonrust",
   "createdAt": "2026-08-25",
-  "completedAt": null,
+  "completedAt": "2026-08-25",
   "branch": "feat/kaf-editorial-sections",
   "base_branch": "main",
   "worktree_path": null,
-  "commit": null,
-  "pr_url": null,
+  "commit": "a4a6c9d",
+  "pr_url": "https://github.com/python-rust/kafu/pull/1",
   "subtasks": [],
   "children": [],
   "parent": "08-25-kaf-immersive-scroll-redesign",
@@ -25,6 +25,10 @@
   "meta": {
     "wave": "1",
     "owner": "content-sections",
-    "parallel": "true"
+    "parallel": "true",
+    "spec_review": "reviewed-no-shared-update-needed",
+    "responsive_matrix": "360,390,768,1024,1440-pass",
+    "work_commit": "a4a6c9d",
+    "pr_status": "opened"
   }
 }

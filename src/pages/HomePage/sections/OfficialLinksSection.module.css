@@ -1,0 +1,200 @@
+.section {
+  --links-bg: var(--color-void, #070812);
+  --links-text: var(--color-text, #f8f6fb);
+  --links-muted: var(--color-text-muted, rgb(248 246 251 / 62%));
+  --links-line: var(--color-line-on-dark, rgb(255 255 255 / 17%));
+  --links-coral: var(--color-coral, #ff6f87);
+  --links-magenta: var(--color-magenta, #ff3f9d);
+  --links-violet: var(--color-violet, #8a72ff);
+  --links-cyan: var(--color-cyan, #77e8ff);
+
+  position: relative;
+  overflow: clip;
+  scroll-margin-top: 5.5rem;
+  padding: clamp(5.5rem, 10vw, 10rem) clamp(1rem, 4vw, 5rem);
+  background:
+    linear-gradient(112deg, rgb(255 63 157 / 11%), transparent 42%),
+    radial-gradient(
+      circle at 86% 20%,
+      rgb(138 114 255 / 16%),
+      transparent 28rem
+    ),
+    var(--links-bg);
+  color: var(--links-text);
+}
+
+.inner {
+  display: grid;
+  width: min(100%, 90rem);
+  margin-inline: auto;
+  gap: clamp(3rem, 8vw, 8rem);
+  grid-template-columns: minmax(18rem, 0.75fr) minmax(0, 1.25fr);
+  align-items: start;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  color: var(--links-coral);
+  font-size: 0.68rem;
+  font-weight: 760;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.intro h2 {
+  margin: 0;
+  font-family: var(--font-display, sans-serif);
+  font-size: clamp(3rem, 6.5vw, 6.5rem);
+  font-weight: 540;
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+}
+
+.intro > p:last-child {
+  max-width: 32rem;
+  margin: 1.8rem 0 0;
+  color: var(--links-muted);
+  font-size: 0.9rem;
+  line-height: 1.85;
+}
+
+.links {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--links-line);
+  list-style: none;
+}
+
+.links li {
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--links-line);
+}
+
+.links a {
+  display: grid;
+  min-width: 0;
+  min-height: 7rem;
+  padding: 1.25rem 0;
+  gap: 1rem clamp(1rem, 2.5vw, 2.5rem);
+  grid-template-columns:
+    3.25rem minmax(10rem, 0.85fr) minmax(12rem, 1.15fr)
+    2.25rem;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}
+
+.index,
+.note {
+  color: var(--links-muted);
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+}
+
+.index {
+  color: var(--links-cyan);
+  font-weight: 720;
+  letter-spacing: 0.13em;
+}
+
+.links strong {
+  font-family: var(--font-display, sans-serif);
+  font-size: clamp(1.65rem, 3.3vw, 3.25rem);
+  font-weight: 520;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.arrow {
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid var(--links-line);
+  align-items: center;
+  justify-items: center;
+  color: var(--links-text);
+  font-size: 1rem;
+}
+
+.links a:focus-visible {
+  outline: 2px solid var(--focus-ring, var(--links-cyan));
+  outline-offset: 0.3rem;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .links a {
+    transition:
+      padding-inline 280ms ease,
+      background 280ms ease;
+  }
+
+  .links a:hover {
+    padding-inline: 0.7rem;
+    background: linear-gradient(90deg, rgb(255 63 157 / 9%), transparent 70%);
+  }
+}
+
+@media (max-width: 1024px) {
+  .inner {
+    gap: 4rem;
+    grid-template-columns: minmax(16rem, 0.7fr) minmax(0, 1.3fr);
+  }
+
+  .links a {
+    grid-template-columns:
+      2.75rem minmax(9rem, 0.9fr) minmax(10rem, 1.1fr)
+      2.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding-block: clamp(4.5rem, 15vw, 7rem);
+  }
+
+  .inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .links a {
+    min-height: 8.5rem;
+    grid-template-columns: 2.5rem minmax(0, 1fr) 2.25rem;
+    align-content: center;
+  }
+
+  .links strong {
+    grid-column: 2;
+  }
+
+  .note {
+    grid-column: 2 / -1;
+  }
+
+  .arrow {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-inline: 1rem;
+  }
+
+  .intro h2 {
+    font-size: clamp(2.85rem, 16vw, 4.5rem);
+  }
+
+  .links a {
+    gap: 0.75rem 1rem;
+    grid-template-columns: 2rem minmax(0, 1fr) 2.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .links a {
+    transition: none;
+  }
+}
