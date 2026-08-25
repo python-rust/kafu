@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Quality gate, focused test expectations, and media provenance review"}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "Review stable typed records, IDs, and avoidance of assertions/any"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Verify the PR remains inside content/assets/test ownership"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/media-rights.md", "reason": "Verify every third-party file has compatible terms and complete evidence"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/visual-direction.md", "reason": "Verify chronology coverage and official fact-source alignment"}

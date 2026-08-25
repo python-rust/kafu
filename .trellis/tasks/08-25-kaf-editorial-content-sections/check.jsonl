@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Review page-local ownership and absence of global/content edits"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Review semantic figures/articles/links, alt text, focus, and CSS Modules"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Review tests, lazy loading, reduced motion, and mise gate"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/visual-direction.md", "reason": "Review image-first hierarchy and avoidance of generic card UI"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/scroll-motion.md", "reason": "Review optional motion performance and fallback behavior"}

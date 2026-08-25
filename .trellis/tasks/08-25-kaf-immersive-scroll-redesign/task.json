@@ -1,0 +1,35 @@
+{
+  "id": "kaf-immersive-scroll-redesign",
+  "name": "kaf-immersive-scroll-redesign",
+  "title": "Redesign KAF site as immersive scroll journey",
+  "description": "Parent plan for an image-rich anime visual redesign, six-stage KAF journey, parallel implementation, and final integration.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": "coordination",
+  "package": null,
+  "priority": "P1",
+  "creator": "pythonrust",
+  "assignee": "pythonrust",
+  "createdAt": "2026-08-25",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "08-25-kaf-media-content-pack",
+    "08-25-kaf-visual-foundation-hero",
+    "08-25-kaf-scroll-journey",
+    "08-25-kaf-editorial-content-sections",
+    "08-25-kaf-immersive-integration-qa"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "role": "coordination-only",
+    "wave": "parent"
+  }
+}

@@ -1,0 +1,11 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend quality/ownership overview"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Review final composition and absence of dead legacy ownership"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Review semantic page structure, links, images, focus, and accessibility"}
+{"file": ".trellis/spec/frontend/hook-guidelines.md", "reason": "Review scroll lifecycle, cleanup, and per-frame state behavior"}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "Review adapters and type assertions"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Review full check/E2E/viewport/provenance gate"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/current-implementation-audit.md", "reason": "Compare final page against the known static/low-image baseline"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/visual-direction.md", "reason": "Review final KAF/anime direction and chapter narrative"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/scroll-motion.md", "reason": "Review native scroll, reduced motion, mobile fallback, and performance"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/media-rights.md", "reason": "Review every actually shipping third-party visual and credit"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/review-log.md", "reason": "Verify integration did not reopen or drift from the approved multi-round design decisions"}

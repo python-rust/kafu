@@ -1,0 +1,31 @@
+{
+  "id": "kaf-immersive-integration-qa",
+  "name": "kaf-immersive-integration-qa",
+  "title": "Integrate and verify immersive KAF homepage",
+  "description": "After Wave 1 merges, compose the homepage, remove legacy monolith styles, resolve contracts, and run responsive/accessibility/performance QA.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": "frontend-integration-qa",
+  "package": null,
+  "priority": "P1",
+  "creator": "pythonrust",
+  "assignee": "pythonrust",
+  "createdAt": "2026-08-25",
+  "completedAt": null,
+  "branch": "feat/kaf-immersive-integration",
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": "08-25-kaf-immersive-scroll-redesign",
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "wave": "2",
+    "owner": "integration-qa",
+    "parallel": "false",
+    "depends_on": "wave-1-merged"
+  }
+}

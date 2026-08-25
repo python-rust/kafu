@@ -1,0 +1,10 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend ownership and pre-development entry point for all child tasks"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Defines page, content, asset, style, and test ownership used by the Worktree split"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Component, CSS Module, props, and accessibility conventions"}
+{"file": ".trellis/spec/frontend/hook-guidelines.md", "reason": "Lifecycle, observer cleanup, and high-frequency animation-state constraints"}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "Stable data-contract and local-prop typing rules"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/current-implementation-audit.md", "reason": "Local evidence for the redesign and parallel file-ownership boundaries"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/visual-direction.md", "reason": "Official-site reference synthesis and six-chapter product direction"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/scroll-motion.md", "reason": "Chosen native-scroll Motion architecture and fallbacks"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/media-rights.md", "reason": "Asset acquisition and provenance gate"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/review-log.md", "reason": "Explicit four-round product, visual, engineering, and risk decision record"}

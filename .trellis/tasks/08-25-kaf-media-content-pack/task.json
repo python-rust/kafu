@@ -1,0 +1,30 @@
+{
+  "id": "kaf-media-content-pack",
+  "name": "kaf-media-content-pack",
+  "title": "Curate KAF journey media and content",
+  "description": "Verify facts and per-asset rights, acquire and optimize the local media pack, and define typed six-chapter journey content.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": "frontend-media-content",
+  "package": null,
+  "priority": "P1",
+  "creator": "pythonrust",
+  "assignee": "pythonrust",
+  "createdAt": "2026-08-25",
+  "completedAt": null,
+  "branch": "feat/kaf-media-content",
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": "08-25-kaf-immersive-scroll-redesign",
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "wave": "1",
+    "owner": "media-content",
+    "parallel": "true"
+  }
+}

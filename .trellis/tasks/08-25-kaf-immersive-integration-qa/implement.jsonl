@@ -1,0 +1,11 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend ownership, pre-development, and quality overview"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Final route/page/section/content/asset ownership and legacy migration"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Semantic composition, props, CSS Modules, focus, and accessibility"}
+{"file": ".trellis/spec/frontend/hook-guidelines.md", "reason": "Scroll/observer lifecycle and high-frequency state review"}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "Structural adapters and avoidance of broad assertions"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Full mise, E2E, accessibility, and media-provenance gate"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/current-implementation-audit.md", "reason": "Legacy markup/CSS baseline and screenshot-tool limitation"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/visual-direction.md", "reason": "Final visual hierarchy and six-chapter product acceptance"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/scroll-motion.md", "reason": "Native-scroll, mobile, reduced-motion, and performance contracts"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/media-rights.md", "reason": "Final shipping-media and provenance reconciliation"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/review-log.md", "reason": "Approved product direction, rejected alternatives, Worktree split, and risk mitigations"}

@@ -1,0 +1,30 @@
+{
+  "id": "kaf-visual-foundation-hero",
+  "name": "kaf-visual-foundation-hero",
+  "title": "Build KAF visual foundation and hero",
+  "description": "Replace the paper editorial palette with an immersive anime visual system and build the site header and full-viewport hero.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": "frontend-visual-foundation",
+  "package": null,
+  "priority": "P1",
+  "creator": "pythonrust",
+  "assignee": "pythonrust",
+  "createdAt": "2026-08-25",
+  "completedAt": null,
+  "branch": "feat/kaf-visual-foundation",
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": "08-25-kaf-immersive-scroll-redesign",
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "wave": "1",
+    "owner": "visual-foundation",
+    "parallel": "true"
+  }
+}

@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Review semantic chapter structure, links, images, focus, and props"}
+{"file": ".trellis/spec/frontend/hook-guidelines.md", "reason": "Review lifecycle cleanup and absence of per-frame React state/global listeners"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Review focused tests, accessibility, reduced motion, and mise gate"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/scroll-motion.md", "reason": "Verify native scrolling, sticky/linear behavior, reduced motion, and performance contract"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/review-log.md", "reason": "Verify implementation matches the approved multi-round engineering decision"}

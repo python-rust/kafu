@@ -1,0 +1,8 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend ownership and pre-development checklist"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Homepage-local component/CSS/test placement"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Props, semantics, CSS Modules, focus, and accessibility"}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "Narrow structural prop interfaces"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Focused tests, image loading, and mise validation"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/current-implementation-audit.md", "reason": "Current low image density and monolith boundary"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/visual-direction.md", "reason": "Image-first KAF/anime hierarchy and atmosphere"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/scroll-motion.md", "reason": "Reduced-motion and low-cost reveal constraints"}

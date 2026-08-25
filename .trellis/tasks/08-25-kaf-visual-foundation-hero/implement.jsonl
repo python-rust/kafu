@@ -1,0 +1,7 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend pre-development and ownership overview"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Global-style versus page-section placement rules"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Props, semantic markup, CSS Modules, and accessibility conventions"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Required tests and mise validation"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/current-implementation-audit.md", "reason": "Current palette, monolith, and compatibility baseline"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/visual-direction.md", "reason": "Chosen KAF-specific visual hierarchy and dark/luminous direction"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/scroll-motion.md", "reason": "Reduced-motion and low-cost animation constraints"}

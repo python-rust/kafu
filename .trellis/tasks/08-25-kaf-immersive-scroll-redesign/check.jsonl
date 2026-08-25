@@ -1,0 +1,8 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend quality and ownership overview"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Required mise checks, E2E coverage, accessibility, and provenance review"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Semantic markup, accessibility, props, and CSS Module review"}
+{"file": ".trellis/spec/frontend/hook-guidelines.md", "reason": "Observer/listener cleanup and animation-state review"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/current-implementation-audit.md", "reason": "Baseline comparison and legacy migration boundaries"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/scroll-motion.md", "reason": "Native scrolling, reduced-motion, and performance acceptance contract"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/media-rights.md", "reason": "Third-party image license and provenance acceptance contract"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/review-log.md", "reason": "Verify the final task map still matches the approved multi-round review"}

@@ -1,0 +1,30 @@
+{
+  "id": "kaf-scroll-journey",
+  "name": "kaf-scroll-journey",
+  "title": "Build KAF scroll journey",
+  "description": "Implement a prop-driven six-stage scroll-linked KAF journey with native scrolling and reduced-motion/mobile fallbacks.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": "frontend-scroll-journey",
+  "package": null,
+  "priority": "P1",
+  "creator": "pythonrust",
+  "assignee": "pythonrust",
+  "createdAt": "2026-08-25",
+  "completedAt": null,
+  "branch": "feat/kaf-scroll-journey",
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": "08-25-kaf-immersive-scroll-redesign",
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "wave": "1",
+    "owner": "scroll-journey",
+    "parallel": "true"
+  }
+}

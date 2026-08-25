@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Review global/page-local style ownership"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Review semantics, props, focus, alt text, and CSS Modules"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Review focused tests and mise gate"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/visual-direction.md", "reason": "Review visual direction against official-reference synthesis"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/scroll-motion.md", "reason": "Review reduced-motion and performance behavior"}

@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend ownership, static content, media provenance, and mise workflow entry point"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Defines ownership of src/content, src/assets, and focused tests"}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "Typed static records and stable cross-module contract rules"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Required tests, build gate, and third-party media provenance checks"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/visual-direction.md", "reason": "Six-chapter narrative grouping and official-source product context"}
+{"file": ".trellis/tasks/08-25-kaf-immersive-scroll-redesign/research/media-rights.md", "reason": "Per-asset acquisition, licensing, modification, and provenance gate"}
