@@ -45,3 +45,55 @@ Do not modify `HomePage.tsx` to create a preview. A temporary uncommitted local 
 ## Rollback
 
 Revert token/base changes and remove the additive section/test files. No data or media migration is owned here.
+
+## Completion evidence
+
+Implemented on `feat/kaf-visual-foundation` without composing the new sections into
+`HomePage.tsx` and without modifying content, assets, sibling sections, legacy
+`HomePage.module.css`, or E2E specs.
+
+### Token compatibility audit
+
+- Added dark/luminous semantic roles for void, midnight/surfaces, text, coral,
+  magenta, violet, cyan, dark rules/grid, focus, glow, typography, and motion.
+- Kept the existing paper/ink/KAF/night token values intact because the live
+  Wave 1 `HomePage.module.css` still consumes them. The new Header/Hero consume
+  the additive dark semantic roles instead.
+- `base.css` establishes the near-black document background and global
+  `:focus-visible` treatment while retaining the legacy body ink color until
+  Wave 2 removes the light homepage shell.
+
+### Component and viewport evidence
+
+- `SiteHeader` and `HeroSection` are prop-driven and import no future content
+  module or media pack.
+- Browser harness checks were run at 360×800, 390×844, 768×1024, 1024×768, and
+  1440×1000, then the harness was deleted before commit.
+- All five widths reported document `scrollWidth === clientWidth`.
+- Header navigation targets measured 44 CSS px high in the browser matrix.
+- At 360×800 and 390×844 the h1, character visual, unofficial status, Official
+  CTA, and Journey cue all intersect the first viewport; after the mobile
+  refinement both CTAs are fully visible within the viewport bounds.
+- A 390×844 browser run with `prefers-reduced-motion: reduce` reported final
+  visible states (`opacity: 1`, `visibility: visible`, `transform: none`) for
+  the primary Hero content.
+
+### Automated validation
+
+```text
+focused Vitest: 4/4 passed
+mise run check: passed (Prettier, Oxlint, Vitest 5/5, tsc, Vite build)
+mise run e2e: 4/4 passed against the still-live legacy homepage
+git diff --check: passed
+```
+
+### SPEC sync judgment
+
+No shared `.trellis/spec/` file was changed. The durable implementation rules
+used here (global semantic tokens, CSS Modules, narrow typed props, semantic
+controls, intrinsic media dimensions, visible focus, and reduced-motion
+support) are already covered by the frontend specs. The only new compatibility
+decision—preserving legacy light-theme token values until Wave 2 migrates the
+route—is intentionally temporary and should not be promoted into a long-lived
+coding convention. Keeping shared specs untouched also preserves the Wave 1
+exclusive-ownership boundary for parallel PRs.

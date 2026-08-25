@@ -1,12 +1,11 @@
 html {
+  background: var(--color-void);
   scroll-behavior: smooth;
 }
 
 body {
-  background:
-    radial-gradient(circle at 12% 10%, rgb(188 49 95 / 6%), transparent 30rem),
-    radial-gradient(circle at 90% 54%, rgb(107 89 137 / 7%), transparent 34rem),
-    var(--color-paper);
+  background: var(--color-void);
+  /* Keep legacy ink until Wave 2 removes the light HomePage shell. */
   color: var(--color-ink);
   font-family: var(--font-sans);
   line-height: 1.5;
@@ -16,11 +15,16 @@ body {
 
 button,
 a {
-  outline-offset: 4px;
+  outline-offset: var(--focus-offset);
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
 }
 
 ::selection {
-  background: rgb(188 49 95 / 20%);
+  background: var(--color-magenta);
+  color: var(--color-void);
 }
 
 @media (prefers-reduced-motion: reduce) {
