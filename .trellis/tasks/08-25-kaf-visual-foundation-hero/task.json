@@ -21,7 +21,7 @@
   "children": [],
   "parent": "08-25-kaf-immersive-scroll-redesign",
   "relatedFiles": [],
-  "notes": "",
+  "notes": "Implementation and validation are complete on feat/kaf-visual-foundation. PR creation is blocked because this Git repository has no configured remote and the authenticated GitHub account has no accessible KAF/kafu repository or remote containing base commit 56557e9. Work commits: d9d55db, 5a6d33a. Keep this task in_progress and unarchived until a real PR target exists.",
   "meta": {
     "wave": "1",
     "owner": "visual-foundation",
