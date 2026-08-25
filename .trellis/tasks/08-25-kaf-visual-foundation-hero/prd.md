@@ -94,16 +94,16 @@ Use prop fixtures in focused tests. Do not import future Wave 1 content modules 
 
 ## Acceptance Criteria
 
-- [ ] **AC-01**: Semantic global tokens define the dark/luminous palette, typography, lines, focus, and motion roles without breaking existing CSS variable consumers.
-- [ ] **AC-02**: `SiteHeader` visibly identifies the fan project and unofficial status and exposes semantic anchor navigation with keyboard/touch usability.
-- [ ] **AC-03**: `HeroSection` clearly renders `花譜 / KAF`, fan-authored copy, one visual with credit, official CTA, and `#journey` cue through typed props.
-- [ ] **AC-04**: The hero composition reads as anime / virtual-singer key art rather than the previous paper editorial spread or generic glass dashboard.
-- [ ] **AC-05**: Hero/header remain usable at 360, 390, 768, 1024, and 1440 widths with no component-level horizontal overflow.
-- [ ] **AC-06**: Reduced-motion rendering contains all content and removes non-essential reveal/decorative movement.
-- [ ] **AC-07**: Meaningful images have alt text, decorative graphics are hidden from assistive technology, and interactive elements have visible focus.
-- [ ] **AC-08**: Focused DOM tests cover identity, unofficial status, accessible navigation, official CTA, journey cue, visual alt text, and credit link.
-- [ ] **AC-09**: No content/assets, Journey, Works/Gallery, `HomePage.tsx`, or legacy HomePage CSS files are modified.
-- [ ] **AC-10**: `mise run check` passes.
+- [x] **AC-01**: Semantic global tokens define the dark/luminous palette, typography, lines, focus, and motion roles without breaking existing CSS variable consumers.
+- [x] **AC-02**: `SiteHeader` visibly identifies the fan project and unofficial status and exposes semantic anchor navigation with keyboard/touch usability.
+- [x] **AC-03**: `HeroSection` clearly renders `花譜 / KAF`, fan-authored copy, one visual with credit, official CTA, and `#journey` cue through typed props.
+- [x] **AC-04**: The hero composition reads as anime / virtual-singer key art rather than the previous paper editorial spread or generic glass dashboard.
+- [x] **AC-05**: Hero/header remain usable at 360, 390, 768, 1024, and 1440 widths with no component-level horizontal overflow.
+- [x] **AC-06**: Reduced-motion rendering contains all content and removes non-essential reveal/decorative movement.
+- [x] **AC-07**: Meaningful images have alt text, decorative graphics are hidden from assistive technology, and interactive elements have visible focus.
+- [x] **AC-08**: Focused DOM tests cover identity, unofficial status, accessible navigation, official CTA, journey cue, visual alt text, and credit link.
+- [x] **AC-09**: No content/assets, Journey, Works/Gallery, `HomePage.tsx`, or legacy HomePage CSS files are modified.
+- [x] **AC-10**: `mise run check` passes.
 
 ## Out of Scope
 

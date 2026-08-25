@@ -3,7 +3,7 @@
   "name": "kaf-visual-foundation-hero",
   "title": "Build KAF visual foundation and hero",
   "description": "Replace the paper editorial palette with an immersive anime visual system and build the site header and full-viewport hero.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": "frontend-visual-foundation",
   "package": null,
