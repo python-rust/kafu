@@ -15,8 +15,8 @@
   "branch": "feat/kaf-editorial-sections",
   "base_branch": "main",
   "worktree_path": null,
-  "commit": null,
-  "pr_url": null,
+  "commit": "a4a6c9d",
+  "pr_url": "https://github.com/python-rust/kafu/pull/1",
   "subtasks": [],
   "children": [],
   "parent": "08-25-kaf-immersive-scroll-redesign",
@@ -29,6 +29,6 @@
     "spec_review": "reviewed-no-shared-update-needed",
     "responsive_matrix": "360,390,768,1024,1440-pass",
     "work_commit": "a4a6c9d",
-    "pr_status": "blocked-no-canonical-remote"
+    "pr_status": "opened"
   }
 }
