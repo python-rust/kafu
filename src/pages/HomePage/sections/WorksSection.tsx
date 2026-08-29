@@ -57,9 +57,9 @@ function VisualCredit({
 
 export function WorksSection({
   works,
-  eyebrow = 'PHENOMENON / SELECTED WORKS',
+  eyebrow = 'KAF / SELECTED DISCOGRAPHY',
   title = 'Selected Works',
-  intro = 'A small set of works, arranged as an editorial sequence rather than a complete discography.',
+  intro = '从当下的《深愛》向早期的“観測”回望：这里不是完整唱片目录，而是一条帮助理解创作变化的精选路径。',
 }: WorksSectionProps) {
   const featuredWorks = works.filter((work) => work.featured);
   const [featuredWork] = featuredWorks;
@@ -100,9 +100,6 @@ export function WorksSection({
                     loading="lazy"
                     decoding="async"
                   />
-                  <span className={styles.mediaSignal} aria-hidden="true">
-                    CURRENT / 01
-                  </span>
                 </div>
                 <figcaption>
                   <VisualCredit
@@ -200,7 +197,6 @@ export function WorksSection({
           ))}
         </div>
       </div>
-      <span className={styles.signalLine} aria-hidden="true" />
     </section>
   );
 }

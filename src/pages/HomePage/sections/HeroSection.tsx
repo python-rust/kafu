@@ -55,7 +55,7 @@ export function HeroSection({
   officialUrl,
   titleJa = '花譜',
   titleEn = 'KAF',
-  eyebrow = 'OBSERVATION / KAF PHENOMENON',
+  eyebrow = 'VOICE / IMAGE / MEMORY',
   projectName = 'KAF Observatory',
   statusLabel = 'UNOFFICIAL / NON-COMMERCIAL',
   officialLabel = 'Official Site',
@@ -72,12 +72,6 @@ export function HeroSection({
 
   return (
     <section className={styles.hero} id="top" aria-labelledby="hero-title">
-      <div className={styles.signalField} aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </div>
-
       <div className={styles.heroGrid}>
         <motion.div
           className={styles.identityPanel}
@@ -119,11 +113,6 @@ export function HeroSection({
                   : undefined
               }
             />
-            <span className={styles.visualIndex} aria-hidden="true">
-              SIGNAL / 001
-            </span>
-            <span className={styles.registrationTop} aria-hidden="true" />
-            <span className={styles.registrationBottom} aria-hidden="true" />
           </div>
           <figcaption className={styles.caption}>
             <span>VISUAL CREDIT</span>

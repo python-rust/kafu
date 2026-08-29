@@ -10,14 +10,9 @@ vi.mock('motion/react', async (importOriginal) => {
     return motionPreference.reduced;
   }
 
-  function useScrollMock() {
-    return { scrollYProgress: actual.useMotionValue(0) };
-  }
-
   return {
     ...actual,
     useReducedMotion: useReducedMotionMock,
-    useScroll: useScrollMock,
   };
 });
 

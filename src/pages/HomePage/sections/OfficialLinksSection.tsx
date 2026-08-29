@@ -14,7 +14,7 @@ interface OfficialLinksSectionProps {
 
 export function OfficialLinksSection({
   links,
-  eyebrow = 'PHENOMENON / OFFICIAL SOURCES',
+  eyebrow = 'KAF / OFFICIAL CHANNELS',
   title = 'Go to the source.',
 }: OfficialLinksSectionProps) {
   return (

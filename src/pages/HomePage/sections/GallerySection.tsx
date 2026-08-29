@@ -20,9 +20,9 @@ interface GallerySectionProps {
 
 export function GallerySection({
   visuals,
-  eyebrow = 'PHENOMENON / VISUAL ARCHIVE',
+  eyebrow = 'KAF / VISUAL NOTES',
   title = 'Visual Archive',
-  intro = 'A controlled visual sequence with credits kept adjacent to every source image.',
+  intro = '不同阶段的服装、舞台与色彩被放回同一条视觉脉络中；每一张图都在近处保留来源与署名。',
 }: GallerySectionProps) {
   return (
     <section
@@ -82,7 +82,6 @@ export function GallerySection({
           ))}
         </div>
       </div>
-      <span className={styles.signalArc} aria-hidden="true" />
     </section>
   );
 }

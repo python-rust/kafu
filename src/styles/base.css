@@ -1,13 +1,15 @@
 html {
-  background: var(--color-void);
+  background: var(--color-paper);
   scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
 }
 
 body {
-  background: var(--color-void);
-  color: var(--color-text);
+  background: var(--color-paper);
+  color: var(--color-ink);
   font-family: var(--font-sans);
-  line-height: 1.5;
+  font-size: 1rem;
+  line-height: 1.7;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -22,8 +24,8 @@ a {
 }
 
 ::selection {
-  background: var(--color-magenta);
-  color: var(--color-void);
+  background: var(--color-kaf);
+  color: var(--color-night-text);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const targetViewports = [
+  { width: 320, height: 800 },
   { width: 360, height: 800 },
   { width: 390, height: 844 },
   { width: 768, height: 1024 },
@@ -103,8 +104,36 @@ test('desktop homepage exposes the final semantic structure and anchor navigatio
   await expect(page.getByRole('contentinfo')).toBeAttached();
   await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
     'content',
-    '#060711',
+    '#f7f4f3',
   );
+
+  const visualSystemContract = await page.evaluate(() => {
+    const readFontSize = (selector: string) => {
+      const element = document.querySelector(selector);
+
+      if (!element) {
+        throw new Error(`Missing visual-system contract target: ${selector}`);
+      }
+
+      return Number.parseFloat(getComputedStyle(element).fontSize);
+    };
+
+    return {
+      bodyFontSize: readFontSize('body'),
+      navFontSize: readFontSize('header nav a'),
+      sectionHeadingSizes: ['#journey h2', '#works h2', '#visuals h2'].map(
+        readFontSize,
+      ),
+      documentHeight: document.documentElement.scrollHeight,
+    };
+  });
+
+  expect(visualSystemContract.bodyFontSize).toBeGreaterThanOrEqual(16);
+  expect(visualSystemContract.navFontSize).toBeGreaterThanOrEqual(12);
+  expect(
+    Math.max(...visualSystemContract.sectionHeadingSizes),
+  ).toBeLessThanOrEqual(80);
+  expect(visualSystemContract.documentHeight).toBeLessThan(14_000);
 
   const navigation = page.getByRole('navigation', {
     name: 'KAF homepage sections',
@@ -153,6 +182,80 @@ test('desktop homepage exposes the final semantic structure and anchor navigatio
   });
   expect(focusStyle.outlineStyle).not.toBe('none');
   expect(Number.parseFloat(focusStyle.outlineWidth)).toBeGreaterThan(0);
+});
+
+test('small-text tokens and the primary hero action retain readable contrast', async ({
+  page,
+}) => {
+  await openHome(page, { width: 1440, height: 900 });
+
+  const contrast = await page.evaluate(() => {
+    function parseColor(value: string) {
+      const probe = document.createElement('span');
+      probe.style.color = value;
+      document.body.append(probe);
+
+      const normalized = getComputedStyle(probe).color;
+      probe.remove();
+
+      const channels = normalized
+        .match(/[\d.]+/g)
+        ?.slice(0, 3)
+        .map(Number);
+
+      if (!channels || channels.length !== 3) {
+        throw new Error(`Unable to parse CSS color: ${value}`);
+      }
+
+      return channels;
+    }
+
+    function relativeLuminance(value: string) {
+      const [red, green, blue] = parseColor(value).map(
+        (channel) => {
+          const normalized = channel / 255;
+          return normalized <= 0.04045
+            ? normalized / 12.92
+            : ((normalized + 0.055) / 1.055) ** 2.4;
+        },
+      );
+
+      return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+    }
+
+    function ratio(foreground: string, background: string) {
+      const foregroundLuminance = relativeLuminance(foreground);
+      const backgroundLuminance = relativeLuminance(background);
+      const lighter = Math.max(foregroundLuminance, backgroundLuminance);
+      const darker = Math.min(foregroundLuminance, backgroundLuminance);
+
+      return (lighter + 0.05) / (darker + 0.05);
+    }
+
+    const rootStyle = getComputedStyle(document.documentElement);
+    const paper = rootStyle.getPropertyValue('--color-paper-clean').trim();
+    const faintInk = rootStyle.getPropertyValue('--color-ink-faint').trim();
+    const deepBlue = rootStyle.getPropertyValue('--color-blue-deep').trim();
+    const heroAction = document.querySelector<HTMLElement>(
+      '#top a[href="https://kaf.kamitsubaki.jp/"]',
+    );
+
+    if (!heroAction) {
+      throw new Error('Primary hero action was not found.');
+    }
+
+    const actionStyle = getComputedStyle(heroAction);
+
+    return {
+      faintInkOnPaper: ratio(faintInk, paper),
+      deepBlueOnPaper: ratio(deepBlue, paper),
+      heroAction: ratio(actionStyle.color, actionStyle.backgroundColor),
+    };
+  });
+
+  expect(contrast.faintInkOnPaper).toBeGreaterThanOrEqual(4.5);
+  expect(contrast.deepBlueOnPaper).toBeGreaterThanOrEqual(4.5);
+  expect(contrast.heroAction).toBeGreaterThanOrEqual(4.5);
 });
 
 test('desktop journey advances through real chapters and releases the sticky stage', async ({
@@ -305,6 +408,29 @@ test('all target viewport sizes remain free of horizontal overflow', async ({
         `${viewport.width}×${viewport.height} ${selector}`,
       );
     }
+  }
+});
+
+test('large user text preferences preserve essential reflow', async ({
+  page,
+}) => {
+  await openHome(page, { width: 640, height: 900 });
+  await page.addStyleTag({
+    content: ':root { font-size: 200% !important; }',
+  });
+
+  await expectNoHorizontalOverflow(page, '640×900 with 200% root text');
+  await expectNoEssentialHorizontalClipping(
+    page,
+    '640×900 with 200% root text essential content',
+  );
+
+  for (const selector of ['#journey', '#works', '#visuals', '#links']) {
+    await scrollToCenter(page, selector);
+    await expectNoHorizontalOverflow(
+      page,
+      `640×900 with 200% root text ${selector}`,
+    );
   }
 });
 

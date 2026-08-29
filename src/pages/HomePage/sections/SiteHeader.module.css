@@ -1,24 +1,19 @@
 .header {
-  position: absolute;
+  position: sticky;
   z-index: 30;
   top: 0;
-  right: 0;
-  left: 0;
-  color: var(--color-text);
-  background: linear-gradient(
-    180deg,
-    var(--color-void) 0%,
-    color-mix(in srgb, var(--color-void) 82%, transparent) 62%,
-    transparent 100%
-  );
+  border-bottom: 1px solid var(--color-line);
+  background: color-mix(in srgb, var(--color-paper-clean) 91%, transparent);
+  color: var(--color-ink);
+  backdrop-filter: blur(16px) saturate(118%);
 }
 
 .inner {
   display: grid;
   width: min(100%, var(--page-max));
-  min-height: 5.5rem;
+  min-height: 4.75rem;
   margin: 0 auto;
-  padding: 0.9rem var(--page-gutter) 1.2rem;
+  padding: 0.65rem var(--page-gutter);
   gap: 1.5rem;
   grid-template-columns: minmax(14rem, 1fr) auto;
   align-items: center;
@@ -27,7 +22,7 @@
 .identity {
   display: flex;
   min-width: 0;
-  gap: 0.65rem 1rem;
+  gap: 0.6rem 1rem;
   align-items: center;
   flex-wrap: wrap;
 }
@@ -37,11 +32,11 @@
   min-height: 2.75rem;
   gap: 0.7rem;
   align-items: center;
-  color: var(--color-text);
+  color: var(--color-ink);
   font-family: var(--font-display-latin);
-  font-size: 0.9rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-decoration: none;
   text-transform: uppercase;
 }
@@ -49,28 +44,33 @@
 .brandSignal {
   position: relative;
   width: 1.75rem;
-  height: 1px;
-  background: var(--color-coral);
-  box-shadow: 0.55rem -0.35rem 0 -0.2rem var(--color-cyan);
+  height: 0.35rem;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(
+    90deg,
+    var(--color-kaf) 0 58%,
+    var(--color-blue) 58% 100%
+  );
 }
 
 .brandSignal::after {
   position: absolute;
-  top: -0.2rem;
-  right: 0;
-  width: 0.4rem;
-  height: 0.4rem;
-  border: 1px solid var(--color-coral);
+  top: 50%;
+  right: -0.35rem;
+  width: 0.28rem;
+  height: 0.28rem;
+  border-radius: 50%;
+  background: var(--color-violet);
   content: '';
-  rotate: 45deg;
+  translate: 0 -50%;
 }
 
 .status {
-  color: var(--color-text-muted);
-  font-size: 0.55rem;
-  font-weight: 720;
-  letter-spacing: 0.13em;
-  line-height: 1.45;
+  color: var(--color-ink-soft);
+  font-size: var(--type-label);
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  line-height: 1.4;
 }
 
 .nav {
@@ -81,7 +81,7 @@
   display: flex;
   margin: 0;
   padding: 0;
-  gap: clamp(0.15rem, 1vw, 0.8rem);
+  gap: clamp(0.1rem, 0.7vw, 0.55rem);
   align-items: center;
   list-style: none;
 }
@@ -90,25 +90,25 @@
   position: relative;
   display: inline-flex;
   min-height: 2.75rem;
-  padding: 0.45rem 0.65rem;
+  padding: 0.45rem 0.7rem;
   align-items: center;
-  color: var(--color-text-muted);
-  font-size: 0.6rem;
-  font-weight: 760;
-  letter-spacing: 0.13em;
+  color: var(--color-ink-soft);
+  font-size: var(--type-label);
+  font-weight: 650;
+  letter-spacing: 0.055em;
   text-decoration: none;
-  text-transform: uppercase;
   white-space: nowrap;
   transition: color var(--duration-fast) ease;
 }
 
 .navLink::after {
   position: absolute;
-  right: 0.65rem;
-  bottom: 0.42rem;
-  left: 0.65rem;
-  height: 1px;
-  background: linear-gradient(90deg, var(--color-coral), var(--color-magenta));
+  right: 0.7rem;
+  bottom: 0.45rem;
+  left: 0.7rem;
+  height: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--color-kaf);
   content: '';
   transform: scaleX(0);
   transform-origin: right;
@@ -117,7 +117,7 @@
 
 .navLink:hover,
 .navLink:focus-visible {
-  color: var(--color-text);
+  color: var(--color-ink);
 }
 
 .navLink:hover::after,
@@ -127,20 +127,11 @@
 }
 
 @media (max-width: 760px) {
-  .header {
-    background: linear-gradient(
-      180deg,
-      var(--color-void) 0%,
-      color-mix(in srgb, var(--color-void) 94%, transparent) 78%,
-      transparent 100%
-    );
-  }
-
   .inner {
     min-height: auto;
-    padding-top: 0.75rem;
-    padding-bottom: 1.15rem;
-    gap: 0.25rem;
+    padding-top: 0.55rem;
+    padding-bottom: 0.45rem;
+    gap: 0;
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -149,11 +140,11 @@
   }
 
   .brand {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
   }
 
   .status {
-    max-width: 10.5rem;
+    max-width: 12rem;
     text-align: right;
   }
 
@@ -171,15 +162,15 @@
   .navList {
     width: max-content;
     min-width: 100%;
-    gap: 0.15rem;
   }
 
   .navLink {
-    padding-inline: 0.55rem;
+    min-height: 2.75rem;
+    padding-inline: 0.6rem;
   }
 }
 
-@media (max-width: 390px) {
+@media (max-width: 420px) {
   .identity {
     align-items: flex-start;
     flex-direction: column;
@@ -187,7 +178,7 @@
   }
 
   .status {
-    margin-left: 2.45rem;
+    margin: -0.25rem 0 0 2.45rem;
     max-width: none;
     text-align: left;
   }

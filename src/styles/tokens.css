@@ -1,63 +1,67 @@
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  /* Wave 1 compatibility: the legacy HomePage still consumes these roles. */
   --font-display:
     'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', 'Songti SC', serif;
   --font-sans:
     Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    'Hiragino Sans', 'Noto Sans CJK JP', sans-serif;
-  --font-display-ja:
-    'Hiragino Sans', 'Yu Gothic', 'Noto Sans CJK JP', 'Microsoft YaHei',
-    sans-serif;
+    'Hiragino Sans', 'Noto Sans CJK JP', 'Microsoft YaHei', sans-serif;
+  --font-display-ja: var(--font-display);
   --font-display-latin:
-    'Avenir Next Condensed', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
+    'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
-  /* KAF Phenomenon Chapters — dark/luminous semantic foundation. */
-  --color-void: #060711;
-  --color-midnight: #0b0d1b;
-  --color-surface: #101326;
-  --color-surface-raised: #171a31;
-  --color-text: #f7f7ff;
-  --color-text-muted: #b8b8ca;
-  --color-text-faint: #8688a1;
-  --color-coral: #ff6f7e;
-  --color-magenta: #f451a5;
-  --color-violet-signal: #9a7cff;
-  --color-cyan: #64e2f5;
-  --color-line-on-dark: rgb(247 247 255 / 16%);
-  --color-line-on-dark-strong: rgb(247 247 255 / 28%);
-  --color-grid-on-dark: rgb(247 247 255 / 4%);
-  --color-coral-glow: rgb(255 111 126 / 17%);
-  --color-magenta-glow: rgb(244 81 165 / 16%);
-  --color-cyan-glow: rgb(100 226 245 / 11%);
-  --focus-ring: #78e9ff;
+  /* KAF editorial palette: quiet neutrals, one vivid signal, soft atmosphere. */
+  --color-paper: #f7f4f3;
+  --color-paper-soft: #efe9ed;
+  --color-paper-deep: #e2d9df;
+  --color-paper-clean: #fffdfc;
+  --color-ink: #211c23;
+  --color-ink-soft: #605861;
+  --color-ink-faint: #847b84;
+  --color-kaf: #e94486;
+  --color-kaf-deep: #b92f68;
+  --color-kaf-soft: #f2b9d0;
+  --color-blue: #91c4d5;
+  --color-blue-deep: #437488;
+  --color-lavender: #c9bddd;
+  --color-violet: #75618b;
+  --color-night: #211d27;
+  --color-night-soft: #302936;
+  --color-night-text: #fffafd;
+  --color-night-muted: #c9c0c8;
+  --color-line: rgb(33 28 35 / 14%);
+  --color-line-strong: rgb(33 28 35 / 24%);
+  --color-line-on-dark: rgb(255 250 253 / 18%);
+  --color-line-on-dark-strong: rgb(255 250 253 / 32%);
+
+  /* Compatibility aliases for existing section-local roles. */
+  --color-void: var(--color-night);
+  --color-midnight: var(--color-night-soft);
+  --color-surface: var(--color-paper-soft);
+  --color-surface-raised: var(--color-paper-clean);
+  --color-text: var(--color-ink);
+  --color-text-muted: var(--color-ink-soft);
+  --color-text-faint: var(--color-ink-faint);
+  --color-coral: var(--color-kaf);
+  --color-magenta: var(--color-kaf);
+  --color-violet-signal: var(--color-violet);
+  --color-cyan: var(--color-blue-deep);
+  --color-grid-on-dark: rgb(255 250 253 / 5%);
+  --color-coral-glow: rgb(233 68 134 / 12%);
+  --color-magenta-glow: rgb(233 68 134 / 12%);
+  --color-cyan-glow: rgb(145 196 213 / 16%);
+
+  --focus-ring: #b52664;
   --focus-width: 2px;
   --focus-offset: 4px;
-  --shadow-glow-soft: 0 0 3.5rem rgb(244 81 165 / 18%);
-  --shadow-stage: 0 2rem 7rem rgb(0 0 0 / 36%);
 
-  /*
-   * Legacy paper/ink tokens stay stable until the Wave 2 route migration.
-   * Removing or remapping them here would make the still-live editorial page
-   * unreadable while the new sections are landing in parallel.
-   */
-  --color-paper: #f3efe8;
-  --color-paper-soft: #ebe4df;
-  --color-paper-deep: #ded5d0;
-  --color-paper-clean: #faf7f2;
-  --color-ink: #18161d;
-  --color-ink-soft: #5c5661;
-  --color-ink-faint: #87808b;
-  --color-line: rgb(23 23 26 / 14%);
-  --color-kaf: #bc315f;
-  --color-kaf-deep: #8f2147;
-  --color-kaf-soft: #e8a5ba;
-  --color-violet: #6b5989;
-  --color-lavender: #d8d0e5;
-  --color-blue: #496b8f;
-  --color-night: #211d27;
-  --color-night-soft: #2f2937;
+  --type-label: clamp(0.75rem, 0.73rem + 0.08vw, 0.82rem);
+  --type-body-small: clamp(0.875rem, 0.85rem + 0.08vw, 0.94rem);
+  --type-body: clamp(1rem, 0.97rem + 0.12vw, 1.08rem);
+  --type-lead: clamp(1.18rem, 1.08rem + 0.4vw, 1.5rem);
+  --type-card-title: clamp(1.7rem, 1.3rem + 1.35vw, 2.8rem);
+  --type-section: clamp(2.7rem, 2.05rem + 2.55vw, 4.75rem);
+  --type-display: clamp(4rem, 3.2rem + 3.5vw, 6.5rem);
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -70,17 +74,23 @@
   --space-9: 6rem;
   --space-10: 8rem;
 
-  --page-gutter: clamp(1.25rem, 4vw, 4rem);
-  --page-max: 90rem;
-  --section-space: clamp(5.5rem, 10vw, 10rem);
+  --page-gutter: clamp(1.25rem, 4vw, 4.5rem);
+  --page-max: 84rem;
+  --section-space: clamp(5rem, 8vw, 8rem);
+  --section-space-compact: clamp(3.75rem, 6vw, 6rem);
 
-  --radius-sm: 0.75rem;
-  --radius-md: 1.5rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 1.25rem;
+  --radius-lg: 2rem;
   --radius-pill: 999px;
 
   --duration-fast: 160ms;
-  --duration-normal: 360ms;
-  --duration-slow: 720ms;
+  --duration-normal: 320ms;
+  --duration-slow: 620ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-emphasis: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --shadow-soft: 0 1.5rem 4rem rgb(62 39 55 / 10%);
+  --shadow-stage: 0 2rem 6rem rgb(37 27 36 / 16%);
+  --shadow-glow-soft: none;
 }

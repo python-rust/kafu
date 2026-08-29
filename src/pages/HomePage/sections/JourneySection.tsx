@@ -1,11 +1,5 @@
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-  type MotionValue,
-} from 'motion/react';
-import { useEffect, useRef, useState, type RefObject } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { useEffect, useRef, useState } from 'react';
 
 import styles from './JourneySection.module.css';
 
@@ -48,17 +42,14 @@ interface JourneySectionProps {
 interface JourneyDesktopStageProps {
   activeIndex: number;
   chapters: readonly JourneyChapter[];
-  trackRef: RefObject<HTMLDivElement | null>;
 }
 
-interface JourneyVisualLayerProps {
-  chapter: JourneyChapter;
-  chapterCount: number;
-  index: number;
-  progress: MotionValue<number>;
-}
+const CHAPTER_OBSERVER_ROOT_MARGIN = '-44% 0px -44% 0px';
 
-const CHAPTER_OBSERVER_ROOT_MARGIN = '-48% 0px -48% 0px';
+const stageVisualTransition = {
+  duration: 0.46,
+  ease: [0.22, 1, 0.36, 1],
+} as const;
 
 function formatSequence(index: number) {
   return String(index + 1).padStart(2, '0');
@@ -68,116 +59,17 @@ function getChapterAnchorId(id: string) {
   return `journey-${id}`;
 }
 
-function getLayerOpacityMapping(
-  index: number,
-  chapterCount: number,
-): { input: number[]; output: number[] } {
-  if (chapterCount <= 1) {
-    return {
-      input: [0, 1],
-      output: [1, 1],
-    };
-  }
-
-  const segmentSize = 1 / chapterCount;
-  const segmentStart = index * segmentSize;
-  const segmentEnd = (index + 1) * segmentSize;
-  const fade = segmentSize * 0.22;
-
-  if (index === 0) {
-    return {
-      input: [0, segmentEnd - fade, segmentEnd + fade],
-      output: [1, 1, 0],
-    };
-  }
-
-  if (index === chapterCount - 1) {
-    return {
-      input: [segmentStart - fade, segmentStart + fade, 1],
-      output: [0, 1, 1],
-    };
-  }
-
-  return {
-    input: [
-      segmentStart - fade,
-      segmentStart + fade,
-      segmentEnd - fade,
-      segmentEnd + fade,
-    ],
-    output: [0, 1, 1, 0],
-  };
-}
-
-function JourneyVisualLayer({
-  chapter,
-  chapterCount,
-  index,
-  progress,
-}: JourneyVisualLayerProps) {
-  const segmentSize = 1 / chapterCount;
-  const segmentStart = index * segmentSize;
-  const segmentEnd = (index + 1) * segmentSize;
-  const segmentCenter = segmentStart + segmentSize / 2;
-  const opacityMapping = getLayerOpacityMapping(index, chapterCount);
-  const opacity = useTransform(
-    progress,
-    opacityMapping.input,
-    opacityMapping.output,
-  );
-  const y = useTransform(
-    progress,
-    [segmentStart, segmentCenter, segmentEnd],
-    [18, 0, -18],
-  );
-  const scale = useTransform(
-    progress,
-    [segmentStart, segmentCenter, segmentEnd],
-    [1.035, 1, 1.02],
-  );
-
-  return (
-    <motion.figure
-      className={styles.visualLayer}
-      style={{ opacity, scale, y }}
-      aria-hidden="true"
-    >
-      <img
-        src={chapter.primaryVisual.src}
-        alt=""
-        width={chapter.primaryVisual.width}
-        height={chapter.primaryVisual.height}
-        loading="lazy"
-        decoding="async"
-        style={
-          chapter.primaryVisual.objectPosition
-            ? { objectPosition: chapter.primaryVisual.objectPosition }
-            : undefined
-        }
-      />
-    </motion.figure>
-  );
-}
-
 function JourneyDesktopStage({
   activeIndex,
   chapters,
-  trackRef,
 }: JourneyDesktopStageProps) {
-  const { scrollYProgress } = useScroll({
-    target: trackRef,
-    offset: ['start start', 'end end'],
-  });
-  const progressScale = useTransform(scrollYProgress, [0, 1], [0.02, 1]);
   const activeChapter = chapters[activeIndex];
 
   if (!activeChapter) {
     return null;
   }
 
-  const visibleLayers = chapters
-    .map((chapter, index) => ({ chapter, index }))
-    .filter(({ index }) => Math.abs(index - activeIndex) <= 1);
+  const progress = (activeIndex + 1) / chapters.length;
 
   return (
     <aside
@@ -187,40 +79,64 @@ function JourneyDesktopStage({
     >
       <div className={styles.stageFrame}>
         <div className={styles.stageSignal} />
+
         <div className={styles.visualStack}>
-          {visibleLayers.map(({ chapter, index }) => (
-            <JourneyVisualLayer
-              key={chapter.id}
-              chapter={chapter}
-              chapterCount={chapters.length}
-              index={index}
-              progress={scrollYProgress}
-            />
-          ))}
+          <AnimatePresence initial={false} mode="sync">
+            <motion.figure
+              key={activeChapter.id}
+              className={styles.visualLayer}
+              initial={{ opacity: 0, scale: 1.018, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.992, y: -6 }}
+              transition={stageVisualTransition}
+            >
+              <img
+                src={activeChapter.primaryVisual.src}
+                alt=""
+                width={activeChapter.primaryVisual.width}
+                height={activeChapter.primaryVisual.height}
+                loading="lazy"
+                decoding="async"
+                style={
+                  activeChapter.primaryVisual.objectPosition
+                    ? {
+                        objectPosition:
+                          activeChapter.primaryVisual.objectPosition,
+                      }
+                    : undefined
+                }
+              />
+            </motion.figure>
+          </AnimatePresence>
         </div>
 
-        <motion.div
-          key={activeChapter.id}
-          className={styles.stageMeta}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <span className={styles.stageSequence}>
-            CHAPTER {formatSequence(activeIndex)}
-          </span>
-          <strong className={styles.stageYear}>
-            {activeChapter.yearLabel}
-          </strong>
-          <span className={styles.stageTitleJa}>{activeChapter.titleJa}</span>
-          <span className={styles.stageTitleEn}>{activeChapter.titleEn}</span>
-        </motion.div>
+        <AnimatePresence initial={false} mode="wait">
+          <motion.div
+            key={activeChapter.id}
+            className={styles.stageMeta}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <span className={styles.stageSequence}>
+              CHAPTER {formatSequence(activeIndex)}
+            </span>
+            <strong className={styles.stageYear}>
+              {activeChapter.yearLabel}
+            </strong>
+            <span className={styles.stageTitleJa}>{activeChapter.titleJa}</span>
+            <span className={styles.stageTitleEn}>{activeChapter.titleEn}</span>
+          </motion.div>
+        </AnimatePresence>
 
         <div className={styles.stageProgress}>
           <span className={styles.stageProgressTrack}>
             <motion.span
               className={styles.stageProgressFill}
-              style={{ scaleY: progressScale }}
+              initial={false}
+              animate={{ scaleY: progress }}
+              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
             />
           </span>
           <span className={styles.stageProgressCount}>
@@ -267,7 +183,6 @@ function ChapterVisual({ visual }: { visual: JourneyVisual }) {
 export function JourneySection({ chapters }: JourneySectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const shouldReduceMotion = useReducedMotion();
-  const trackRef = useRef<HTMLDivElement | null>(null);
   const chapterRefs = useRef<Array<HTMLElement | null>>([]);
   const safeActiveIndex = Math.min(
     activeIndex,
@@ -282,7 +197,21 @@ export function JourneySection({ chapters }: JourneySectionProps) {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const activeEntry = entries.find((entry) => entry.isIntersecting);
+        const viewportCenter = window.innerHeight / 2;
+        const activeEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((left, right) => {
+            const leftCenter =
+              left.boundingClientRect.top + left.boundingClientRect.height / 2;
+            const rightCenter =
+              right.boundingClientRect.top +
+              right.boundingClientRect.height / 2;
+
+            return (
+              Math.abs(leftCenter - viewportCenter) -
+              Math.abs(rightCenter - viewportCenter)
+            );
+          })[0];
 
         if (!activeEntry) {
           return;
@@ -330,13 +259,11 @@ export function JourneySection({ chapters }: JourneySectionProps) {
       <div className={styles.inner}>
         <header className={styles.intro}>
           <div>
-            <p className={styles.eyebrow}>KAF PHENOMENON CHAPTERS</p>
+            <p className={styles.eyebrow}>KAF / CHRONOLOGY</p>
             <h2 id="journey-heading">声と景色、その六つの章。</h2>
           </div>
           <p className={styles.introCopy}>
-            Scroll through the chronology. Every chapter remains readable
-            without motion; on larger screens the visual stage follows the same
-            native document flow.
+            沿着时间向下阅读花譜的六个创作阶段。桌面端的视觉窗口只在章节切换时更新；移动端与减弱动态模式则保留完整、自然的线性叙事。
           </p>
         </header>
 
@@ -366,12 +293,11 @@ export function JourneySection({ chapters }: JourneySectionProps) {
           </ol>
         </nav>
 
-        <div className={styles.track} ref={trackRef}>
+        <div className={styles.track}>
           {shouldReduceMotion === true ? null : (
             <JourneyDesktopStage
               activeIndex={safeActiveIndex}
               chapters={chapters}
-              trackRef={trackRef}
             />
           )}
 
