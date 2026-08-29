@@ -134,3 +134,25 @@ Rebuilt the homepage around a restrained KAF editorial palette and readable type
 ### Status
 
 [OK] **Completed**
+
+
+## Session 7: Refine KAF visual system and scrolling
+
+**Date**: 2026-08-29
+**Task**: Refine KAF visual system and scrolling
+**Branch**: `main`
+
+### Summary
+
+Rebuilt the homepage around a restrained KAF editorial palette and readable type scale; removed continuous scroll-linked Journey animation; reduced desktop document height by 29.8%; added 320px, 200% text, reduced-motion, density, and contrast browser regressions; synchronized frontend visual-system specs and archived the task.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `544013d0883f0a8f9229fd21f61b64312a4c2ec5` | (see git log) |
+| `c1282c7c84526686787ebe1fcff5a3f6e6c21b62` | (see git log) |
+
+### Status
+
+[OK] **Completed**

@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 6
+- **Total Sessions**: 7
 - **Last Active**: 2026-08-29
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~136 | Active |
+| `journal-1.md` | ~158 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 7 | 2026-08-29 | Refine KAF visual system and scrolling | `544013d0883f0a8f9229fd21f61b64312a4c2ec5`, `c1282c7c84526686787ebe1fcff5a3f6e6c21b62` | `main` |
 | 6 | 2026-08-29 | Refine KAF visual system and scrolling | `544013d0883f0a8f9229fd21f61b64312a4c2ec5`, `c1282c7c84526686787ebe1fcff5a3f6e6c21b62` | `main` |
 | 5 | 2026-08-25 | Integrate immersive KAF homepage | `7f280b4`, `f532371` | `feat/kaf-immersive-integration` |
 | 4 | 2026-08-25 | KAF six-stage scroll journey | `0481436a80eac088bfa89dab3d2004dc118ebf44` | `feat/kaf-scroll-journey` |
