@@ -48,6 +48,11 @@ import styles from './HeroSection.module.css';
 
 Global design tokens are CSS custom properties from `src/styles/tokens.css`. Components should consume those tokens instead of redefining common palette/spacing/motion constants when an existing token fits.
 
+Homepage visual, type, responsive, and motion changes must also follow
+[Visual System Guidelines](./visual-system-guidelines.md). In particular, a
+section may alias semantic tokens locally, but it must not invent an independent
+brand palette or microtype scale.
+
 Inline `style` is reserved for genuinely dynamic values that must cross from React state into CSS.
 
 Do not move static visual declarations into JSX inline styles.
@@ -78,4 +83,5 @@ Current example:
 - Do not make a non-semantic element clickable when a native button/link fits.
 - Do not create a global component abstraction for code that currently has only one owner.
 - Do not duplicate project-wide constants inside component CSS if an existing token already represents the value.
+- Do not recreate a separate visual language for each homepage section; use the shared KAF semantic roles and let composition/media provide variation.
 - Do not move static styling into JSX just because inline styles are convenient.

@@ -1,0 +1,6 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend ownership, pre-development checklist, and quality entry point"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "CSS Modules, tokens, semantic component, and accessibility conventions"}
+{"file": ".trellis/spec/frontend/hook-guidelines.md", "reason": "Observer cleanup and high-frequency animation-state constraints"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Required mise checks, responsive and accessibility validation"}
+{"file": ".trellis/tasks/08-29-kaf-visual-system-refinement/research/visual-motion-audit.md", "reason": "Measured baseline and researched visual/motion decisions"}

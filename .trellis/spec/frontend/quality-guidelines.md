@@ -68,6 +68,7 @@ Do not document `pnpm run ...` as the normal project workflow. The package manag
 - Add or update automated tests when changing observable behavior.
 - Preserve accessibility semantics and names used by tests unless the product behavior intentionally changes.
 - Keep third-party media provenance synchronized with the actual files under the owning asset directory.
+- Follow [Visual System Guidelines](./visual-system-guidelines.md) when changing color roles, typography, responsive density, sticky content, or motion.
 
 The current aggregate local gate in `mise.toml` is:
 
@@ -97,7 +98,7 @@ Prefer role/name queries over class selectors or implementation details.
 
 Use for browser-level smoke behavior and routing whose environment matters.
 
-Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies desktop/mobile identity, final anchor navigation, desktop Journey progression/sticky release, linear/reduced-motion fallbacks, essential-content clipping, touch targets, image loading, and horizontal-overflow safety across the supported viewport matrix.
+Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies desktop/mobile identity, final anchor navigation, desktop Journey progression/sticky release, linear/reduced-motion fallbacks, essential-content clipping, touch targets, image loading, typography/density bounds, `320px` reflow, `200%` text preferences, and horizontal-overflow safety across the supported viewport matrix.
 
 > **Responsive clipping gotcha**: `document.documentElement.scrollWidth` is not sufficient by itself. A section using `overflow: clip` or `overflow: hidden` can conceal an oversized child while the document still reports no horizontal overflow. For critical responsive layouts, also assert the horizontal bounding boxes of user-visible headings, copy, links, credits, and other essential content. This catches over-constrained CSS Grid gaps/tracks and similar clipped-content defects.
 
@@ -134,6 +135,8 @@ The provenance document is evidence for this project context, not a blanket lice
 - Decorative elements must not pollute the accessibility tree.
 - Dynamic status updates should use an appropriate live region when users need them announced.
 - Respect reduced-motion behavior in visual/animation work when applicable.
+- Keep primary reading text at or above `1rem` and labels/navigation at or above the shared `--type-label` floor.
+- Verify `320px` and `200%` text reflow for page-level visual changes.
 
 ---
 
@@ -142,6 +145,7 @@ The provenance document is evidence for this project context, not a blanket lice
 - Does the change belong in `app`, `pages`, `content`, `assets`, or global `styles` according to current ownership?
 - Is page-specific CSS colocated in a CSS Module instead of becoming global CSS?
 - Are existing CSS custom-property tokens reused where appropriate?
+- Does the change follow the visual-system palette, typography, layout, and motion contracts?
 - Does every added third-party media file have a verified provenance entry and compatible usage basis?
 - Are props/types narrow and explicit?
 - Are user interactions semantic and keyboard accessible?
