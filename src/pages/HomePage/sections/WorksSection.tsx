@@ -1,3 +1,5 @@
+import { MediaCredit } from '../components/MediaCredit';
+import { SectionHeading } from '../components/SectionHeading';
 import styles from './WorksSection.module.css';
 
 export interface WorkVisual {
@@ -23,44 +25,44 @@ export interface WorkItem {
 
 interface WorksSectionProps {
   works: readonly WorkItem[];
-  eyebrow?: string;
   title?: string;
-  intro?: string;
 }
 
-function VisualCredit({
+function WorkMediaCredit({
   title,
   visual,
 }: {
   title: string;
   visual: WorkVisual;
 }) {
-  if (!visual.credit && !visual.sourceUrl) {
+  if (!visual.credit) {
     return null;
   }
 
   if (!visual.sourceUrl) {
-    return <span>{visual.credit}</span>;
+    return <span className={styles.creditText}>{visual.credit}</span>;
   }
 
   return (
-    <a
+    <MediaCredit
+      credit={visual.credit}
       href={visual.sourceUrl}
-      target="_blank"
-      rel="noreferrer"
-      aria-label={`${title} visual source${visual.credit ? `, ${visual.credit}` : ''} (opens in a new tab)`}
-    >
-      {visual.credit ?? 'VISUAL SOURCE'} <span aria-hidden="true">↗</span>
-    </a>
+      subject={title}
+      tone="light"
+    />
   );
 }
 
-export function WorksSection({
-  works,
-  eyebrow = 'KAF / SELECTED DISCOGRAPHY',
-  title = 'Selected Works',
-  intro = '从当下的《深愛》向早期的“観測”回望：这里不是完整唱片目录，而是一条帮助理解创作变化的精选路径。',
-}: WorksSectionProps) {
+function WorkMeta({ work }: { work: WorkItem }) {
+  return (
+    <div className={styles.workMeta}>
+      <time dateTime={work.releaseDateTime}>{work.releaseDate}</time>
+      <span>{work.kind}</span>
+    </div>
+  );
+}
+
+export function WorksSection({ works, title = '作品' }: WorksSectionProps) {
   const featuredWorks = works.filter((work) => work.featured);
   const [featuredWork] = featuredWorks;
 
@@ -77,15 +79,9 @@ export function WorksSection({
       aria-labelledby="works-title"
     >
       <div className={styles.inner}>
-        <header className={styles.headingRow}>
-          <div>
-            <p className={styles.eyebrow}>{eyebrow}</p>
-            <h2 id="works-title" className={styles.heading}>
-              {title}
-            </h2>
-          </div>
-          <p className={styles.intro}>{intro}</p>
-        </header>
+        <SectionHeading id="works-title" tone="light">
+          {title}
+        </SectionHeading>
 
         <article className={styles.featuredWork}>
           <div className={styles.featuredMedia}>
@@ -102,7 +98,7 @@ export function WorksSection({
                   />
                 </div>
                 <figcaption>
-                  <VisualCredit
+                  <WorkMediaCredit
                     title={featuredWork.title}
                     visual={featuredWork.visual}
                   />
@@ -110,20 +106,13 @@ export function WorksSection({
               </figure>
             ) : (
               <div className={styles.featuredFallback} aria-hidden="true">
-                <span>CURRENT / FEATURED</span>
-                <strong>{featuredWork.title}</strong>
+                {featuredWork.title}
               </div>
             )}
           </div>
 
           <div className={styles.featuredCopy}>
-            <div className={styles.featuredMeta}>
-              <time dateTime={featuredWork.releaseDateTime}>
-                {featuredWork.releaseDate}
-              </time>
-              <span>{featuredWork.kind}</span>
-              <span>CURRENT WORK</span>
-            </div>
+            <WorkMeta work={featuredWork} />
             <h3>{featuredWork.title}</h3>
             <p>{featuredWork.description}</p>
             <a
@@ -131,20 +120,16 @@ export function WorksSection({
               href={featuredWork.sourceUrl}
               target="_blank"
               rel="noreferrer"
-              aria-label={`${featuredWork.title} official source (opens in a new tab)`}
+              aria-label={`${featuredWork.title}の公式ページ（新しいタブで開く）`}
             >
-              OPEN OFFICIAL SOURCE <span aria-hidden="true">↗</span>
+              公式ページ <span aria-hidden="true">↗</span>
             </a>
           </div>
         </article>
 
         <div className={styles.supportingWorks}>
-          {supportingWorks.map((work, index) => (
-            <article
-              className={styles.supportingWork}
-              data-rhythm={String(index % 3)}
-              key={work.id}
-            >
+          {supportingWorks.map((work) => (
+            <article className={styles.supportingWork} key={work.id}>
               <div className={styles.supportingMedia}>
                 {work.visual ? (
                   <figure className={styles.supportingFigure}>
@@ -157,30 +142,23 @@ export function WorksSection({
                         loading="lazy"
                         decoding="async"
                       />
-                      <span aria-hidden="true">
-                        {String(index + 2).padStart(2, '0')}
-                      </span>
                     </div>
                     <figcaption>
-                      <VisualCredit title={work.title} visual={work.visual} />
+                      <WorkMediaCredit
+                        title={work.title}
+                        visual={work.visual}
+                      />
                     </figcaption>
                   </figure>
                 ) : (
                   <div className={styles.typeFallback} aria-hidden="true">
-                    <span>{String(index + 2).padStart(2, '0')}</span>
-                    <strong>{work.kind}</strong>
+                    {work.title}
                   </div>
                 )}
               </div>
 
               <div className={styles.supportingCopy}>
-                <div className={styles.supportingMeta}>
-                  <span>{String(index + 2).padStart(2, '0')}</span>
-                  <span>{work.kind}</span>
-                  <time dateTime={work.releaseDateTime}>
-                    {work.releaseDate}
-                  </time>
-                </div>
+                <WorkMeta work={work} />
                 <h3>{work.title}</h3>
                 <p>{work.description}</p>
                 <a
@@ -188,9 +166,9 @@ export function WorksSection({
                   href={work.sourceUrl}
                   target="_blank"
                   rel="noreferrer"
-                  aria-label={`${work.title} official source (opens in a new tab)`}
+                  aria-label={`${work.title}の公式ページ（新しいタブで開く）`}
                 >
-                  OFFICIAL SOURCE <span aria-hidden="true">↗</span>
+                  公式ページ <span aria-hidden="true">↗</span>
                 </a>
               </div>
             </article>

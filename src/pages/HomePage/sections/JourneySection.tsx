@@ -1,6 +1,8 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 
+import { MediaCredit } from '../components/MediaCredit';
+import { SectionHeading } from '../components/SectionHeading';
 import styles from './JourneySection.module.css';
 
 type JourneyTheme =
@@ -27,7 +29,6 @@ interface JourneyChapter {
   period: string;
   yearLabel: string;
   titleJa: string;
-  titleEn: string;
   summary: string;
   theme: JourneyTheme;
   milestones: readonly JourneyMilestone[];
@@ -51,10 +52,6 @@ const stageVisualTransition = {
   ease: [0.22, 1, 0.36, 1],
 } as const;
 
-function formatSequence(index: number) {
-  return String(index + 1).padStart(2, '0');
-}
-
 function getChapterAnchorId(id: string) {
   return `journey-${id}`;
 }
@@ -69,8 +66,6 @@ function JourneyDesktopStage({
     return null;
   }
 
-  const progress = (activeIndex + 1) / chapters.length;
-
   return (
     <aside
       className={styles.stage}
@@ -78,16 +73,14 @@ function JourneyDesktopStage({
       data-testid="journey-sticky-stage"
     >
       <div className={styles.stageFrame}>
-        <div className={styles.stageSignal} />
-
         <div className={styles.visualStack}>
           <AnimatePresence initial={false} mode="sync">
             <motion.figure
               key={activeChapter.id}
               className={styles.visualLayer}
-              initial={{ opacity: 0, scale: 1.018, y: 8 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.992, y: -6 }}
+              initial={{ opacity: 0, scale: 1.018 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.992 }}
               transition={stageVisualTransition}
             >
               <img
@@ -119,31 +112,12 @@ function JourneyDesktopStage({
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           >
-            <span className={styles.stageSequence}>
-              CHAPTER {formatSequence(activeIndex)}
-            </span>
-            <strong className={styles.stageYear}>
-              {activeChapter.yearLabel}
+            <span className={styles.stageYear}>{activeChapter.yearLabel}</span>
+            <strong className={styles.stageTitleJa}>
+              {activeChapter.titleJa}
             </strong>
-            <span className={styles.stageTitleJa}>{activeChapter.titleJa}</span>
-            <span className={styles.stageTitleEn}>{activeChapter.titleEn}</span>
           </motion.div>
         </AnimatePresence>
-
-        <div className={styles.stageProgress}>
-          <span className={styles.stageProgressTrack}>
-            <motion.span
-              className={styles.stageProgressFill}
-              initial={false}
-              animate={{ scaleY: progress }}
-              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-            />
-          </span>
-          <span className={styles.stageProgressCount}>
-            {formatSequence(activeIndex)} /{' '}
-            {String(chapters.length).padStart(2, '0')}
-          </span>
-        </div>
       </div>
     </aside>
   );
@@ -166,15 +140,12 @@ function ChapterVisual({ visual }: { visual: JourneyVisual }) {
         }
       />
       <figcaption>
-        <span>Visual credit</span>
-        <a
+        <MediaCredit
+          credit={visual.credit}
           href={visual.sourceUrl}
-          target="_blank"
-          rel="noreferrer"
-          aria-label={`Visual source: ${visual.credit}`}
-        >
-          {visual.credit}
-        </a>
+          subject={visual.alt}
+          tone="light"
+        />
       </figcaption>
     </figure>
   );
@@ -257,17 +228,11 @@ export function JourneySection({ chapters }: JourneySectionProps) {
       aria-labelledby="journey-heading"
     >
       <div className={styles.inner}>
-        <header className={styles.intro}>
-          <div>
-            <p className={styles.eyebrow}>KAF / CHRONOLOGY</p>
-            <h2 id="journey-heading">声と景色、その六つの章。</h2>
-          </div>
-          <p className={styles.introCopy}>
-            沿着时间向下阅读花譜的六个创作阶段。桌面端的视觉窗口只在章节切换时更新；移动端与减弱动态模式则保留完整、自然的线性叙事。
-          </p>
-        </header>
+        <SectionHeading id="journey-heading" tone="light">
+          軌跡
+        </SectionHeading>
 
-        <nav className={styles.chapterNav} aria-label="KAF journey chapters">
+        <nav className={styles.chapterNav} aria-label="花譜の活動年表">
           <ol>
             {chapters.map((chapter, index) => {
               const isActive = index === safeActiveIndex;
@@ -278,13 +243,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                     href={`#${getChapterAnchorId(chapter.id)}`}
                     aria-current={isActive ? 'step' : undefined}
                   >
-                    <span className={styles.currentMarker} aria-hidden="true">
-                      {isActive ? '●' : '○'}
-                    </span>
-                    <span className={styles.navSequence} aria-hidden="true">
-                      {formatSequence(index)}
-                    </span>
-                    <span className={styles.navYear}>{chapter.yearLabel}</span>
+                    <span>{chapter.yearLabel}</span>
                     <span className={styles.srOnly}>{chapter.titleJa}</span>
                   </a>
                 </li>
@@ -324,15 +283,8 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                     aria-labelledby={titleId}
                   >
                     <div className={styles.chapterHeading}>
-                      <p className={styles.chapterKicker}>
-                        <span aria-hidden="true">{formatSequence(index)}</span>
-                        <span>{chapter.period}</span>
-                      </p>
                       <p className={styles.chapterYear}>{chapter.yearLabel}</p>
                       <h3 id={titleId}>{chapter.titleJa}</h3>
-                      <p className={styles.chapterTitleEn} lang="en">
-                        {chapter.titleEn}
-                      </p>
                     </div>
 
                     <div className={styles.chapterMedia}>
@@ -346,7 +298,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
 
                     <p className={styles.summary}>{chapter.summary}</p>
 
-                    <ol className={styles.milestones} aria-label="Milestones">
+                    <ol className={styles.milestones} aria-label="主な出来事">
                       {chapter.milestones.map((milestone) => (
                         <li key={`${milestone.date}-${milestone.sourceUrl}`}>
                           <time dateTime={milestone.date}>
@@ -357,9 +309,9 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                             href={milestone.sourceUrl}
                             target="_blank"
                             rel="noreferrer"
-                            aria-label={`Milestone source: ${milestone.label}`}
+                            aria-label={`${milestone.label}の出典（新しいタブで開く）`}
                           >
-                            Source
+                            出典
                           </a>
                         </li>
                       ))}

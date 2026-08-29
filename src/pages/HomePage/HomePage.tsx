@@ -16,19 +16,11 @@ import { SiteHeader, type SiteHeaderNavItem } from './sections/SiteHeader';
 import { WorksSection } from './sections/WorksSection';
 
 const homeNavItems = [
-  { label: 'Journey', href: '#journey' },
-  { label: 'Works', href: '#works' },
-  { label: 'Gallery', href: '#visuals' },
-  { label: 'Official Links', href: '#links' },
+  { label: '軌跡', href: '#journey' },
+  { label: '作品', href: '#works' },
+  { label: '視覚', href: '#visuals' },
+  { label: '公式', href: '#links' },
 ] as const satisfies readonly SiteHeaderNavItem[];
-
-const heroMetadata = [
-  { label: 'ACTIVITY', value: 'SINCE 2018' },
-  { label: 'FIELD', value: 'VOICE / VISUAL / STORY' },
-  { label: 'JOURNEY', value: 'SIX CHAPTERS' },
-] as const;
-
-const fanProjectStatus = 'UNOFFICIAL FAN PROJECT / NON-COMMERCIAL';
 
 export function HomePage() {
   const officialWebsite = officialLinks.find(
@@ -43,19 +35,16 @@ export function HomePage() {
     <MotionConfig reducedMotion="user">
       <div>
         <SiteHeader
-          statusLabel={fanProjectStatus}
-          navLabel="KAF homepage sections"
+          navLabel="花譜サイト内ナビゲーション"
           navItems={homeNavItems}
         />
 
         <main>
           <HeroSection
             visual={heroMedia}
-            statement="声音像一束无法被固定的光，穿过现实与虚拟，也穿过每一次被重新命名的风景。"
-            description="KAF Observatory 是一个非官方、非商业的花譜粉丝观测站。沿着六个阶段，我们从声音、视觉与时间里重新观察她持续变化的创作世界。"
+            statement="歌、姿、舞台。花譜が重ねてきた変化を、作品と時間から辿る。"
+            description="2018年から現在までの活動をまとめた私設アーカイブ。"
             officialUrl={officialWebsite.href}
-            statusLabel={fanProjectStatus}
-            metadata={heroMetadata}
           />
           <JourneySection chapters={journeyChapters} />
           <WorksSection works={selectedWorks} />
@@ -66,8 +55,7 @@ export function HomePage() {
         <SiteFooter
           projectLabel="KAF OBSERVATORY"
           mediaCreditsHref="#visuals"
-          mediaCreditsLabel="Media credits in Visual Archive"
-          curationLabel="CURATED / 2026"
+          mediaCreditsLabel="画像出典"
         />
       </div>
     </MotionConfig>

@@ -24,7 +24,7 @@ const chapters = [
     period: '2018',
     yearLabel: '2018',
     titleJa: 'Origin',
-    titleEn: 'Discovery',
+    titleEn: 'Origin English subtitle',
     summary: 'Fixture summary for the first journey chapter.',
     theme: 'origin',
     milestones: [
@@ -186,7 +186,7 @@ describe('JourneySection', () => {
     render(<JourneySection chapters={chapters} />);
 
     const journey = screen.getByRole('region', {
-      name: '声と景色、その六つの章。',
+      name: '軌跡',
     });
     const articles = within(journey).getAllByRole('article');
     const headings = within(journey).getAllByRole('heading', { level: 3 });
@@ -201,13 +201,17 @@ describe('JourneySection', () => {
       'Fable / Second Chapter',
       'Transcendent Love',
     ]);
+    expect(
+      within(journey).queryByText('Origin English subtitle'),
+    ).not.toBeInTheDocument();
+    expect(within(journey).queryByText(/CHAPTER/)).not.toBeInTheDocument();
   });
 
   it('exposes chapter navigation, milestone sources, and visual metadata', () => {
     const { container } = render(<JourneySection chapters={chapters} />);
 
     const navigation = screen.getByRole('navigation', {
-      name: 'KAF journey chapters',
+      name: '花譜の活動年表',
     });
     const chapterLinks = within(navigation).getAllByRole('link');
 
@@ -221,11 +225,13 @@ describe('JourneySection', () => {
     expect(originVisual).toHaveAttribute('loading', 'lazy');
 
     expect(
-      screen.getByRole('link', { name: 'Visual source: Origin artist' }),
+      screen.getByRole('link', {
+        name: /Origin visualの画像出典：Origin artist/,
+      }),
     ).toHaveAttribute('href', 'https://example.com/origin-visual');
     expect(
       screen.getByRole('link', {
-        name: 'Milestone source: Origin milestone',
+        name: /Origin milestoneの出典/,
       }),
     ).toHaveAttribute('href', 'https://example.com/origin-milestone');
     const rebuildSecondaryVisual = screen.getByRole('img', {
@@ -258,7 +264,7 @@ describe('JourneySection', () => {
     expect(transcendentVisual).toHaveAttribute('loading', 'lazy');
     expect(
       screen.getByRole('link', {
-        name: 'Milestone source: Transcendent milestone',
+        name: /Transcendent milestoneの出典/,
       }),
     ).toBeInTheDocument();
   });

@@ -13,15 +13,12 @@ function renderHomePage() {
 }
 
 describe('home page', () => {
-  it('composes the final KAF phenomenon journey from production content', () => {
+  it('composes the final KAF journey with direct Japanese navigation and no template copy', () => {
     const { container } = renderHomePage();
 
     expect(
-      screen.getByRole('heading', { level: 1, name: /花譜.*KAF/i }),
+      screen.getByRole('heading', { level: 1, name: '花譜' }),
     ).toBeInTheDocument();
-    expect(
-      screen.getAllByText('UNOFFICIAL FAN PROJECT / NON-COMMERCIAL').length,
-    ).toBeGreaterThanOrEqual(2);
 
     const main = screen.getByRole('main');
     const sectionIds = Array.from(main.children)
@@ -30,21 +27,14 @@ describe('home page', () => {
 
     expect(sectionIds).toEqual(['top', 'journey', 'works', 'visuals', 'links']);
 
-    expect(
-      screen.getByRole('heading', { name: '声と景色、その六つの章。' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: 'Selected Works' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: 'Visual Archive' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: 'Go to the source.' }),
-    ).toBeInTheDocument();
+    for (const heading of ['軌跡', '作品', '視覚', '公式']) {
+      expect(
+        screen.getByRole('heading', { level: 2, name: heading }),
+      ).toBeInTheDocument();
+    }
 
     const journeySection = screen
-      .getByRole('heading', { name: '声と景色、その六つの章。' })
+      .getByRole('heading', { level: 2, name: '軌跡' })
       .closest('section');
     expect(journeySection).not.toBeNull();
 
@@ -69,12 +59,12 @@ describe('home page', () => {
     }
 
     const worksSection = screen
-      .getByRole('heading', { name: 'Selected Works' })
+      .getByRole('heading', { level: 2, name: '作品' })
       .closest('section');
     expect(worksSection).not.toBeNull();
 
     if (!worksSection) {
-      throw new Error('Selected Works section was not rendered.');
+      throw new Error('Works section was not rendered.');
     }
 
     for (const workTitle of ['深愛', '寓話', '魔法α', '観測α']) {
@@ -83,13 +73,13 @@ describe('home page', () => {
       ).toBeInTheDocument();
     }
 
-    expect(screen.getByRole('link', { name: 'Official Site' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /公式サイト/ })).toHaveAttribute(
       'href',
       'https://kaf.kamitsubaki.jp/',
     );
     expect(
       screen.getByRole('link', {
-        name: /Milestone source:.*不可解\(再\)/,
+        name: /不可解\(再\).*出典/,
       }),
     ).toHaveAttribute(
       'href',
@@ -101,38 +91,52 @@ describe('home page', () => {
     );
 
     const expectedAnchors = new Map([
-      ['Journey', '#journey'],
-      ['Works', '#works'],
-      ['Gallery', '#visuals'],
-      ['Official Links', '#links'],
+      ['軌跡', '#journey'],
+      ['作品', '#works'],
+      ['視覚', '#visuals'],
+      ['公式', '#links'],
     ]);
 
+    const navigation = screen.getByRole('navigation', {
+      name: '花譜サイト内ナビゲーション',
+    });
+
     for (const [label, href] of expectedAnchors) {
-      expect(screen.getByRole('link', { name: label })).toHaveAttribute(
-        'href',
-        href,
-      );
+      expect(
+        within(navigation).getByRole('link', { name: label }),
+      ).toHaveAttribute('href', href);
     }
 
     const footer = screen.getByRole('contentinfo');
     expect(
-      within(footer).getByText(/Unofficial, non-commercial fan project/i),
-    ).toBeInTheDocument();
-    expect(
       within(footer).getByText(
-        /Not affiliated with KAF or KAMITSUBAKI STUDIO/i,
+        '花譜およびKAMITSUBAKI STUDIOとは関係のない、非公式・非営利のファンサイトです。',
       ),
     ).toBeInTheDocument();
     expect(
-      within(footer).getByRole('link', {
-        name: 'Media credits in Visual Archive',
-      }),
+      within(footer).getByRole('link', { name: '画像出典' }),
     ).toHaveAttribute('href', '#visuals');
 
+    const bannedCopy = [
+      'VOICE / IMAGE / MEMORY',
+      'KAF / CHRONOLOGY',
+      'KAF / SELECTED DISCOGRAPHY',
+      'KAF / VISUAL NOTES',
+      'KAF / OFFICIAL CHANNELS',
+      'CURRENT WORK',
+      'VISUAL CREDIT',
+      '沿着时间向下阅读花譜的六个创作阶段。',
+    ];
+
+    for (const copy of bannedCopy) {
+      expect(
+        screen.queryByText(copy, { exact: false }),
+      ).not.toBeInTheDocument();
+    }
+
+    expect(container.querySelector('[class*="eyebrow"]')).toBeNull();
+    expect(container.querySelector('[data-rhythm]')).toBeNull();
     expect(container.querySelector('#about')).toBeNull();
-    expect(
-      screen.queryByRole('heading', { name: '声が、風景を変えていく。' }),
-    ).not.toBeInTheDocument();
   });
 
   it('uses all verified local visuals while only prioritizing the hero image', () => {

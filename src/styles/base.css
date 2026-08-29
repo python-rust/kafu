@@ -1,12 +1,12 @@
 html {
-  background: var(--color-paper);
+  background: var(--color-bg);
   scroll-behavior: smooth;
-  scroll-padding-top: 6rem;
+  scroll-padding-top: 5rem;
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--color-bg);
+  color: var(--color-text);
   font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.7;
@@ -19,13 +19,17 @@ a {
   outline-offset: var(--focus-offset);
 }
 
+button {
+  color: inherit;
+}
+
 :focus-visible {
   outline: var(--focus-width) solid var(--focus-ring);
 }
 
 ::selection {
   background: var(--color-kaf);
-  color: var(--color-night-text);
+  color: var(--color-text);
 }
 
 @media (prefers-reduced-motion: reduce) {

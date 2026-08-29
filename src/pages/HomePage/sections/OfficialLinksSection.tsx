@@ -1,3 +1,4 @@
+import { SectionHeading } from '../components/SectionHeading';
 import styles from './OfficialLinksSection.module.css';
 
 export interface OfficialLinkItem {
@@ -8,14 +9,12 @@ export interface OfficialLinkItem {
 
 interface OfficialLinksSectionProps {
   links: readonly OfficialLinkItem[];
-  eyebrow?: string;
   title?: string;
 }
 
 export function OfficialLinksSection({
   links,
-  eyebrow = 'KAF / OFFICIAL CHANNELS',
-  title = 'Go to the source.',
+  title = '公式',
 }: OfficialLinksSectionProps) {
   return (
     <section
@@ -24,26 +23,19 @@ export function OfficialLinksSection({
       aria-labelledby="links-title"
     >
       <div className={styles.inner}>
-        <div className={styles.intro}>
-          <p className={styles.eyebrow}>{eyebrow}</p>
-          <h2 id="links-title">{title}</h2>
-          <p>
-            新闻、日程、完整作品目录与社交动态会持续变化，请回到官方来源确认最新信息；这个非官方站点不替代官方发布。
-          </p>
-        </div>
+        <SectionHeading id="links-title" tone="light">
+          {title}
+        </SectionHeading>
 
-        <ol className={styles.links}>
-          {links.map((link, index) => (
+        <ul className={styles.links}>
+          {links.map((link) => (
             <li key={`${link.label}-${link.href}`}>
               <a
                 href={link.href}
                 target="_blank"
                 rel="noreferrer"
-                aria-label={`${link.label}: ${link.note}. Official source (opens in a new tab)`}
+                aria-label={`${link.label}：${link.note}（新しいタブで開く）`}
               >
-                <span className={styles.index} aria-hidden="true">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
                 <strong>{link.label}</strong>
                 <span className={styles.note}>{link.note}</span>
                 <span className={styles.arrow} aria-hidden="true">
@@ -52,7 +44,7 @@ export function OfficialLinksSection({
               </a>
             </li>
           ))}
-        </ol>
+        </ul>
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'motion/react';
 
+import { MediaCredit } from '../components/MediaCredit';
 import styles from './HeroSection.module.css';
 
 export interface HeroVisual {
@@ -12,25 +13,15 @@ export interface HeroVisual {
   objectPosition?: string;
 }
 
-export interface HeroMetaItem {
-  label: string;
-  value: string;
-}
-
 export interface HeroSectionProps {
   visual: HeroVisual;
   statement: string;
   description: string;
   officialUrl: string;
   titleJa?: string;
-  titleEn?: string;
-  eyebrow?: string;
-  projectName?: string;
-  statusLabel?: string;
   officialLabel?: string;
   journeyHref?: `#${string}`;
   journeyLabel?: string;
-  metadata?: readonly HeroMetaItem[];
 }
 
 const revealTransition = {
@@ -38,105 +29,57 @@ const revealTransition = {
   ease: [0.22, 1, 0.36, 1],
 } as const;
 
-const visualTransition = {
-  duration: 0.82,
-  delay: 0.06,
-  ease: [0.16, 1, 0.3, 1],
-} as const;
-
-function ExternalArrow() {
-  return <span aria-hidden="true">↗</span>;
-}
-
 export function HeroSection({
   visual,
   statement,
   description,
   officialUrl,
   titleJa = '花譜',
-  titleEn = 'KAF',
-  eyebrow = 'VOICE / IMAGE / MEMORY',
-  projectName = 'KAF Observatory',
-  statusLabel = 'UNOFFICIAL / NON-COMMERCIAL',
-  officialLabel = 'Official Site',
+  officialLabel = '公式サイト',
   journeyHref = '#journey',
-  journeyLabel = 'Enter the Journey',
-  metadata = [],
+  journeyLabel = '軌跡を見る',
 }: HeroSectionProps) {
   const shouldReduceMotion = useReducedMotion();
   const shouldAnimate = shouldReduceMotion === false;
-  const revealInitial = shouldAnimate ? { opacity: 0, y: 18 } : false;
-  const visualInitial = shouldAnimate
-    ? { opacity: 0, scale: 0.985, y: 12 }
-    : false;
+  const revealInitial = shouldAnimate ? { opacity: 0, y: 20 } : false;
 
   return (
     <section className={styles.hero} id="top" aria-labelledby="hero-title">
-      <div className={styles.heroGrid}>
+      <motion.figure
+        className={styles.visual}
+        initial={shouldAnimate ? { opacity: 0 } : false}
+        animate={{ opacity: 1 }}
+        transition={shouldAnimate ? { duration: 0.9 } : { duration: 0 }}
+      >
+        <img
+          className={styles.visualImage}
+          src={visual.src}
+          alt={visual.alt}
+          width={visual.width}
+          height={visual.height}
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          style={
+            visual.objectPosition
+              ? { objectPosition: visual.objectPosition }
+              : undefined
+          }
+        />
+      </motion.figure>
+
+      <div className={styles.scrim} aria-hidden="true" />
+
+      <div className={styles.inner}>
         <motion.div
-          className={styles.identityPanel}
+          className={styles.copy}
           initial={revealInitial}
           animate={{ opacity: 1, y: 0 }}
           transition={shouldAnimate ? revealTransition : { duration: 0 }}
         >
-          <p className={styles.eyebrow}>{eyebrow}</p>
-          <h1 className={styles.title} id="hero-title">
-            <span className={styles.titleJa}>{titleJa}</span>
-            <span className={styles.titleEn}>{titleEn}</span>
-          </h1>
-          <p className={styles.projectLine}>
-            <span>{projectName}</span>
-            <span aria-hidden="true">/</span>
-            <strong>{statusLabel}</strong>
-          </p>
-        </motion.div>
-
-        <motion.figure
-          className={styles.visual}
-          initial={visualInitial}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={shouldAnimate ? visualTransition : { duration: 0 }}
-        >
-          <div className={styles.visualFrame}>
-            <img
-              className={styles.visualImage}
-              src={visual.src}
-              alt={visual.alt}
-              width={visual.width}
-              height={visual.height}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              style={
-                visual.objectPosition
-                  ? { objectPosition: visual.objectPosition }
-                  : undefined
-              }
-            />
-          </div>
-          <figcaption className={styles.caption}>
-            <span>VISUAL CREDIT</span>
-            <a
-              href={visual.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {visual.credit} <ExternalArrow />
-            </a>
-          </figcaption>
-        </motion.figure>
-
-        <motion.div
-          className={styles.storyPanel}
-          initial={revealInitial}
-          animate={{ opacity: 1, y: 0 }}
-          transition={
-            shouldAnimate
-              ? { ...revealTransition, delay: 0.1 }
-              : { duration: 0 }
-          }
-        >
+          <h1 id="hero-title">{titleJa}</h1>
           <p className={styles.statement}>{statement}</p>
+          <p className={styles.description}>{description}</p>
 
           <div className={styles.actions}>
             <a
@@ -145,27 +88,22 @@ export function HeroSection({
               target="_blank"
               rel="noopener noreferrer"
             >
-              {officialLabel} <ExternalArrow />
+              {officialLabel} <span aria-hidden="true">↗</span>
             </a>
             <a className={styles.journeyLink} href={journeyHref}>
-              <span>{journeyLabel}</span>
-              <span aria-hidden="true">↓</span>
+              {journeyLabel} <span aria-hidden="true">↓</span>
             </a>
           </div>
-
-          <p className={styles.description}>{description}</p>
-
-          {metadata.length > 0 ? (
-            <dl className={styles.metadata}>
-              {metadata.map((item) => (
-                <div key={`${item.label}-${item.value}`}>
-                  <dt>{item.label}</dt>
-                  <dd>{item.value}</dd>
-                </div>
-              ))}
-            </dl>
-          ) : null}
         </motion.div>
+
+        <p className={styles.credit}>
+          <MediaCredit
+            credit={visual.credit}
+            href={visual.sourceUrl}
+            subject={titleJa}
+            tone="light"
+          />
+        </p>
       </div>
     </section>
   );

@@ -36,13 +36,9 @@ function renderHero() {
   return render(
     <HeroSection
       visual={visualFixture}
-      statement="我们沿着声音留下的信号，重新观看花譜的每一次变化。"
-      description="A fan-written observation of voice, image, stage, and the chapters between them."
+      statement="歌、姿、舞台。花譜が重ねてきた変化を、作品と時間から辿る。"
+      description="2018年から現在までの活動をまとめた私設アーカイブ。"
       officialUrl="https://kaf.kamitsubaki.jp/"
-      metadata={[
-        { label: 'Activity', value: 'Since 2018' },
-        { label: 'Field', value: 'Voice / Visual / Story' },
-      ]}
     />,
   );
 }
@@ -57,39 +53,51 @@ describe('HeroSection', () => {
     stubReducedMotion(true);
     renderHero();
 
-    expect(screen.getByRole('heading', { level: 1 })).toBeVisible();
-    expect(screen.getByRole('img', { name: visualFixture.alt })).toBeVisible();
-    expect(screen.getByRole('link', { name: /official site/i })).toBeVisible();
     expect(
-      screen.getByRole('link', { name: /enter the journey/i }),
+      screen.getByRole('heading', { level: 1, name: '花譜' }),
     ).toBeVisible();
-    expect(screen.getByText('UNOFFICIAL / NON-COMMERCIAL')).toBeVisible();
+    expect(screen.getByRole('img', { name: visualFixture.alt })).toBeVisible();
+    expect(screen.getByRole('link', { name: /公式サイト/ })).toBeVisible();
+    expect(screen.getByRole('link', { name: /軌跡を見る/ })).toBeVisible();
   });
 
-  it('renders KAF identity, fan status, visual provenance, and both hero destinations', () => {
+  it('renders direct KAF identity, provenance, and both destinations without template metadata', () => {
     renderHero();
 
     expect(
-      screen.getByRole('heading', { level: 1, name: /花譜\s*KAF/i }),
+      screen.getByRole('heading', { level: 1, name: '花譜' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('KAF Observatory')).toBeInTheDocument();
-    expect(screen.getByText('UNOFFICIAL / NON-COMMERCIAL')).toBeInTheDocument();
     expect(
-      screen.getByText('我们沿着声音留下的信号，重新观看花譜的每一次变化。'),
+      screen.getByText(
+        '歌、姿、舞台。花譜が重ねてきた変化を、作品と時間から辿る。',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('2018年から現在までの活動をまとめた私設アーカイブ。'),
     ).toBeInTheDocument();
 
     const visual = screen.getByRole('img', { name: visualFixture.alt });
     expect(visual).toHaveAttribute('width', '1600');
     expect(visual).toHaveAttribute('height', '2000');
 
+    expect(screen.getByRole('link', { name: /公式サイト/ })).toHaveAttribute(
+      'href',
+      'https://kaf.kamitsubaki.jp/',
+    );
+    expect(screen.getByRole('link', { name: /軌跡を見る/ })).toHaveAttribute(
+      'href',
+      '#journey',
+    );
     expect(
-      screen.getByRole('link', { name: /official site/i }),
-    ).toHaveAttribute('href', 'https://kaf.kamitsubaki.jp/');
-    expect(
-      screen.getByRole('link', { name: /enter the journey/i }),
-    ).toHaveAttribute('href', '#journey');
-    expect(
-      screen.getByRole('link', { name: /fixture artist \/ source/i }),
+      screen.getByRole('link', { name: /Fixture artist \/ source/ }),
     ).toHaveAttribute('href', visualFixture.sourceUrl);
+
+    expect(
+      screen.queryByText('VOICE / IMAGE / MEMORY'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('UNOFFICIAL / NON-COMMERCIAL'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('ACTIVITY')).not.toBeInTheDocument();
   });
 });

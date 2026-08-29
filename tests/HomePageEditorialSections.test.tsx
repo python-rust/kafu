@@ -1,4 +1,10 @@
-import { render, screen, within } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { GallerySection } from '../src/pages/HomePage/sections/GallerySection';
@@ -110,10 +116,10 @@ const officialLinks = [
 ] as const;
 
 describe('homepage editorial sections', () => {
-  it('renders a featured work, supporting works, and lazy intrinsic visuals', () => {
+  it('renders one featured work and a consistent supporting-work collection', () => {
     render(<WorksSection works={works} />);
 
-    const section = screen.getByRole('region', { name: 'Selected Works' });
+    const section = screen.getByRole('region', { name: '作品' });
     expect(within(section).getAllByRole('article')).toHaveLength(3);
     expect(
       within(section).getByRole('heading', { name: 'Current Work' }),
@@ -131,81 +137,100 @@ describe('homepage editorial sections', () => {
 
     expect(
       within(section).getByRole('link', {
-        name: /Current Work official source.*opens in a new tab/i,
+        name: /Current Workの公式ページ/,
       }),
     ).toHaveAttribute('href', 'https://example.com/works/current');
+    expect(within(section).queryByText('CURRENT WORK')).not.toBeInTheDocument();
   });
 
-  it('keeps every gallery visual credited, sourced, and lazy-loaded', () => {
-    render(<GallerySection visuals={visuals} />);
+  it('uses one active gallery stage and updates it from source-ordered thumbnails', async () => {
+    const { container } = render(<GallerySection visuals={visuals} />);
 
-    const section = screen.getByRole('region', { name: 'Visual Archive' });
-    expect(within(section).getAllByRole('figure')).toHaveLength(3);
-    expect(
-      within(section).getByText('Gallery Fixture Artist One'),
-    ).toBeVisible();
-    expect(
-      within(section).getByText('Gallery Fixture Artist Two'),
-    ).toBeVisible();
-    expect(
-      within(section).getByText('Gallery Fixture Artist Three'),
-    ).toBeVisible();
+    const section = screen.getByRole('region', { name: '視覚' });
+    const thumbnailButtons = within(section).getAllByRole('button', {
+      name: /を表示$/,
+    });
 
-    for (const visual of visuals) {
-      const image = within(section).getByRole('img', { name: visual.alt });
-      expect(image).toHaveAttribute('loading', 'lazy');
-      expect(image).toHaveAttribute('width', String(visual.width));
-      expect(image).toHaveAttribute('height', String(visual.height));
+    expect(thumbnailButtons).toHaveLength(3);
+    expect(
+      thumbnailButtons.map((button) => button.getAttribute('aria-label')),
+    ).toEqual([
+      'Signal Portraitを表示',
+      'Stage Fieldを表示',
+      'Chapter Fragmentを表示',
+    ]);
+    expect(thumbnailButtons[0]).toHaveAttribute('aria-pressed', 'true');
+    expect(
+      within(section).getByRole('button', {
+        name: 'Signal Portraitを拡大表示',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      within(section).getByRole('link', {
+        name: /Signal Portraitの画像出典：Gallery Fixture Artist One/,
+      }),
+    ).toHaveAttribute('href', 'https://example.com/gallery/one');
+
+    const secondThumbnail = thumbnailButtons[1];
+
+    if (!secondThumbnail) {
+      throw new Error('Second gallery thumbnail was not rendered.');
+    }
+
+    fireEvent.click(secondThumbnail);
+
+    await waitFor(() => {
       expect(
-        within(section).getByRole('link', {
-          name: new RegExp(
-            `${visual.title} visual source.*opens in a new tab`,
-            'i',
-          ),
-        }),
-      ).toHaveAttribute('href', visual.sourceUrl);
+        within(section).getByRole('button', { name: 'Stage Fieldを拡大表示' }),
+      ).toBeInTheDocument();
+    });
+    expect(secondThumbnail).toHaveAttribute('aria-pressed', 'true');
+    expect(
+      within(section).getByRole('link', {
+        name: /Stage Fieldの画像出典：Gallery Fixture Artist Two/,
+      }),
+    ).toHaveAttribute('href', 'https://example.com/gallery/two');
+
+    for (const image of container.querySelectorAll('img')) {
+      expect(Number(image.getAttribute('width'))).toBeGreaterThan(0);
+      expect(Number(image.getAttribute('height'))).toBeGreaterThan(0);
+      expect(image).toHaveAttribute('loading', 'lazy');
     }
   });
 
-  it('directs changing information back to explicit official-source links', () => {
+  it('renders direct official destinations without explanatory filler copy', () => {
     render(<OfficialLinksSection links={officialLinks} />);
 
-    const section = screen.getByRole('region', { name: 'Go to the source.' });
+    const section = screen.getByRole('region', { name: '公式' });
     expect(
-      within(section).getByText(/新闻、日程、完整作品目录与社交动态/),
-    ).toBeVisible();
+      within(section).queryByText(/新闻、日程、完整作品目录与社交动态/),
+    ).not.toBeInTheDocument();
 
     for (const link of officialLinks) {
       expect(
         within(section).getByRole('link', {
-          name: new RegExp(`${link.label}: ${link.note}.*Official source`, 'i'),
+          name: `${link.label}：${link.note}（新しいタブで開く）`,
         }),
       ).toHaveAttribute('href', link.href);
     }
   });
 
-  it('states the fan-project disclaimer and exposes media provenance', () => {
+  it('states the fan-project disclaimer once and exposes media provenance', () => {
     render(
       <SiteFooter
         projectLabel="KAF OBSERVATORY"
         mediaCreditsHref="/media-credits"
-        curationLabel="CURATED / 2026"
       />,
     );
 
     const footer = screen.getByRole('contentinfo');
     expect(
-      within(footer).getByText(/Unofficial, non-commercial fan project/i),
-    ).toBeVisible();
-    expect(
       within(footer).getByText(
-        /Not affiliated with KAF or KAMITSUBAKI STUDIO/i,
+        '花譜およびKAMITSUBAKI STUDIOとは関係のない、非公式・非営利のファンサイトです。',
       ),
     ).toBeVisible();
     expect(
-      within(footer).getByRole('link', {
-        name: 'Media credits & source provenance',
-      }),
+      within(footer).getByRole('link', { name: '画像出典' }),
     ).toHaveAttribute('href', '/media-credits');
   });
 });

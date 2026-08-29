@@ -18,6 +18,17 @@ const chapterAnchors = [
   '#journey-transcendent-love-2025-2026',
 ] as const;
 
+const galleryTitles = [
+  '花譜ちゃん',
+  '忘れてしまえ',
+  '不可解',
+  '糸',
+  '過去を喰らう',
+  '景色',
+  'チューイン・ディスコ',
+  'ユーフォーを見にいこう',
+] as const;
+
 async function openHome(
   page: Page,
   viewport: { width: number; height: number },
@@ -61,7 +72,8 @@ async function expectNoEssentialHorizontalClipping(page: Page, label: string) {
         return (
           style.display !== 'none' &&
           style.visibility !== 'hidden' &&
-          rect.width > 0 &&
+          rect.width > 2 &&
+          rect.height > 2 &&
           (rect.left < -1 || rect.right > window.innerWidth + 1)
         );
       })
@@ -77,34 +89,29 @@ async function expectNoEssentialHorizontalClipping(page: Page, label: string) {
   expect(clippedElements, label).toEqual([]);
 }
 
-test('desktop homepage exposes the final semantic structure and anchor navigation', async ({
+test('desktop homepage uses direct Japanese structure and rejects template copy', async ({
   page,
 }) => {
   await openHome(page, { width: 1440, height: 900 });
 
   await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
   await expect(
-    page.getByRole('heading', { level: 1, name: /花譜.*KAF/i }),
+    page.getByRole('heading', { level: 1, name: '花譜' }),
   ).toBeInViewport();
   await expect(
-    page.getByText('UNOFFICIAL FAN PROJECT / NON-COMMERCIAL').first(),
+    page
+      .locator('#top')
+      .getByRole('img', { name: /粉色短发の花譜|粉色短发的花譜/ }),
   ).toBeInViewport();
-  await expect(
-    page.locator('#top').getByRole('img', { name: /粉色短发的花譜正面肖像/ }),
-  ).toBeInViewport();
-  await expect(
-    page.getByRole('link', { name: 'Official Site' }),
-  ).toBeInViewport();
-  await expect(
-    page.getByRole('link', { name: /Enter the Journey/i }),
-  ).toBeInViewport();
+  await expect(page.getByRole('link', { name: /公式サイト/ })).toBeInViewport();
+  await expect(page.getByRole('link', { name: /軌跡を見る/ })).toBeInViewport();
 
   await expect(page.getByRole('banner')).toBeVisible();
   await expect(page.getByRole('main')).toBeVisible();
   await expect(page.getByRole('contentinfo')).toBeAttached();
   await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
     'content',
-    '#f7f4f3',
+    '#0d0910',
   );
 
   const visualSystemContract = await page.evaluate(() => {
@@ -118,6 +125,29 @@ test('desktop homepage exposes the final semantic structure and anchor navigatio
       return Number.parseFloat(getComputedStyle(element).fontSize);
     };
 
+    const smallVisibleText = Array.from(
+      document.querySelectorAll<HTMLElement>('header *, main *, footer *'),
+    )
+      .filter((element) => {
+        const text = element.textContent?.trim();
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+
+        return (
+          Boolean(text) &&
+          element.children.length === 0 &&
+          style.display !== 'none' &&
+          style.visibility !== 'hidden' &&
+          rect.width > 2 &&
+          rect.height > 2 &&
+          Number.parseFloat(style.fontSize) < 14
+        );
+      })
+      .map((element) => ({
+        size: Number.parseFloat(getComputedStyle(element).fontSize),
+        text: element.textContent?.trim().replace(/\s+/g, ' ').slice(0, 80),
+      }));
+
     return {
       bodyFontSize: readFontSize('body'),
       navFontSize: readFontSize('header nav a'),
@@ -125,26 +155,26 @@ test('desktop homepage exposes the final semantic structure and anchor navigatio
         readFontSize,
       ),
       documentHeight: document.documentElement.scrollHeight,
+      smallVisibleText,
     };
   });
 
   expect(visualSystemContract.bodyFontSize).toBeGreaterThanOrEqual(16);
-  expect(visualSystemContract.navFontSize).toBeGreaterThanOrEqual(12);
+  expect(visualSystemContract.navFontSize).toBeGreaterThanOrEqual(14);
   expect(
     Math.max(...visualSystemContract.sectionHeadingSizes),
-  ).toBeLessThanOrEqual(80);
+  ).toBeLessThanOrEqual(72);
   expect(visualSystemContract.documentHeight).toBeLessThan(14_000);
+  expect(visualSystemContract.smallVisibleText).toEqual([]);
 
   const navigation = page.getByRole('navigation', {
-    name: 'KAF homepage sections',
+    name: '花譜サイト内ナビゲーション',
   });
-  await expect(navigation).toBeVisible();
-
   const expectedTargets = [
-    ['Journey', '#journey'],
-    ['Works', '#works'],
-    ['Gallery', '#visuals'],
-    ['Official Links', '#links'],
+    ['軌跡', '#journey'],
+    ['作品', '#works'],
+    ['視覚', '#visuals'],
+    ['公式', '#links'],
   ] as const;
 
   for (const [label, href] of expectedTargets) {
@@ -154,19 +184,37 @@ test('desktop homepage exposes the final semantic structure and anchor navigatio
     );
   }
 
-  await navigation.getByRole('link', { name: 'Journey' }).click();
+  const bannedCopy = [
+    'VOICE / IMAGE / MEMORY',
+    'KAF / CHRONOLOGY',
+    'KAF / SELECTED DISCOGRAPHY',
+    'KAF / VISUAL NOTES',
+    'KAF / OFFICIAL CHANNELS',
+    'CURRENT WORK',
+    'VISUAL CREDIT',
+    '沿着时间向下阅读花譜的六个创作阶段',
+    '不同阶段的服装、舞台与色彩被放回同一条视觉脉络中',
+  ];
+
+  for (const copy of bannedCopy) {
+    await expect(page.locator('body')).not.toContainText(copy);
+  }
+  await expect(page.locator('[class*="eyebrow"]')).toHaveCount(0);
+  await expect(page.locator('[data-rhythm]')).toHaveCount(0);
+
+  await navigation.getByRole('link', { name: '軌跡' }).click();
   await expect(
-    page.getByRole('heading', { name: '声と景色、その六つの章。' }),
+    page.getByRole('heading', { level: 2, name: '軌跡' }),
   ).toBeInViewport();
 
   await page.goto('/');
   await page.evaluate(() => document.fonts.ready);
   await page
-    .getByRole('navigation', { name: 'KAF homepage sections' })
-    .getByRole('link', { name: 'Works' })
+    .getByRole('navigation', { name: '花譜サイト内ナビゲーション' })
+    .getByRole('link', { name: '作品' })
     .click();
   await expect(
-    page.getByRole('heading', { name: 'Selected Works' }),
+    page.getByRole('heading', { level: 2, name: '作品' }),
   ).toBeInViewport();
 
   await page.keyboard.press('Home');
@@ -184,13 +232,13 @@ test('desktop homepage exposes the final semantic structure and anchor navigatio
   expect(Number.parseFloat(focusStyle.outlineWidth)).toBeGreaterThan(0);
 });
 
-test('small-text tokens and the primary hero action retain readable contrast', async ({
+test('dark-system text roles and the primary hero action retain readable contrast', async ({
   page,
 }) => {
   await openHome(page, { width: 1440, height: 900 });
 
   const contrast = await page.evaluate(() => {
-    function parseColor(value: string) {
+    function parseColor(value: string): [number, number, number] {
       const probe = document.createElement('span');
       probe.style.color = value;
       document.body.append(probe);
@@ -207,18 +255,16 @@ test('small-text tokens and the primary hero action retain readable contrast', a
         throw new Error(`Unable to parse CSS color: ${value}`);
       }
 
-      return channels;
+      return [channels[0] ?? 0, channels[1] ?? 0, channels[2] ?? 0];
     }
 
     function relativeLuminance(value: string) {
-      const [red, green, blue] = parseColor(value).map(
-        (channel) => {
-          const normalized = channel / 255;
-          return normalized <= 0.04045
-            ? normalized / 12.92
-            : ((normalized + 0.055) / 1.055) ** 2.4;
-        },
-      );
+      const [red, green, blue] = parseColor(value).map((channel) => {
+        const normalized = channel / 255;
+        return normalized <= 0.04045
+          ? normalized / 12.92
+          : ((normalized + 0.055) / 1.055) ** 2.4;
+      }) as [number, number, number];
 
       return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
     }
@@ -233,9 +279,11 @@ test('small-text tokens and the primary hero action retain readable contrast', a
     }
 
     const rootStyle = getComputedStyle(document.documentElement);
-    const paper = rootStyle.getPropertyValue('--color-paper-clean').trim();
-    const faintInk = rootStyle.getPropertyValue('--color-ink-faint').trim();
-    const deepBlue = rootStyle.getPropertyValue('--color-blue-deep').trim();
+    const background = rootStyle.getPropertyValue('--color-bg').trim();
+    const softBackground = rootStyle.getPropertyValue('--color-bg-soft').trim();
+    const mutedText = rootStyle.getPropertyValue('--color-text-muted').trim();
+    const faintText = rootStyle.getPropertyValue('--color-text-faint').trim();
+    const blueText = rootStyle.getPropertyValue('--color-blue-light').trim();
     const heroAction = document.querySelector<HTMLElement>(
       '#top a[href="https://kaf.kamitsubaki.jp/"]',
     );
@@ -247,14 +295,16 @@ test('small-text tokens and the primary hero action retain readable contrast', a
     const actionStyle = getComputedStyle(heroAction);
 
     return {
-      faintInkOnPaper: ratio(faintInk, paper),
-      deepBlueOnPaper: ratio(deepBlue, paper),
+      mutedOnBackground: ratio(mutedText, background),
+      faintOnSoftBackground: ratio(faintText, softBackground),
+      blueOnSoftBackground: ratio(blueText, softBackground),
       heroAction: ratio(actionStyle.color, actionStyle.backgroundColor),
     };
   });
 
-  expect(contrast.faintInkOnPaper).toBeGreaterThanOrEqual(4.5);
-  expect(contrast.deepBlueOnPaper).toBeGreaterThanOrEqual(4.5);
+  expect(contrast.mutedOnBackground).toBeGreaterThanOrEqual(4.5);
+  expect(contrast.faintOnSoftBackground).toBeGreaterThanOrEqual(4.5);
+  expect(contrast.blueOnSoftBackground).toBeGreaterThanOrEqual(4.5);
   expect(contrast.heroAction).toBeGreaterThanOrEqual(4.5);
 });
 
@@ -279,6 +329,7 @@ test('desktop journey advances through real chapters and releases the sticky sta
     'true',
   );
   await expect(stage.getByText('2020–2021', { exact: true })).toBeVisible();
+  await expect(stage.getByText('魔法 / 再構築', { exact: true })).toBeVisible();
 
   await scrollToCenter(page, chapterAnchors[5]);
   await expect(page.locator(chapterAnchors[5])).toHaveAttribute(
@@ -289,7 +340,7 @@ test('desktop journey advances through real chapters and releases the sticky sta
 
   await scrollToCenter(page, '#works-title');
   await expect(
-    page.getByRole('heading', { name: 'Selected Works' }),
+    page.getByRole('heading', { level: 2, name: '作品' }),
   ).toBeInViewport();
   await page
     .locator('#works article')
@@ -300,26 +351,67 @@ test('desktop journey advances through real chapters and releases the sticky sta
   await expect(stage).not.toBeInViewport();
 });
 
-test('mobile homepage keeps the journey linear, touch-safe, and source-ordered', async ({
+test('gallery provides one focal stage, eight selectors, and keyboard lightbox navigation', async ({
+  page,
+}) => {
+  await openHome(page, { width: 1440, height: 900 });
+  await scrollToCenter(page, '#visuals-title');
+
+  const gallery = page.locator('#visuals');
+  const thumbnailList = gallery.getByRole('list', { name: '画像を選ぶ' });
+  const thumbnailButtons = thumbnailList.getByRole('button');
+
+  await expect(thumbnailButtons).toHaveCount(8);
+  await expect(
+    thumbnailButtons.evaluateAll((buttons) =>
+      buttons.map((button) => button.getAttribute('aria-label')),
+    ),
+  ).resolves.toEqual(galleryTitles.map((title) => `${title}を表示`));
+  await expect(
+    thumbnailList.getByRole('button', { name: '花譜ちゃんを表示' }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(
+    gallery.getByRole('button', { name: '花譜ちゃんを拡大表示' }),
+  ).toBeVisible();
+
+  await thumbnailList.getByRole('button', { name: '不可解を表示' }).click();
+  await expect(
+    thumbnailList.getByRole('button', { name: '不可解を表示' }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  const activeStage = gallery.getByRole('button', { name: '不可解を拡大表示' });
+  await expect(activeStage).toBeVisible();
+  await expect(
+    gallery.getByRole('heading', { level: 3, name: '不可解' }),
+  ).toBeVisible();
+
+  await activeStage.click();
+  const closeButton = page.getByRole('button', { name: '閉じる' });
+  await expect(closeButton).toBeVisible();
+  await expect(page.getByRole('button', { name: '前の画像' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '次の画像' })).toBeVisible();
+
+  await page.keyboard.press('ArrowRight');
+  await expect(
+    page.locator('#visuals button[aria-label="糸を表示"]'),
+  ).toHaveAttribute('aria-pressed', 'true');
+
+  await page.keyboard.press('Escape');
+  await expect(closeButton).toHaveCount(0);
+  await expect(
+    gallery.getByRole('button', { name: '糸を拡大表示' }),
+  ).toBeVisible();
+});
+
+test('mobile homepage keeps the journey linear and gallery selectors source-ordered', async ({
   page,
 }) => {
   await openHome(page, { width: 390, height: 844 });
 
   await expect(
-    page.getByRole('heading', { level: 1, name: /花譜.*KAF/i }),
+    page.getByRole('heading', { level: 1, name: '花譜' }),
   ).toBeInViewport();
-  await expect(
-    page.getByText('UNOFFICIAL FAN PROJECT / NON-COMMERCIAL').first(),
-  ).toBeInViewport();
-  await expect(
-    page.locator('#top').getByRole('img', { name: /粉色短发的花譜正面肖像/ }),
-  ).toBeInViewport();
-  await expect(
-    page.getByRole('link', { name: 'Official Site' }),
-  ).toBeInViewport();
-  await expect(
-    page.getByRole('link', { name: /Enter the Journey/i }),
-  ).toBeInViewport();
+  await expect(page.getByRole('link', { name: /公式サイト/ })).toBeInViewport();
+  await expect(page.getByRole('link', { name: /軌跡を見る/ })).toBeInViewport();
   await expectNoHorizontalOverflow(page, '390×844 hero');
 
   const stage = page.getByTestId('journey-sticky-stage');
@@ -333,7 +425,7 @@ test('mobile homepage keeps the journey linear, touch-safe, and source-ordered',
   }
 
   const navTargets = page
-    .getByRole('navigation', { name: 'KAF homepage sections' })
+    .getByRole('navigation', { name: '花譜サイト内ナビゲーション' })
     .getByRole('link');
   const navTargetCount = await navTargets.count();
 
@@ -344,19 +436,16 @@ test('mobile homepage keeps the journey linear, touch-safe, and source-ordered',
   }
 
   await scrollToCenter(page, '#visuals');
-  const galleryTitles = await page
-    .locator('#visuals figure h3')
-    .allTextContents();
-  expect(galleryTitles).toEqual([
-    '花譜ちゃん',
-    '忘れてしまえ',
-    '不可解',
-    '糸',
-    '過去を喰らう',
-    '景色',
-    'チューイン・ディスコ',
-    'ユーフォーを見にいこう',
-  ]);
+  const mobileGalleryLabels = await page
+    .locator('#visuals')
+    .getByRole('list', { name: '画像を選ぶ' })
+    .getByRole('button')
+    .evaluateAll((buttons) =>
+      buttons.map((button) => button.getAttribute('aria-label')),
+    );
+  expect(mobileGalleryLabels).toEqual(
+    galleryTitles.map((title) => `${title}を表示`),
+  );
   await expectNoHorizontalOverflow(page, '390×844 gallery');
 });
 
@@ -387,7 +476,7 @@ test('all target viewport sizes remain free of horizontal overflow', async ({
 
     if (viewport.width <= 390) {
       const navTargets = page
-        .getByRole('navigation', { name: 'KAF homepage sections' })
+        .getByRole('navigation', { name: '花譜サイト内ナビゲーション' })
         .getByRole('link');
       const navTargetCount = await navTargets.count();
 
@@ -434,44 +523,47 @@ test('large user text preferences preserve essential reflow', async ({
   }
 });
 
-test('reduced motion renders all six chapters without the desktop sticky stage', async ({
+test('reduced motion renders all content without the desktop sticky stage', async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await openHome(page, { width: 1440, height: 900 });
 
   await expect(
-    page.getByRole('heading', { level: 1, name: /花譜.*KAF/i }),
+    page.getByRole('heading', { level: 1, name: '花譜' }),
   ).toBeVisible();
   await expect(page.getByTestId('journey-sticky-stage')).toHaveCount(0);
   await expect(
     page.locator('#journey article[data-journey-index]'),
   ).toHaveCount(6);
+  await expect(
+    page
+      .locator('#visuals')
+      .getByRole('list', { name: '画像を選ぶ' })
+      .getByRole('button'),
+  ).toHaveCount(8);
 
   for (const chapterAnchor of chapterAnchors) {
     await scrollToCenter(page, chapterAnchor);
     await expect(page.locator(chapterAnchor)).toBeInViewport();
   }
 
-  const heroMotionState = await page
-    .locator('#top')
-    .locator('h1')
-    .evaluate((element) => {
-      const animatedParent = element.parentElement;
+  const heroMotionState = await page.locator('#top h1').evaluate((element) => {
+    const animatedParent = element.parentElement;
 
-      if (!animatedParent) {
-        return null;
-      }
+    if (!animatedParent) {
+      return null;
+    }
 
-      const style = getComputedStyle(animatedParent);
-      return { opacity: style.opacity, transform: style.transform };
-    });
+    const style = getComputedStyle(animatedParent);
+    return { opacity: style.opacity, transform: style.transform };
+  });
 
   expect(heroMotionState).toEqual({ opacity: '1', transform: 'none' });
   await expectNoHorizontalOverflow(page, '1440×900 reduced motion');
 });
 
-test('only the hero image is eager/high-priority and all shipped images have intrinsic sizing', async ({
+test('only the hero image is eager and all inline images have intrinsic sizing', async ({
   page,
 }) => {
   await openHome(page, { width: 1440, height: 900 });
@@ -503,27 +595,17 @@ test('only the hero image is eager/high-priority and all shipped images have int
   }
 });
 
-test('captures the required integration visual evidence', async ({ page }) => {
-  const evidenceDirectory = 'test-results/kaf-integration-visual-evidence';
+test('captures the second-pass visual evidence', async ({ page }) => {
+  const evidenceDirectory = 'test-results/kaf-round2-visual-evidence';
 
   await openHome(page, { width: 1440, height: 900 });
   await page.screenshot({
     path: `${evidenceDirectory}/1440x900-hero.png`,
   });
 
-  await scrollToCenter(page, chapterAnchors[0]);
-  await page.screenshot({
-    path: `${evidenceDirectory}/1440x900-journey-early.png`,
-  });
-
   await scrollToCenter(page, chapterAnchors[2]);
   await page.screenshot({
-    path: `${evidenceDirectory}/1440x900-journey-middle.png`,
-  });
-
-  await scrollToCenter(page, chapterAnchors[5]);
-  await page.screenshot({
-    path: `${evidenceDirectory}/1440x900-journey-final.png`,
+    path: `${evidenceDirectory}/1440x900-journey.png`,
   });
 
   await scrollToCenter(page, '#works-title');
@@ -541,15 +623,8 @@ test('captures the required integration visual evidence', async ({ page }) => {
     path: `${evidenceDirectory}/390x844-hero.png`,
   });
 
-  await scrollToCenter(page, chapterAnchors[2]);
+  await scrollToCenter(page, '#visuals-title');
   await page.screenshot({
-    path: `${evidenceDirectory}/390x844-linear-journey.png`,
-  });
-
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  await openHome(page, { width: 1440, height: 900 });
-  await scrollToCenter(page, chapterAnchors[2]);
-  await page.screenshot({
-    path: `${evidenceDirectory}/1440x900-reduced-motion.png`,
+    path: `${evidenceDirectory}/390x844-gallery.png`,
   });
 });

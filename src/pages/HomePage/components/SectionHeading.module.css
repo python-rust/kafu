@@ -1,0 +1,31 @@
+.root {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+}
+
+.root::after {
+  height: 1px;
+  margin-left: clamp(1.25rem, 3vw, 3rem);
+  background: var(--color-line);
+  content: '';
+  flex: 1;
+}
+
+.root h2 {
+  margin: 0;
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: var(--type-section);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.06;
+}
+
+.root[data-tone='light']::after {
+  background: var(--color-line-on-dark);
+}
+
+.root[data-tone='light'] h2 {
+  color: var(--color-night-text);
+}
