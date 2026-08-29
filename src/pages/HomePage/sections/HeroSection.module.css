@@ -21,7 +21,6 @@
   height: 100%;
   object-fit: cover;
   object-position: 66% center;
-  scale: 1.002;
 }
 
 .scrim {
@@ -132,14 +131,6 @@
   background: rgb(248 242 245 / 8%);
 }
 
-.credit {
-  min-width: 0;
-  margin: 0;
-  justify-self: end;
-  align-self: end;
-  text-align: right;
-}
-
 @media (max-width: 56rem) {
   .scrim {
     background:
@@ -154,11 +145,6 @@
 
   .inner {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .credit {
-    justify-self: start;
-    text-align: left;
   }
 }
 

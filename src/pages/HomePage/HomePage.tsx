@@ -4,6 +4,7 @@ import {
   galleryVisuals,
   heroMedia,
   journeyChapters,
+  kafMedia,
   officialLinks,
   selectedWorks,
 } from '../../content/kaf';
@@ -52,11 +53,7 @@ export function HomePage() {
           <OfficialLinksSection links={officialLinks} />
         </main>
 
-        <SiteFooter
-          projectLabel="KAF OBSERVATORY"
-          mediaCreditsHref="#visuals"
-          mediaCreditsLabel="画像出典"
-        />
+        <SiteFooter projectLabel="KAF OBSERVATORY" mediaSources={kafMedia} />
       </div>
     </MotionConfig>
   );

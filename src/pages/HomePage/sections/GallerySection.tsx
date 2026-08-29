@@ -2,20 +2,18 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { lazy, Suspense, useMemo, useState } from 'react';
 import type { Slide } from 'yet-another-react-lightbox';
 
-import { MediaCredit } from '../components/MediaCredit';
+import {
+  ResponsiveArtwork,
+  type ResponsiveArtworkSource,
+} from '../components/ResponsiveArtwork';
 import { SectionHeading } from '../components/SectionHeading';
 import styles from './GallerySection.module.css';
 
 const loadGalleryLightbox = () => import('./GalleryLightbox');
 const GalleryLightbox = lazy(loadGalleryLightbox);
 
-export interface GalleryVisual {
-  id: string;
+export interface GalleryVisual extends ResponsiveArtworkSource {
   title: string;
-  src: string;
-  alt: string;
-  width: number;
-  height: number;
   credit: string;
   sourceUrl: string;
 }
@@ -45,10 +43,10 @@ export function GallerySection({
   const slides = useMemo<readonly Slide[]>(
     () =>
       visuals.map((visual) => ({
-        src: visual.src,
+        src: visual.highDensity.src,
         alt: visual.alt,
-        width: visual.width,
-        height: visual.height,
+        width: visual.highDensity.width,
+        height: visual.highDensity.height,
         imageFit: 'contain',
       })),
     [visuals],
@@ -72,21 +70,27 @@ export function GallerySection({
       id="visuals"
       aria-labelledby="visuals-title"
     >
-      <div className={styles.backdrop} aria-hidden="true">
+      <div
+        className={styles.backdrop}
+        aria-hidden="true"
+        data-testid="gallery-backdrop"
+      >
         <AnimatePresence initial={false} mode="sync">
-          <motion.img
+          <motion.div
             key={activeVisual.id}
-            src={activeVisual.src}
-            alt=""
-            width={activeVisual.width}
-            height={activeVisual.height}
-            loading="lazy"
-            decoding="async"
             initial={shouldReduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={shouldReduceMotion ? { duration: 0 } : stageTransition}
-          />
+          >
+            <ResponsiveArtwork
+              source={activeVisual}
+              variant="thumbnail"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+          </motion.div>
         </AnimatePresence>
       </div>
 
@@ -117,11 +121,8 @@ export function GallerySection({
                   shouldReduceMotion ? { duration: 0 } : stageTransition
                 }
               >
-                <img
-                  src={activeVisual.src}
-                  alt={activeVisual.alt}
-                  width={activeVisual.width}
-                  height={activeVisual.height}
+                <ResponsiveArtwork
+                  source={activeVisual}
                   loading="lazy"
                   decoding="async"
                 />
@@ -134,12 +135,6 @@ export function GallerySection({
 
           <div className={styles.activeMeta} aria-live="polite">
             <h3>{activeVisual.title}</h3>
-            <MediaCredit
-              credit={activeVisual.credit}
-              href={activeVisual.sourceUrl}
-              subject={activeVisual.title}
-              tone="light"
-            />
           </div>
         </div>
 
@@ -158,11 +153,10 @@ export function GallerySection({
                   onClick={() => changeActiveVisual(index)}
                 >
                   <span className={styles.thumbnailImage}>
-                    <img
-                      src={visual.src}
+                    <ResponsiveArtwork
+                      source={visual}
+                      variant="thumbnail"
                       alt=""
-                      width={visual.width}
-                      height={visual.height}
                       loading="lazy"
                       decoding="async"
                     />
@@ -189,7 +183,7 @@ export function GallerySection({
               closeOnBackdropClick: true,
               closeOnEscape: true,
             }}
-            animation={{ fade: 220, swipe: 320, navigation: 280 }}
+            animation={{ fade: 220, swipe: 320, navigation: 280, zoom: 280 }}
             labels={{
               Previous: '前の画像',
               Next: '次の画像',
@@ -199,6 +193,8 @@ export function GallerySection({
               Lightbox: '画像を拡大表示',
               'Photo gallery': '花譜の視覚資料',
               '{index} of {total}': '{total}枚中{index}枚',
+              'Zoom in': '拡大',
+              'Zoom out': '縮小',
             }}
             on={{
               view: ({ index }) => setActiveIndex(index),

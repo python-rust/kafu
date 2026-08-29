@@ -54,18 +54,6 @@
   object-fit: contain;
 }
 
-.featuredFigure figcaption,
-.supportingFigure figcaption {
-  min-height: 2rem;
-  padding-top: 0.7rem;
-}
-
-.creditText {
-  color: var(--color-text-muted);
-  font-size: var(--type-label);
-  line-height: 1.6;
-}
-
 .featuredFallback,
 .typeFallback {
   display: grid;

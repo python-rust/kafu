@@ -1,17 +1,12 @@
 import { motion, useReducedMotion } from 'motion/react';
 
-import { MediaCredit } from '../components/MediaCredit';
+import {
+  ResponsiveArtwork,
+  type ResponsiveArtworkSource,
+} from '../components/ResponsiveArtwork';
 import styles from './HeroSection.module.css';
 
-export interface HeroVisual {
-  src: string;
-  alt: string;
-  width: number;
-  height: number;
-  credit: string;
-  sourceUrl: string;
-  objectPosition?: string;
-}
+export interface HeroVisual extends ResponsiveArtworkSource {}
 
 export interface HeroSectionProps {
   visual: HeroVisual;
@@ -51,20 +46,12 @@ export function HeroSection({
         animate={{ opacity: 1 }}
         transition={shouldAnimate ? { duration: 0.9 } : { duration: 0 }}
       >
-        <img
+        <ResponsiveArtwork
           className={styles.visualImage}
-          src={visual.src}
-          alt={visual.alt}
-          width={visual.width}
-          height={visual.height}
+          source={visual}
           loading="eager"
           fetchPriority="high"
           decoding="async"
-          style={
-            visual.objectPosition
-              ? { objectPosition: visual.objectPosition }
-              : undefined
-          }
         />
       </motion.figure>
 
@@ -95,15 +82,6 @@ export function HeroSection({
             </a>
           </div>
         </motion.div>
-
-        <p className={styles.credit}>
-          <MediaCredit
-            credit={visual.credit}
-            href={visual.sourceUrl}
-            subject={titleJa}
-            tone="light"
-          />
-        </p>
       </div>
     </section>
   );

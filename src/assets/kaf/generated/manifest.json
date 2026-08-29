@@ -1,0 +1,301 @@
+{
+  "generator": {
+    "tool": "waifu2x-ncnn-vulkan",
+    "release": "20250915",
+    "model": "models-cunet",
+    "noiseLevel": -1,
+    "scale": 4,
+    "webpQuality": 90,
+    "thumbnailLongEdge": 480
+  },
+  "items": [
+    {
+      "id": "kaihou",
+      "source": {
+        "path": "src/assets/kaf/hero-kaihou.jpg",
+        "width": 860,
+        "height": 484,
+        "sha256": "850e38af66e1f28a9ad00677d53568ea9fa52ff5a12e8317b84207e609acd516"
+      },
+      "variants": {
+        "2x": {
+          "path": "src/assets/kaf/generated/kaihou-2x.webp",
+          "width": 1720,
+          "height": 968,
+          "sha256": "ce1db383f1ec1e18a0cb1d7f5bceadd6b18b0e0cf8cbf26fd1cd53e47721cc32",
+          "bytes": 178570
+        },
+        "4x": {
+          "path": "src/assets/kaf/generated/kaihou-4x.webp",
+          "width": 3440,
+          "height": 1936,
+          "sha256": "e4a45a9e2085da81c57e3dd9ac64a9489cf2dc600751a2ce23e172e0efe86148",
+          "bytes": 424608
+        },
+        "thumb": {
+          "path": "src/assets/kaf/generated/kaihou-thumb.webp",
+          "width": 480,
+          "height": 270,
+          "sha256": "a93bab1877b969ddccc1cdf3c0999859b839a43fea551350352accb2d89fd749",
+          "bytes": 21102
+        }
+      }
+    },
+    {
+      "id": "wasurete-shimae",
+      "source": {
+        "path": "src/assets/kaf/visual-wasurete-shimae.jpg",
+        "width": 860,
+        "height": 484,
+        "sha256": "cf39ce8eefbc57ef9652bd434d1a250454b26bffa3fb960e2f2cfbb6ef01d7d8"
+      },
+      "variants": {
+        "2x": {
+          "path": "src/assets/kaf/generated/wasurete-shimae-2x.webp",
+          "width": 1720,
+          "height": 968,
+          "sha256": "ddeb1ffa1f1b643d91ad442318208176be11281a6f6fbaf43dfa5a1c68286f19",
+          "bytes": 70510
+        },
+        "4x": {
+          "path": "src/assets/kaf/generated/wasurete-shimae-4x.webp",
+          "width": 3440,
+          "height": 1936,
+          "sha256": "dd0f9fcf94a7ccff8ded5e55e800db0ccd70b65c0f4e7b9efe4e98b324d23a04",
+          "bytes": 168380
+        },
+        "thumb": {
+          "path": "src/assets/kaf/generated/wasurete-shimae-thumb.webp",
+          "width": 480,
+          "height": 270,
+          "sha256": "e0a3bfe16c7b10de835946f5f8271a57aea44f0a69994b981ef78fc7a484cd11",
+          "bytes": 13100
+        }
+      }
+    },
+    {
+      "id": "fukakai",
+      "source": {
+        "path": "src/assets/kaf/visual-fukakai.jpg",
+        "width": 860,
+        "height": 484,
+        "sha256": "caef91a45a66d9c9a5e720446d2a81c030b9b45973e77588cca60d72beeb531a"
+      },
+      "variants": {
+        "2x": {
+          "path": "src/assets/kaf/generated/fukakai-2x.webp",
+          "width": 1720,
+          "height": 968,
+          "sha256": "ffe77dfe8fee5a0cf0cddd241b44ec23093b341adcba6049de80469b5bfc5434",
+          "bytes": 62322
+        },
+        "4x": {
+          "path": "src/assets/kaf/generated/fukakai-4x.webp",
+          "width": 3440,
+          "height": 1936,
+          "sha256": "df01e636747b55048dfbd6e6a114dc0edefc2a3b7d379002109489c4fa0046c5",
+          "bytes": 150642
+        },
+        "thumb": {
+          "path": "src/assets/kaf/generated/fukakai-thumb.webp",
+          "width": 480,
+          "height": 270,
+          "sha256": "e89988892bb24b711fa510415b91f8414b1ccf99206c33b2b32c3f60b265d6a6",
+          "bytes": 14392
+        }
+      }
+    },
+    {
+      "id": "origin-ito",
+      "source": {
+        "path": "src/assets/kaf/journey/2018-origin-ito.jpg",
+        "width": 860,
+        "height": 484,
+        "sha256": "0d2a25eae4996247ee4272ef8e29ee7ef206348d496dd2b5faf0a95c7071c44c"
+      },
+      "variants": {
+        "2x": {
+          "path": "src/assets/kaf/generated/origin-ito-2x.webp",
+          "width": 1720,
+          "height": 968,
+          "sha256": "4edc191a230d19a9136b38a7555b2126169e159d3d5386d3fa300b289cde7b14",
+          "bytes": 99670
+        },
+        "4x": {
+          "path": "src/assets/kaf/generated/origin-ito-4x.webp",
+          "width": 3440,
+          "height": 1936,
+          "sha256": "f2b0a31791b597c67adb512d299daec8685f831ce7e8350bed92373013d3524e",
+          "bytes": 236412
+        },
+        "thumb": {
+          "path": "src/assets/kaf/generated/origin-ito-thumb.webp",
+          "width": 480,
+          "height": 270,
+          "sha256": "ef6dbcb21a7398908cea56e8f1950bf908312a23c9065bc375efda3a9574592d",
+          "bytes": 18842
+        }
+      }
+    },
+    {
+      "id": "observation-past",
+      "source": {
+        "path": "src/assets/kaf/journey/2019-observation-past.jpg",
+        "width": 860,
+        "height": 484,
+        "sha256": "a445f01b893a93e38c7c977c00997763b160ebc0bea30fd12907916b12c6f523"
+      },
+      "variants": {
+        "2x": {
+          "path": "src/assets/kaf/generated/observation-past-2x.webp",
+          "width": 1720,
+          "height": 968,
+          "sha256": "5a29f1a8d3475e2e9499597e5e499dcfefcb2bba986564e89ec86a792caac9fd",
+          "bytes": 131240
+        },
+        "4x": {
+          "path": "src/assets/kaf/generated/observation-past-4x.webp",
+          "width": 3440,
+          "height": 1936,
+          "sha256": "c36b548a39c43e61698b61af0c3d6bec6c0d43b8aa4c170e8f9f4626f65565ee",
+          "bytes": 289276
+        },
+        "thumb": {
+          "path": "src/assets/kaf/generated/observation-past-thumb.webp",
+          "width": 480,
+          "height": 270,
+          "sha256": "5589d9d8c543aeb4a49b610e9d4975cf6f5a4878848026ea16598b3cf304da40",
+          "bytes": 20840
+        }
+      }
+    },
+    {
+      "id": "magic-keshiki",
+      "source": {
+        "path": "src/assets/kaf/journey/2020-magic-keshiki.jpg",
+        "width": 860,
+        "height": 484,
+        "sha256": "5fab05560238bf1ff0e1a0bcf4fa01c21ab855086fc8004ac81c5999208d0169"
+      },
+      "variants": {
+        "2x": {
+          "path": "src/assets/kaf/generated/magic-keshiki-2x.webp",
+          "width": 1720,
+          "height": 968,
+          "sha256": "648848144568ee67181ff0175db23ace950b02e61e89d0540a8794ef6590889a",
+          "bytes": 94904
+        },
+        "4x": {
+          "path": "src/assets/kaf/generated/magic-keshiki-4x.webp",
+          "width": 3440,
+          "height": 1936,
+          "sha256": "d1fbfdda7725626b9fdf1e69e9cf42bbec299670037120df522e1fc58e48c720",
+          "bytes": 226866
+        },
+        "thumb": {
+          "path": "src/assets/kaf/generated/magic-keshiki-thumb.webp",
+          "width": 480,
+          "height": 270,
+          "sha256": "5d88517b90c34c1d25a4a20ff4f65fc46ad937fa377d2800b894bcb3dcd33291",
+          "bytes": 15126
+        }
+      }
+    },
+    {
+      "id": "fable-chewing-disco",
+      "source": {
+        "path": "src/assets/kaf/journey/2024-fable-chewing-disco.png",
+        "width": 860,
+        "height": 484,
+        "sha256": "42dd8bf80d83f2bc306f31c778d5ddbed9f5aac66779edb24daef0d4cb4c4850"
+      },
+      "variants": {
+        "2x": {
+          "path": "src/assets/kaf/generated/fable-chewing-disco-2x.webp",
+          "width": 1720,
+          "height": 968,
+          "sha256": "f29cd994ac40989d24b1e08657fff767b036f7b200a2a6e08dc615bcf02235b3",
+          "bytes": 194386
+        },
+        "4x": {
+          "path": "src/assets/kaf/generated/fable-chewing-disco-4x.webp",
+          "width": 3440,
+          "height": 1936,
+          "sha256": "9aa73c8a974acae63d24a8bb5f33a80dcc3d28d48048cc84fa02570a7a7f5704",
+          "bytes": 436508
+        },
+        "thumb": {
+          "path": "src/assets/kaf/generated/fable-chewing-disco-thumb.webp",
+          "width": 480,
+          "height": 270,
+          "sha256": "8836a07ed5e132e57760a799a27b9bcd3c501c055b3acd9b020ca0bbb66de89c",
+          "bytes": 39018
+        }
+      }
+    },
+    {
+      "id": "transcendent-ufo",
+      "source": {
+        "path": "src/assets/kaf/journey/2025-transcendent-ufo.png",
+        "width": 600,
+        "height": 600,
+        "sha256": "72448105038392b96d68ec713cd93d758b29ee52019268daa6262d750ed38a55"
+      },
+      "variants": {
+        "2x": {
+          "path": "src/assets/kaf/generated/transcendent-ufo-2x.webp",
+          "width": 1200,
+          "height": 1200,
+          "sha256": "63412a3f3a17ef2a612176a1fc3a0f068c3993f0d1f7379525d5e3274f737f81",
+          "bytes": 184378
+        },
+        "4x": {
+          "path": "src/assets/kaf/generated/transcendent-ufo-4x.webp",
+          "width": 2400,
+          "height": 2400,
+          "sha256": "cacab6ccddf5380f1572b39811c2f8a55daf0c380b54220a383cfcdf70f78296",
+          "bytes": 392866
+        },
+        "thumb": {
+          "path": "src/assets/kaf/generated/transcendent-ufo-thumb.webp",
+          "width": 480,
+          "height": 480,
+          "sha256": "5fc91d8bc2b83f22a38080a113dba3fa3fed7007788c386590a2e0ed9c5bd0d6",
+          "bytes": 53178
+        }
+      }
+    },
+    {
+      "id": "tori-portrait",
+      "source": {
+        "path": "src/assets/kaf/gallery/kaf-tori-portrait.jpg",
+        "width": 428,
+        "height": 600,
+        "sha256": "0638aa003a71475dde64a6cbc7c724343aeb3eff17c2272fdea41302c549d116"
+      },
+      "variants": {
+        "2x": {
+          "path": "src/assets/kaf/generated/tori-portrait-2x.webp",
+          "width": 856,
+          "height": 1200,
+          "sha256": "ff89ac308fa1008e31af7aef3bf8fa1d4c480c1dd03828d4d4baba9413323d6e",
+          "bytes": 50662
+        },
+        "4x": {
+          "path": "src/assets/kaf/generated/tori-portrait-4x.webp",
+          "width": 1712,
+          "height": 2400,
+          "sha256": "f74e53f0a7b45e02dcbd599f8d8e9c189609c36259ca7cd9e3e97ad9f99524be",
+          "bytes": 126006
+        },
+        "thumb": {
+          "path": "src/assets/kaf/generated/tori-portrait-thumb.webp",
+          "width": 342,
+          "height": 480,
+          "sha256": "dacb3aaecf007353eaad19715c5e58861fc3e6c7610e5550d2ccaa638cbb70d8",
+          "bytes": 14424
+        }
+      }
+    }
+  ]
+}

@@ -118,7 +118,7 @@
 }
 
 .activeMeta h3 {
-  margin: 0 0 1rem;
+  margin: 0;
   font-family: var(--font-display);
   font-size: var(--type-card-title);
   font-weight: 600;
@@ -217,17 +217,6 @@
   .theatre {
     grid-template-columns: minmax(0, 1fr);
   }
-
-  .activeMeta {
-    display: grid;
-    gap: 1rem 2rem;
-    grid-template-columns: minmax(0, 0.75fr) minmax(14rem, 1.25fr);
-    align-items: start;
-  }
-
-  .activeMeta h3 {
-    margin-bottom: 0;
-  }
 }
 
 @media (max-width: 40rem) {
@@ -241,10 +230,6 @@
 
   .activeMeta {
     display: block;
-  }
-
-  .activeMeta h3 {
-    margin-bottom: 0.8rem;
   }
 
   .thumbnailRail {

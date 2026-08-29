@@ -1,15 +1,11 @@
-import { MediaCredit } from '../components/MediaCredit';
+import {
+  ResponsiveArtwork,
+  type ResponsiveArtworkSource,
+} from '../components/ResponsiveArtwork';
 import { SectionHeading } from '../components/SectionHeading';
 import styles from './WorksSection.module.css';
 
-export interface WorkVisual {
-  src: string;
-  alt: string;
-  width: number;
-  height: number;
-  credit?: string;
-  sourceUrl?: string;
-}
+export interface WorkVisual extends ResponsiveArtworkSource {}
 
 export interface WorkItem {
   id: string;
@@ -26,31 +22,6 @@ export interface WorkItem {
 interface WorksSectionProps {
   works: readonly WorkItem[];
   title?: string;
-}
-
-function WorkMediaCredit({
-  title,
-  visual,
-}: {
-  title: string;
-  visual: WorkVisual;
-}) {
-  if (!visual.credit) {
-    return null;
-  }
-
-  if (!visual.sourceUrl) {
-    return <span className={styles.creditText}>{visual.credit}</span>;
-  }
-
-  return (
-    <MediaCredit
-      credit={visual.credit}
-      href={visual.sourceUrl}
-      subject={title}
-      tone="light"
-    />
-  );
 }
 
 function WorkMeta({ work }: { work: WorkItem }) {
@@ -88,21 +59,12 @@ export function WorksSection({ works, title = '作品' }: WorksSectionProps) {
             {featuredWork.visual ? (
               <figure className={styles.featuredFigure}>
                 <div className={styles.featuredFrame}>
-                  <img
-                    src={featuredWork.visual.src}
-                    alt={featuredWork.visual.alt}
-                    width={featuredWork.visual.width}
-                    height={featuredWork.visual.height}
+                  <ResponsiveArtwork
+                    source={featuredWork.visual}
                     loading="lazy"
                     decoding="async"
                   />
                 </div>
-                <figcaption>
-                  <WorkMediaCredit
-                    title={featuredWork.title}
-                    visual={featuredWork.visual}
-                  />
-                </figcaption>
               </figure>
             ) : (
               <div className={styles.featuredFallback} aria-hidden="true">
@@ -134,21 +96,12 @@ export function WorksSection({ works, title = '作品' }: WorksSectionProps) {
                 {work.visual ? (
                   <figure className={styles.supportingFigure}>
                     <div className={styles.supportingFrame}>
-                      <img
-                        src={work.visual.src}
-                        alt={work.visual.alt}
-                        width={work.visual.width}
-                        height={work.visual.height}
+                      <ResponsiveArtwork
+                        source={work.visual}
                         loading="lazy"
                         decoding="async"
                       />
                     </div>
-                    <figcaption>
-                      <WorkMediaCredit
-                        title={work.title}
-                        visual={work.visual}
-                      />
-                    </figcaption>
                   </figure>
                 ) : (
                   <div className={styles.typeFallback} aria-hidden="true">

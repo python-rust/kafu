@@ -10,7 +10,21 @@ License references:
 
 Piapro states that its work-specific icons control use: the non-commercial icon limits use to non-commercial purposes, the creator-name icon requires attribution, and the no-modification icon prohibits modification. The FAQ states that a work without the no-modification condition may be modified, subject to the platform's restrictions. None of the nine image work pages below displayed an original-license condition at the 2026-08-25 check.
 
-The local files use piapro's own published display thumbnails. No additional crop, recolor, recompression, or generative processing was performed in this repository.
+The original local files use piapro's published display thumbnails and remain unchanged as provenance inputs. The public work pages report larger source dimensions, but original downloads require a piapro account; this repository does not bypass that access boundary or substitute unverified reposts.
+
+## Responsive display derivatives
+
+On **2026-08-30**, the nine verified preview inputs were converted into responsive display derivatives under `src/assets/kaf/generated/`:
+
+- tool: official `waifu2x-ncnn-vulkan` portable macOS release `20250915`;
+- model: `models-cunet`;
+- processing: 4× scale with noise level `-1` (no denoise), preserving the verified preview as closely as the selected model permits;
+- outputs: 4× WebP, a Lanczos-downsampled 2× WebP, and a longest-edge 480px WebP thumbnail;
+- WebP quality: 90;
+- reproducibility: `scripts/generate_kaf_media_variants.py` verifies every source SHA-256 before generation;
+- derivative dimensions, byte sizes, and SHA-256 values: `src/assets/kaf/generated/manifest.json`.
+
+These derivatives improve display density and reduce browser enlargement. They do **not** restore the inaccessible original pixels and must not be represented as source originals. The source preview files listed below remain the authoritative local provenance inputs.
 
 ## `hero-kaihou.jpg`
 
@@ -21,10 +35,10 @@ The local files use piapro's own published display thumbnails. No additional cro
 - License / permission observed: non-commercial use only
 - Original-license condition: none displayed
 - Modification allowed: yes; no no-modification icon displayed
-- Required credit: none required by the creator-name icon; project credit is `Visual via 花譜 / piapro · non-commercial use`
+- Required credit: none required by the creator-name icon; the bottom source index renders `花譜 / piapro`
 - Source dimensions: 1920×1080
 - Local dimensions: 860×484
-- Local derivative: piapro-published display thumbnail; no repository-side transformation
+- Display derivatives: `generated/kaihou-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-24; license rechecked 2026-08-25
 - SHA-256: `850e38af66e1f28a9ad00677d53568ea9fa52ff5a12e8317b84207e609acd516`
 
@@ -41,7 +55,7 @@ The local files use piapro's own published display thumbnails. No additional cro
 - Required credit: none required by the creator-name icon; project voluntarily credits `Character design: PALOW. · 3DCG: 川サキケンジ · via 花譜 / piapro`
 - Source dimensions: 1280×720
 - Local dimensions: 860×484
-- Local derivative: piapro-published display thumbnail; no repository-side transformation
+- Display derivatives: `generated/wasurete-shimae-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-24; license rechecked 2026-08-25
 - SHA-256: `cf39ce8eefbc57ef9652bd434d1a250454b26bffa3fb960e2f2cfbb6ef01d7d8`
 
@@ -58,7 +72,7 @@ The local files use piapro's own published display thumbnails. No additional cro
 - Required credit: none required by the creator-name icon; project voluntarily credits `Character design: PALOW. · 3DCG: 川サキケンジ · via 花譜 / piapro`
 - Source dimensions: 1280×720
 - Local dimensions: 860×484
-- Local derivative: piapro-published display thumbnail; no repository-side transformation
+- Display derivatives: `generated/fukakai-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-24; license rechecked 2026-08-25
 - SHA-256: `caef91a45a66d9c9a5e720446d2a81c030b9b45973e77588cca60d72beeb531a`
 
@@ -75,7 +89,7 @@ The local files use piapro's own published display thumbnails. No additional cro
 - Required credit: none required by the creator-name icon; project voluntarily credits `Character design: PALOW · 3DCG design: 川サキケンジ · via 花譜 / piapro`
 - Source dimensions: 1280×720
 - Local dimensions: 860×484
-- Local derivative: piapro-published display thumbnail; no repository-side transformation
+- Display derivatives: `generated/origin-ito-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-25
 - SHA-256: `0d2a25eae4996247ee4272ef8e29ee7ef206348d496dd2b5faf0a95c7071c44c`
 
@@ -92,7 +106,7 @@ The local files use piapro's own published display thumbnails. No additional cro
 - Required credit: none required by the creator-name icon; project voluntarily credits `Character design: PALOW · 3DCG design: 川サキケンジ · via 花譜 / piapro`
 - Source dimensions: 1920×1080
 - Local dimensions: 860×484
-- Local derivative: piapro-published display thumbnail; no repository-side transformation
+- Display derivatives: `generated/observation-past-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-25
 - SHA-256: `a445f01b893a93e38c7c977c00997763b160ebc0bea30fd12907916b12c6f523`
 
@@ -105,10 +119,10 @@ The local files use piapro's own published display thumbnails. No additional cro
 - License / permission observed: non-commercial use only
 - Original-license condition: none displayed
 - Modification allowed: yes; no no-modification icon displayed
-- Required credit: none required by the creator-name icon; project credit is `Visual via 花譜 / piapro · non-commercial use`
+- Required credit: none required by the creator-name icon; the bottom source index renders `花譜 / piapro`
 - Source dimensions: 1280×720
 - Local dimensions: 860×484
-- Local derivative: piapro-published display thumbnail; no repository-side transformation
+- Display derivatives: `generated/magic-keshiki-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-25
 - SHA-256: `5fab05560238bf1ff0e1a0bcf4fa01c21ab855086fc8004ac81c5999208d0169`
 
@@ -124,7 +138,7 @@ The local files use piapro's own published display thumbnails. No additional cro
 - Required credit: `花譜`; project renders `花譜 / piapro`
 - Source dimensions: 1920×1080
 - Local dimensions: 860×484
-- Local derivative: piapro-published display thumbnail; no repository-side transformation
+- Display derivatives: `generated/fable-chewing-disco-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-25
 - SHA-256: `42dd8bf80d83f2bc306f31c778d5ddbed9f5aac66779edb24daef0d4cb4c4850`
 
@@ -140,7 +154,7 @@ The local files use piapro's own published display thumbnails. No additional cro
 - Required credit: `花譜`; project renders `花譜 / piapro`
 - Source dimensions: 3000×3000
 - Local dimensions: 600×600
-- Local derivative: piapro-published display thumbnail; no repository-side transformation
+- Display derivatives: `generated/transcendent-ufo-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-25
 - SHA-256: `72448105038392b96d68ec713cd93d758b29ee52019268daa6262d750ed38a55`
 
@@ -157,14 +171,14 @@ The local files use piapro's own published display thumbnails. No additional cro
 - Required credit: `とり`; project renders `とり / piapro`
 - Source dimensions: 2122×2976
 - Local dimensions: 428×600
-- Local derivative: piapro-published display thumbnail; no repository-side transformation
+- Display derivatives: `generated/tori-portrait-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-25
 - SHA-256: `0638aa003a71475dde64a6cbc7c724343aeb3eff17c2272fdea41302c549d116`
 
 ## Usage boundary
 
 - Keep the site explicitly unofficial and non-commercial while these images ship.
-- Keep required creator-name credit visible wherever a credited asset is presented.
+- Keep required creator names visible in the page-bottom source line and retain the per-work source/license entries in the adjacent `画像出典` disclosure.
 - Re-check the exact work page before materially changing distribution context or creating a new derivative.
 - Remove the corresponding local file and content reference if its source terms become incompatible.
 - Do not treat this provenance record as blanket permission for unrelated KAF/KAMITSUBAKI official images, campaign materials, album covers, social-media reposts, logos, screenshots, or wallpapers.

@@ -114,8 +114,13 @@ describe('home page', () => {
       ),
     ).toBeInTheDocument();
     expect(
-      within(footer).getByRole('link', { name: '画像出典' }),
-    ).toHaveAttribute('href', '#visuals');
+      within(footer).getByText('画像：花譜 / PALOW. / 川サキケンジ / とり'),
+    ).toBeVisible();
+    expect(within(footer).getByText('画像出典（9件）')).toBeInTheDocument();
+    expect(footer.querySelectorAll('#media-sources a')).toHaveLength(18);
+    expect(
+      main.querySelectorAll('a[href^="https://piapro.jp/t/"]'),
+    ).toHaveLength(0);
 
     const bannedCopy = [
       'VOICE / IMAGE / MEMORY',
@@ -152,6 +157,8 @@ describe('home page', () => {
     expect(uniqueSources.size).toBeGreaterThanOrEqual(9);
     expect(eagerImages).toHaveLength(1);
     expect(eagerImages[0]).toHaveAttribute('fetchpriority', 'high');
+    expect(eagerImages[0]?.getAttribute('src')).toContain('kaihou-2x');
+    expect(eagerImages[0]?.getAttribute('srcset')).toContain('kaihou-4x');
 
     for (const image of images) {
       expect(Number(image.getAttribute('width'))).toBeGreaterThan(0);

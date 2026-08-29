@@ -17,6 +17,7 @@ vi.mock('motion/react', async (importOriginal) => {
 });
 
 import { JourneySection } from '../src/pages/HomePage/sections/JourneySection';
+import { createMediaFixture } from './fixtures/media';
 
 const chapters = [
   {
@@ -34,14 +35,15 @@ const chapters = [
         sourceUrl: 'https://example.com/origin-milestone',
       },
     ],
-    primaryVisual: {
+    primaryVisual: createMediaFixture({
+      id: 'origin-visual',
       src: '/fixtures/origin.webp',
       alt: 'Origin visual',
       width: 1200,
       height: 1600,
       credit: 'Origin artist',
       sourceUrl: 'https://example.com/origin-visual',
-    },
+    }),
   },
   {
     id: 'observation',
@@ -58,14 +60,15 @@ const chapters = [
         sourceUrl: 'https://example.com/observation-milestone',
       },
     ],
-    primaryVisual: {
+    primaryVisual: createMediaFixture({
+      id: 'observation-visual',
       src: '/fixtures/observation.webp',
       alt: 'Observation visual',
       width: 1200,
       height: 1600,
       credit: 'Observation artist',
       sourceUrl: 'https://example.com/observation-visual',
-    },
+    }),
   },
   {
     id: 'rebuild',
@@ -82,22 +85,24 @@ const chapters = [
         sourceUrl: 'https://example.com/rebuild-milestone',
       },
     ],
-    primaryVisual: {
+    primaryVisual: createMediaFixture({
+      id: 'rebuild-visual',
       src: '/fixtures/rebuild.webp',
       alt: 'Rebuild visual',
       width: 1200,
       height: 1600,
       credit: 'Rebuild artist',
       sourceUrl: 'https://example.com/rebuild-visual',
-    },
-    secondaryVisual: {
+    }),
+    secondaryVisual: createMediaFixture({
+      id: 'rebuild-secondary-visual',
       src: '/fixtures/rebuild-secondary.webp',
       alt: 'Rebuild secondary visual',
       width: 1600,
       height: 1200,
       credit: 'Secondary artist',
       sourceUrl: 'https://example.com/rebuild-secondary-visual',
-    },
+    }),
   },
   {
     id: 'expansion',
@@ -114,14 +119,15 @@ const chapters = [
         sourceUrl: 'https://example.com/expansion-milestone',
       },
     ],
-    primaryVisual: {
+    primaryVisual: createMediaFixture({
+      id: 'expansion-visual',
       src: '/fixtures/expansion.webp',
       alt: 'Expansion visual',
       width: 1200,
       height: 1600,
       credit: 'Expansion artist',
       sourceUrl: 'https://example.com/expansion-visual',
-    },
+    }),
   },
   {
     id: 'fable',
@@ -138,14 +144,15 @@ const chapters = [
         sourceUrl: 'https://example.com/fable-milestone',
       },
     ],
-    primaryVisual: {
+    primaryVisual: createMediaFixture({
+      id: 'fable-visual',
       src: '/fixtures/fable.webp',
       alt: 'Fable visual',
       width: 1200,
       height: 1600,
       credit: 'Fable artist',
       sourceUrl: 'https://example.com/fable-visual',
-    },
+    }),
   },
   {
     id: 'transcendent',
@@ -162,14 +169,15 @@ const chapters = [
         sourceUrl: 'https://example.com/transcendent-milestone',
       },
     ],
-    primaryVisual: {
+    primaryVisual: createMediaFixture({
+      id: 'transcendent-visual',
       src: '/fixtures/transcendent.webp',
       alt: 'Transcendent visual',
       width: 1200,
       height: 1600,
       credit: 'Transcendent artist',
       sourceUrl: 'https://example.com/transcendent-visual',
-    },
+    }),
   },
 ] as const;
 
@@ -223,12 +231,16 @@ describe('JourneySection', () => {
     expect(originVisual).toHaveAttribute('width', '1200');
     expect(originVisual).toHaveAttribute('height', '1600');
     expect(originVisual).toHaveAttribute('loading', 'lazy');
+    expect(originVisual).toHaveAttribute(
+      'srcset',
+      `${chapters[0].primaryVisual.display.src} 1x, ${chapters[0].primaryVisual.highDensity.src} 2x`,
+    );
 
     expect(
-      screen.getByRole('link', {
+      screen.queryByRole('link', {
         name: /Origin visualの画像出典：Origin artist/,
       }),
-    ).toHaveAttribute('href', 'https://example.com/origin-visual');
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole('link', {
         name: /Origin milestoneの出典/,

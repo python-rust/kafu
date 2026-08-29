@@ -11,6 +11,7 @@ import { GallerySection } from '../src/pages/HomePage/sections/GallerySection';
 import { OfficialLinksSection } from '../src/pages/HomePage/sections/OfficialLinksSection';
 import { SiteFooter } from '../src/pages/HomePage/sections/SiteFooter';
 import { WorksSection } from '../src/pages/HomePage/sections/WorksSection';
+import { createMediaFixture } from './fixtures/media';
 
 const works = [
   {
@@ -22,14 +23,15 @@ const works = [
     description: 'A production-shaped featured work fixture.',
     sourceUrl: 'https://example.com/works/current',
     featured: true,
-    visual: {
+    visual: createMediaFixture({
+      id: 'current-work-visual',
       src: 'https://example.com/media/current.jpg',
       alt: 'Featured KAF editorial artwork fixture.',
       width: 1600,
       height: 1000,
       credit: 'Fixture Artist',
       sourceUrl: 'https://example.com/media/current',
-    },
+    }),
   },
   {
     id: 'supporting-work-without-image',
@@ -48,47 +50,71 @@ const works = [
     kind: 'ALBUM',
     description: 'A supporting work with an independently credited visual.',
     sourceUrl: 'https://example.com/works/visual',
-    visual: {
+    visual: createMediaFixture({
+      id: 'supporting-work-visual',
       src: 'https://example.com/media/supporting.jpg',
       alt: 'Supporting KAF artwork fixture.',
       width: 1200,
       height: 900,
       credit: 'Supporting Fixture Artist',
       sourceUrl: 'https://example.com/media/supporting',
-    },
+    }),
   },
 ] as const;
 
 const visuals = [
   {
-    id: 'visual-one',
+    ...createMediaFixture({
+      id: 'visual-one',
+      src: 'https://example.com/gallery/one.jpg',
+      alt: 'KAF portrait fixture with luminous signal lines.',
+      width: 1200,
+      height: 1600,
+      credit: 'Gallery Fixture Artist One',
+      sourceUrl: 'https://example.com/gallery/one',
+    }),
     title: 'Signal Portrait',
-    src: 'https://example.com/gallery/one.jpg',
-    alt: 'KAF portrait fixture with luminous signal lines.',
-    width: 1200,
-    height: 1600,
-    credit: 'Gallery Fixture Artist One',
-    sourceUrl: 'https://example.com/gallery/one',
   },
   {
-    id: 'visual-two',
+    ...createMediaFixture({
+      id: 'visual-two',
+      src: 'https://example.com/gallery/two.jpg',
+      alt: 'KAF stage fixture with a wide illuminated field.',
+      width: 1600,
+      height: 900,
+      credit: 'Gallery Fixture Artist Two',
+      sourceUrl: 'https://example.com/gallery/two',
+    }),
     title: 'Stage Field',
-    src: 'https://example.com/gallery/two.jpg',
-    alt: 'KAF stage fixture with a wide illuminated field.',
-    width: 1600,
-    height: 900,
-    credit: 'Gallery Fixture Artist Two',
-    sourceUrl: 'https://example.com/gallery/two',
   },
   {
-    id: 'visual-three',
+    ...createMediaFixture({
+      id: 'visual-three',
+      src: 'https://example.com/gallery/three.jpg',
+      alt: 'KAF chapter artwork fixture with layered typography.',
+      width: 1400,
+      height: 1400,
+      credit: 'Gallery Fixture Artist Three',
+      sourceUrl: 'https://example.com/gallery/three',
+    }),
     title: 'Chapter Fragment',
-    src: 'https://example.com/gallery/three.jpg',
-    alt: 'KAF chapter artwork fixture with layered typography.',
-    width: 1400,
-    height: 1400,
-    credit: 'Gallery Fixture Artist Three',
-    sourceUrl: 'https://example.com/gallery/three',
+  },
+] as const;
+
+const mediaSources = [
+  {
+    id: 'source-one',
+    title: 'Signal Portrait',
+    credit: '花譜 / PALOW. / 川サキケンジ',
+    sourceUrl: 'https://example.com/gallery/one',
+    licenseUrl: 'https://example.com/license',
+  },
+  {
+    id: 'source-two',
+    title: 'Portrait',
+    credit: 'とり',
+    sourceUrl: 'https://example.com/gallery/two',
+    licenseUrl: 'https://example.com/license',
   },
 ] as const;
 
@@ -134,6 +160,10 @@ describe('homepage editorial sections', () => {
     expect(featuredImage).toHaveAttribute('loading', 'lazy');
     expect(featuredImage).toHaveAttribute('width', '1600');
     expect(featuredImage).toHaveAttribute('height', '1000');
+    expect(featuredImage).toHaveAttribute(
+      'srcset',
+      `${works[0].visual.display.src} 1x, ${works[0].visual.highDensity.src} 2x`,
+    );
 
     expect(
       within(section).getByRole('link', {
@@ -166,10 +196,10 @@ describe('homepage editorial sections', () => {
       }),
     ).toBeInTheDocument();
     expect(
-      within(section).getByRole('link', {
-        name: /Signal Portraitの画像出典：Gallery Fixture Artist One/,
+      within(section).queryByRole('link', {
+        name: /Signal Portraitの画像出典/,
       }),
-    ).toHaveAttribute('href', 'https://example.com/gallery/one');
+    ).not.toBeInTheDocument();
 
     const secondThumbnail = thumbnailButtons[1];
 
@@ -186,10 +216,15 @@ describe('homepage editorial sections', () => {
     });
     expect(secondThumbnail).toHaveAttribute('aria-pressed', 'true');
     expect(
-      within(section).getByRole('link', {
-        name: /Stage Fieldの画像出典：Gallery Fixture Artist Two/,
+      within(section).queryByRole('link', {
+        name: /Stage Fieldの画像出典/,
       }),
-    ).toHaveAttribute('href', 'https://example.com/gallery/two');
+    ).not.toBeInTheDocument();
+
+    const thumbnailImages = container.querySelectorAll(
+      'img[data-media-variant="thumbnail"]',
+    );
+    expect(thumbnailImages.length).toBeGreaterThanOrEqual(visuals.length);
 
     for (const image of container.querySelectorAll('img')) {
       expect(Number(image.getAttribute('width'))).toBeGreaterThan(0);
@@ -217,10 +252,7 @@ describe('homepage editorial sections', () => {
 
   it('states the fan-project disclaimer once and exposes media provenance', () => {
     render(
-      <SiteFooter
-        projectLabel="KAF OBSERVATORY"
-        mediaCreditsHref="/media-credits"
-      />,
+      <SiteFooter projectLabel="KAF OBSERVATORY" mediaSources={mediaSources} />,
     );
 
     const footer = screen.getByRole('contentinfo');
@@ -230,7 +262,11 @@ describe('homepage editorial sections', () => {
       ),
     ).toBeVisible();
     expect(
-      within(footer).getByRole('link', { name: '画像出典' }),
-    ).toHaveAttribute('href', '/media-credits');
+      within(footer).getByText('画像：花譜 / PALOW. / 川サキケンジ / とり'),
+    ).toBeVisible();
+    expect(within(footer).getByText('画像出典（2件）')).toBeInTheDocument();
+    expect(
+      within(footer).getAllByRole('link', { name: /の作品ページ/ }),
+    ).toHaveLength(2);
   });
 });

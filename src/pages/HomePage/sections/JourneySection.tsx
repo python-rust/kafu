@@ -1,22 +1,17 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 
-import { MediaCredit } from '../components/MediaCredit';
+import {
+  ResponsiveArtwork,
+  type ResponsiveArtworkSource,
+} from '../components/ResponsiveArtwork';
 import { SectionHeading } from '../components/SectionHeading';
 import styles from './JourneySection.module.css';
 
 type JourneyTheme =
   'origin' | 'observation' | 'rebuild' | 'expansion' | 'fable' | 'transcendent';
 
-interface JourneyVisual {
-  src: string;
-  alt: string;
-  width: number;
-  height: number;
-  credit: string;
-  sourceUrl: string;
-  objectPosition?: string;
-}
+interface JourneyVisual extends ResponsiveArtworkSource {}
 
 interface JourneyMilestone {
   date: string;
@@ -83,21 +78,11 @@ function JourneyDesktopStage({
               exit={{ opacity: 0, scale: 0.992 }}
               transition={stageVisualTransition}
             >
-              <img
-                src={activeChapter.primaryVisual.src}
+              <ResponsiveArtwork
+                source={activeChapter.primaryVisual}
                 alt=""
-                width={activeChapter.primaryVisual.width}
-                height={activeChapter.primaryVisual.height}
                 loading="lazy"
                 decoding="async"
-                style={
-                  activeChapter.primaryVisual.objectPosition
-                    ? {
-                        objectPosition:
-                          activeChapter.primaryVisual.objectPosition,
-                      }
-                    : undefined
-                }
               />
             </motion.figure>
           </AnimatePresence>
@@ -126,27 +111,7 @@ function JourneyDesktopStage({
 function ChapterVisual({ visual }: { visual: JourneyVisual }) {
   return (
     <figure className={styles.chapterFigure}>
-      <img
-        src={visual.src}
-        alt={visual.alt}
-        width={visual.width}
-        height={visual.height}
-        loading="lazy"
-        decoding="async"
-        style={
-          visual.objectPosition
-            ? { objectPosition: visual.objectPosition }
-            : undefined
-        }
-      />
-      <figcaption>
-        <MediaCredit
-          credit={visual.credit}
-          href={visual.sourceUrl}
-          subject={visual.alt}
-          tone="light"
-        />
-      </figcaption>
+      <ResponsiveArtwork source={visual} loading="lazy" decoding="async" />
     </figure>
   );
 }
@@ -290,7 +255,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                     <div className={styles.chapterMedia}>
                       {visuals.map((visual) => (
                         <ChapterVisual
-                          key={`${chapter.id}-${visual.src}`}
+                          key={`${chapter.id}-${visual.id}`}
                           visual={visual}
                         />
                       ))}

@@ -1,16 +1,15 @@
+import {
+  MediaSources,
+  type MediaSourceEntry,
+} from '../components/MediaSources';
 import styles from './SiteFooter.module.css';
 
 interface SiteFooterProps {
   projectLabel: string;
-  mediaCreditsHref: string;
-  mediaCreditsLabel?: string;
+  mediaSources: readonly MediaSourceEntry[];
 }
 
-export function SiteFooter({
-  projectLabel,
-  mediaCreditsHref,
-  mediaCreditsLabel = '画像出典',
-}: SiteFooterProps) {
+export function SiteFooter({ projectLabel, mediaSources }: SiteFooterProps) {
   return (
     <footer className={styles.footer}>
       <div className={styles.identity}>
@@ -21,8 +20,8 @@ export function SiteFooter({
         </p>
       </div>
 
-      <div className={styles.meta}>
-        <a href={mediaCreditsHref}>{mediaCreditsLabel}</a>
+      <div className={styles.sources}>
+        <MediaSources media={mediaSources} />
       </div>
     </footer>
   );

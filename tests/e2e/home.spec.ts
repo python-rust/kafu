@@ -201,6 +201,20 @@ test('desktop homepage uses direct Japanese structure and rejects template copy'
   }
   await expect(page.locator('[class*="eyebrow"]')).toHaveCount(0);
   await expect(page.locator('[data-rhythm]')).toHaveCount(0);
+  await expect(
+    page
+      .getByRole('contentinfo')
+      .getByText('画像：花譜 / PALOW. / 川サキケンジ / とり'),
+  ).toBeVisible();
+  await expect(page.locator('#media-sources summary')).toContainText(
+    '画像出典（9件）',
+  );
+  await expect(
+    page.getByRole('main').locator('a[href^="https://piapro.jp/t/"]'),
+  ).toHaveCount(0);
+  await expect(
+    page.locator('#media-sources a[href^="https://piapro.jp/t/"]'),
+  ).toHaveCount(9);
 
   await navigation.getByRole('link', { name: '軌跡' }).click();
   await expect(
@@ -230,6 +244,51 @@ test('desktop homepage uses direct Japanese structure and rejects template copy'
   });
   expect(focusStyle.outlineStyle).not.toBe('none');
   expect(Number.parseFloat(focusStyle.outlineWidth)).toBeGreaterThan(0);
+});
+
+test('hero selects density-matched generated artwork at DPR 1 and DPR 2', async ({
+  browser,
+}) => {
+  const baseURL = test.info().project.use.baseURL;
+
+  if (typeof baseURL !== 'string') {
+    throw new Error('Playwright baseURL is required for density tests.');
+  }
+
+  for (const density of [1, 2] as const) {
+    const context = await browser.newContext({
+      baseURL,
+      deviceScaleFactor: density,
+      viewport: { width: 1440, height: 900 },
+    });
+    const page = await context.newPage();
+    await page.goto('/');
+    const hero = page.locator('#top img[data-media-id="kaihou"]');
+    await hero.waitFor();
+
+    const source = await hero.evaluate((element) => {
+      const image = element as HTMLImageElement;
+
+      return {
+        currentSrc: image.currentSrc,
+        src: image.getAttribute('src'),
+        srcSet: image.getAttribute('srcset'),
+        width: image.getAttribute('width'),
+        height: image.getAttribute('height'),
+      };
+    });
+
+    expect(source.src).toContain('kaihou-2x');
+    expect(source.srcSet).toContain('kaihou-2x');
+    expect(source.srcSet).toContain('kaihou-4x');
+    expect(source.width).toBe('1720');
+    expect(source.height).toBe('968');
+    expect(source.currentSrc).toContain(
+      density === 1 ? 'kaihou-2x' : 'kaihou-4x',
+    );
+
+    await context.close();
+  }
 });
 
 test('dark-system text roles and the primary hero action retain readable contrast', async ({
@@ -389,17 +448,51 @@ test('gallery provides one focal stage, eight selectors, and keyboard lightbox n
   await expect(closeButton).toBeVisible();
   await expect(page.getByRole('button', { name: '前の画像' })).toBeVisible();
   await expect(page.getByRole('button', { name: '次の画像' })).toBeVisible();
+  const lightboxImage = page.locator('.yarl__slide_image[alt^="黑色舞台上"]');
+  await expect(lightboxImage).toHaveAttribute('src', /fukakai-4x/);
 
   await page.keyboard.press('ArrowRight');
   await expect(
     page.locator('#visuals button[aria-label="糸を表示"]'),
   ).toHaveAttribute('aria-pressed', 'true');
 
+  const zoomIn = page.getByRole('button', { name: '拡大' });
+  await expect(zoomIn).toBeVisible();
+  await zoomIn.click();
+  const zoomOut = page.getByRole('button', { name: '縮小' });
+  await expect(zoomOut).toBeVisible();
+  await zoomOut.click();
+  await expect(page.getByRole('button', { name: '拡大' })).toBeVisible();
+
   await page.keyboard.press('Escape');
   await expect(closeButton).toHaveCount(0);
   await expect(
     gallery.getByRole('button', { name: '糸を拡大表示' }),
   ).toBeVisible();
+});
+
+test('gallery reserves generated thumbnails for the rail and atmospheric backdrop', async ({
+  page,
+}) => {
+  await openHome(page, { width: 1440, height: 900 });
+  await scrollToCenter(page, '#visuals-title');
+
+  const gallery = page.locator('#visuals');
+  const thumbnailImages = gallery
+    .getByRole('list', { name: '画像を選ぶ' })
+    .locator('img[data-media-variant="thumbnail"]');
+  await expect(thumbnailImages).toHaveCount(8);
+
+  for (let index = 0; index < (await thumbnailImages.count()); index += 1) {
+    await expect(thumbnailImages.nth(index)).toHaveAttribute('src', /-thumb-/);
+    await expect(thumbnailImages.nth(index)).not.toHaveAttribute('srcset');
+  }
+
+  const backdropImage = gallery
+    .getByTestId('gallery-backdrop')
+    .locator('img[data-media-variant="thumbnail"]');
+  await expect(backdropImage).toHaveCount(1);
+  await expect(backdropImage).toHaveAttribute('src', /-thumb-/);
 });
 
 test('mobile homepage keeps the journey linear and gallery selectors source-ordered', async ({
@@ -563,7 +656,7 @@ test('reduced motion renders all content without the desktop sticky stage', asyn
   await expectNoHorizontalOverflow(page, '1440×900 reduced motion');
 });
 
-test('only the hero image is eager and all inline images have intrinsic sizing', async ({
+test('only the hero image is eager and responsive/thumbnail candidates remain explicit', async ({
   page,
 }) => {
   await openHome(page, { width: 1440, height: 900 });
@@ -573,7 +666,9 @@ test('only the hero image is eager and all inline images have intrinsic sizing',
       fetchPriority: image.getAttribute('fetchpriority'),
       height: image.getAttribute('height'),
       loading: image.getAttribute('loading'),
+      mediaVariant: image.getAttribute('data-media-variant'),
       src: image.getAttribute('src'),
+      srcSet: image.getAttribute('srcset'),
       width: image.getAttribute('width'),
     })),
   );
@@ -583,6 +678,8 @@ test('only the hero image is eager and all inline images have intrinsic sizing',
   expect(uniqueSources.size).toBeGreaterThanOrEqual(9);
   expect(eagerImages).toHaveLength(1);
   expect(eagerImages[0]?.fetchPriority).toBe('high');
+  expect(eagerImages[0]?.src).toContain('kaihou-2x');
+  expect(eagerImages[0]?.srcSet).toContain('kaihou-4x');
 
   for (const image of imageLoading) {
     expect(Number(image.width)).toBeGreaterThan(0);
@@ -592,11 +689,21 @@ test('only the hero image is eager and all inline images have intrinsic sizing',
       expect(image.loading).toBe('lazy');
       expect(image.fetchPriority).not.toBe('high');
     }
+
+    if (image.mediaVariant === 'responsive') {
+      expect(image.src).toContain('-2x');
+      expect(image.srcSet).toContain('-4x');
+    }
+
+    if (image.mediaVariant === 'thumbnail') {
+      expect(image.src).toContain('-thumb');
+      expect(image.srcSet).toBeNull();
+    }
   }
 });
 
-test('captures the second-pass visual evidence', async ({ page }) => {
-  const evidenceDirectory = 'test-results/kaf-round2-visual-evidence';
+test('captures the responsive-media visual evidence', async ({ page }) => {
+  const evidenceDirectory = 'test-results/kaf-round3-visual-evidence';
 
   await openHome(page, { width: 1440, height: 900 });
   await page.screenshot({

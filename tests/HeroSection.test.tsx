@@ -5,14 +5,18 @@ import {
   HeroSection,
   type HeroVisual,
 } from '../src/pages/HomePage/sections/HeroSection';
+import { createMediaFixture } from './fixtures/media';
 
 const visualFixture: HeroVisual = {
-  src: '/fixture-kaf-visual.jpg',
-  alt: 'Illustration of KAF standing beneath stage light',
-  width: 1600,
-  height: 2000,
-  credit: 'Fixture artist / source',
-  sourceUrl: 'https://example.com/kaf-visual-source',
+  ...createMediaFixture({
+    id: 'hero-fixture',
+    src: '/fixture-kaf-visual.jpg',
+    alt: 'Illustration of KAF standing beneath stage light',
+    width: 1600,
+    height: 2000,
+    credit: 'Fixture artist / source',
+    sourceUrl: 'https://example.com/kaf-visual-source',
+  }),
   objectPosition: '50% 28%',
 };
 
@@ -61,7 +65,7 @@ describe('HeroSection', () => {
     expect(screen.getByRole('link', { name: /軌跡を見る/ })).toBeVisible();
   });
 
-  it('renders direct KAF identity, provenance, and both destinations without template metadata', () => {
+  it('renders direct KAF identity, responsive artwork, and both destinations without inline credits', () => {
     renderHero();
 
     expect(
@@ -79,6 +83,11 @@ describe('HeroSection', () => {
     const visual = screen.getByRole('img', { name: visualFixture.alt });
     expect(visual).toHaveAttribute('width', '1600');
     expect(visual).toHaveAttribute('height', '2000');
+    expect(visual).toHaveAttribute(
+      'srcset',
+      `${visualFixture.display.src} 1x, ${visualFixture.highDensity.src} 2x`,
+    );
+    expect(visual).toHaveAttribute('fetchpriority', 'high');
 
     expect(screen.getByRole('link', { name: /公式サイト/ })).toHaveAttribute(
       'href',
@@ -89,8 +98,8 @@ describe('HeroSection', () => {
       '#journey',
     );
     expect(
-      screen.getByRole('link', { name: /Fixture artist \/ source/ }),
-    ).toHaveAttribute('href', visualFixture.sourceUrl);
+      screen.queryByRole('link', { name: /Fixture artist \/ source/ }),
+    ).not.toBeInTheDocument();
 
     expect(
       screen.queryByText('VOICE / IMAGE / MEMORY'),

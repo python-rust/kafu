@@ -7,6 +7,7 @@ import {
   kafMedia,
   selectedWorks,
 } from '../src/content/kaf';
+import type { KafMediaVariant } from '../src/content/kaf';
 
 const expectedChapterIds = [
   'origin-2018',
@@ -34,6 +35,12 @@ const getChapter = (id: string) => {
   }
 
   return chapter;
+};
+
+const expectVariant = (variant: KafMediaVariant) => {
+  expect(variant.src.trim()).not.toBe('');
+  expect(variant.width).toBeGreaterThan(0);
+  expect(variant.height).toBeGreaterThan(0);
 };
 
 describe('KAF journey content', () => {
@@ -121,10 +128,11 @@ describe('KAF production editorial data', () => {
         throw new Error(`Missing production visual for work: ${work.id}`);
       }
 
-      expect(work.visual.src.trim()).not.toBe('');
       expect(work.visual.alt.trim()).not.toBe('');
-      expect(work.visual.width).toBeGreaterThan(0);
-      expect(work.visual.height).toBeGreaterThan(0);
+      expectVariant(work.visual.preview);
+      expectVariant(work.visual.display);
+      expectVariant(work.visual.highDensity);
+      expectVariant(work.visual.thumbnail);
       expect(work.visual.credit.trim()).not.toBe('');
       expect(new URL(work.visual.sourceUrl).protocol).toBe('https:');
       expect(kafMedia.some((media) => media.id === work.visual?.id)).toBe(true);
@@ -140,10 +148,10 @@ describe('KAF production editorial data', () => {
     for (const visual of galleryVisuals) {
       expect(visual.id.trim()).not.toBe('');
       expect(visual.title.trim()).not.toBe('');
-      expect(visual.src.trim()).not.toBe('');
       expect(visual.alt.trim()).not.toBe('');
-      expect(visual.width).toBeGreaterThan(0);
-      expect(visual.height).toBeGreaterThan(0);
+      expectVariant(visual.display);
+      expectVariant(visual.highDensity);
+      expectVariant(visual.thumbnail);
       expect(visual.credit.trim()).not.toBe('');
       expect(new URL(visual.sourceUrl).protocol).toBe('https:');
       expect(kafMedia.some((media) => media.id === visual.id)).toBe(true);
@@ -168,12 +176,22 @@ describe('KAF media manifest', () => {
     expect(new Set(mediaIds).size).toBe(mediaIds.length);
 
     for (const media of kafMedia) {
-      expect(media.src.trim()).not.toBe('');
+      expect(media.title.trim()).not.toBe('');
       expect(media.alt.trim()).not.toBe('');
       expect(media.credit.trim()).not.toBe('');
       expect(media.licenseSummary.trim()).not.toBe('');
-      expect(media.width).toBeGreaterThan(0);
-      expect(media.height).toBeGreaterThan(0);
+      expectVariant(media.preview);
+      expectVariant(media.display);
+      expectVariant(media.highDensity);
+      expectVariant(media.thumbnail);
+      expect(media.display.width).toBe(media.preview.width * 2);
+      expect(media.display.height).toBe(media.preview.height * 2);
+      expect(media.highDensity.width).toBe(media.preview.width * 4);
+      expect(media.highDensity.height).toBe(media.preview.height * 4);
+      expect(Math.max(media.thumbnail.width, media.thumbnail.height)).toBe(480);
+      expect(media.display.src).toContain(`${media.id}-2x`);
+      expect(media.highDensity.src).toContain(`${media.id}-4x`);
+      expect(media.thumbnail.src).toContain(`${media.id}-thumb`);
       expect(media.retrievedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(new URL(media.sourceUrl).protocol).toBe('https:');
       expect(new URL(media.licenseUrl).protocol).toBe('https:');
