@@ -200,3 +200,42 @@ Generated verified responsive KAF artwork derivatives, centralized responsive me
 ### Status
 
 [OK] **Completed**
+
+
+## Session 10: Localize KAF storytelling for Chinese audiences
+
+**Date**: 2026-08-30
+**Task**: Localize KAF storytelling for Chinese audiences
+**Branch**: `main`
+
+### Summary
+
+Reframed the KAF homepage as a Simplified Chinese newcomer product with stable fixed navigation, four-beat onboarding, six chapter transformations, Chinese actions/accessibility labels, official references, and content-driven reduced-motion-safe storytelling.
+
+### Main Changes
+
+- Added fixed high-contrast Chinese navigation with five observed aria-current locations.
+- Added a four-beat 认识花谱 sticky/linear onboarding story using verified responsive media.
+- Added Chinese Journey narratives, authoritative Japanese labels, and six changeFrom-to-changeTo transitions.
+- Localized Hero, Works, Gallery/lightbox, Official Links, metadata, and Footer reference disclosures.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `659e31a1a65f2b9fa33f8ebd83c95b828c89d5b8` | (see git log) |
+| `faa73027098ba09fd969d4e35e7e871e2b74887d` | (see git log) |
+
+### Testing
+
+- [OK] Prettier, Oxlint, TypeScript, Vite build, and mise run check passed.
+- [OK] Vitest: 7 files and 26 tests passed.
+- [OK] Playwright Chromium: 13 tests passed across contrast, navigation, storytelling, responsive, reduced-motion, image, and lightbox contracts.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- No pending implementation work; task archived under archive/2026-08.
