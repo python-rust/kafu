@@ -1,0 +1,6 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend quality checklist routing."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Required mise checks, browser coverage, accessibility, and provenance review."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Review semantic components and reuse boundary."}
+{"file": ".trellis/spec/frontend/visual-system-guidelines.md", "reason": "Review visual hierarchy, motion, reflow, and anti-template outcomes."}
+{"file": ".trellis/tasks/08-29-kaf-authentic-editorial-gallery/research/anti-template-gallery-research.md", "reason": "Verify implementation matches evidence-based content and gallery decisions."}

@@ -58,6 +58,11 @@ Current example:
 
 ```text
 src/pages/HomePage/
+├── components/
+│   ├── MediaCredit.tsx
+│   ├── MediaCredit.module.css
+│   ├── SectionHeading.tsx
+│   └── SectionHeading.module.css
 ├── HomePage.tsx
 └── sections/
     ├── SiteHeader.tsx
@@ -70,13 +75,25 @@ src/pages/HomePage/
     ├── WorksSection.module.css
     ├── GallerySection.tsx
     ├── GallerySection.module.css
+    ├── GalleryLightbox.tsx
     ├── OfficialLinksSection.tsx
     ├── OfficialLinksSection.module.css
     ├── SiteFooter.tsx
     └── SiteFooter.module.css
 ```
 
-`HomePage.tsx` owns declarative route composition and small production-data adapters. The independently owned homepage sections keep their presentation and responsive behavior in colocated CSS Modules under `sections/`. Extract a separate module only after a real capability has an independent ownership boundary; do not recreate a second page-wide monolith beside the section modules.
+`HomePage.tsx` owns declarative route composition and small production-data adapters. The independently owned homepage sections keep their presentation and responsive behavior in colocated CSS Modules under `sections/`.
+
+`components/` is page-local shared presentation, not a generic component
+bucket. Add a component there only when two or more homepage sections consume
+one stable semantic contract. Current examples are shared media attribution and
+section headings. One-section integrations stay with their section:
+`GalleryLightbox.tsx` is the lazy package/style adapter owned by
+`GallerySection.tsx`.
+
+Extract a separate module only after a real capability has an independent
+ownership boundary; do not recreate a second page-wide monolith beside the
+section modules.
 
 ### `src/content/`
 
@@ -128,10 +145,12 @@ Page-specific visual rules belong in colocated `*.module.css` files.
 
 1. Put code in the narrowest domain that owns it.
 2. Colocate a React component with its CSS Module when the styles are local to that component or page.
-3. Keep curated static records in `src/content/` when they are independently reviewable product/content data rather than presentation markup.
-4. Keep shipping media under `src/assets/`; third-party media with licensing constraints must have provenance documentation in the owning asset directory.
-5. Keep application routing and provider composition under `src/app/` or `src/main.tsx`.
-6. Do not create broad shared directories until code is genuinely reused across more than one owner.
+3. Put cross-section homepage presentation in `HomePage/components/` only after two real consumers establish the shared contract.
+4. Keep one-section third-party adapters with the owning section and lazy-load them when they are interaction-only.
+5. Keep curated static records in `src/content/` when they are independently reviewable product/content data rather than presentation markup.
+6. Keep shipping media under `src/assets/`; third-party media with licensing constraints must have provenance documentation in the owning asset directory.
+7. Keep application routing and provider composition under `src/app/` or `src/main.tsx`.
+8. Do not create broad shared directories until code is genuinely reused across more than one owner.
 
 ---
 
@@ -140,6 +159,7 @@ Page-specific visual rules belong in colocated `*.module.css` files.
 - React component and page files use `PascalCase.tsx`.
 - Component/page directories use `PascalCase` when named after a component (`HomePage/`).
 - CSS Modules mirror the component name: `HeroSection.module.css`.
+- A section-owned lazy adapter names the integrated capability (`GalleryLightbox.tsx`), not the vendor package.
 - Global stylesheet filenames use lowercase descriptive names (`tokens.css`, `base.css`).
 - Tests use `*.test.tsx`; Playwright specs live under `tests/e2e/` and use `*.spec.ts`.
 

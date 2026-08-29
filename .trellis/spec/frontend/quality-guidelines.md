@@ -68,6 +68,7 @@ Do not document `pnpm run ...` as the normal project workflow. The package manag
 - Add or update automated tests when changing observable behavior.
 - Preserve accessibility semantics and names used by tests unless the product behavior intentionally changes.
 - Keep third-party media provenance synchronized with the actual files under the owning asset directory.
+- Follow [Interface Content Guidelines](./content-guidelines.md) when changing visible copy, section labels, controls, captions, or copy-bearing component APIs.
 - Follow [Visual System Guidelines](./visual-system-guidelines.md) when changing color roles, typography, responsive density, sticky content, or motion.
 
 The current aggregate local gate in `mise.toml` is:
@@ -90,7 +91,10 @@ run = [
 
 Use for React behavior that can be verified in the DOM without needing a real browser.
 
-Current reference: `tests/HomePage.test.tsx` verifies the final homepage section order, production chapter/work content, anchor contract, disclaimer semantics, and image loading invariants through user-visible content and DOM attributes.
+Current reference: `tests/HomePage.test.tsx` verifies section order,
+production chapter/work content, the Japanese anchor contract, one-footer
+disclaimer, absence of banned template copy, hierarchy boundaries, and image
+loading invariants through user-visible content and DOM attributes.
 
 Prefer role/name queries over class selectors or implementation details.
 
@@ -98,7 +102,13 @@ Prefer role/name queries over class selectors or implementation details.
 
 Use for browser-level smoke behavior and routing whose environment matters.
 
-Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies desktop/mobile identity, final anchor navigation, desktop Journey progression/sticky release, linear/reduced-motion fallbacks, essential-content clipping, touch targets, image loading, typography/density bounds, `320px` reflow, `200%` text preferences, and horizontal-overflow safety across the supported viewport matrix.
+Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies desktop/mobile
+identity, direct Japanese anchors, anti-template copy absence, 14px/16px type
+floors, dark-system contrast, Journey progression/sticky release, the one-stage
+eight-selector Gallery, lazy lightbox keyboard/Escape behavior, linear/reduced-
+motion fallbacks, essential-content clipping, touch targets, image loading,
+`320px` reflow, `200%` text preferences, and horizontal-overflow safety across
+the supported viewport matrix.
 
 > **Responsive clipping gotcha**: `document.documentElement.scrollWidth` is not sufficient by itself. A section using `overflow: clip` or `overflow: hidden` can conceal an oversized child while the document still reports no horizontal overflow. For critical responsive layouts, also assert the horizontal bounding boxes of user-visible headings, copy, links, credits, and other essential content. This catches over-constrained CSS Grid gaps/tracks and similar clipped-content defects.
 
@@ -137,6 +147,9 @@ The provenance document is evidence for this project context, not a blanket lice
 - Respect reduced-motion behavior in visual/animation work when applicable.
 - Keep primary reading text at or above `1rem` and labels/navigation at or above the shared `--type-label` floor.
 - Verify `320px` and `200%` text reflow for page-level visual changes.
+- When using a third-party dialog or lightbox, verify focus, keyboard
+  navigation, Escape close, page scroll locking, and localized accessible names
+  in a real browser rather than assuming package defaults are sufficient.
 
 ---
 
@@ -145,6 +158,10 @@ The provenance document is evidence for this project context, not a blanket lice
 - Does the change belong in `app`, `pages`, `content`, `assets`, or global `styles` according to current ownership?
 - Is page-specific CSS colocated in a CSS Module instead of becoming global CSS?
 - Are existing CSS custom-property tokens reused where appropriate?
+- Does every visible string pass the identity/fact/action/attribution/legal job test?
+- Did the change avoid eyebrow/preheader filler, leading-zero decoration, and interface narration?
+- If presentation repeats across sections, is it using the page-local shared component rather than drifting copies?
+- If an open-source package owns difficult interaction mechanics, is it isolated and lazy-loaded behind the owning section boundary?
 - Does the change follow the visual-system palette, typography, layout, and motion contracts?
 - Does every added third-party media file have a verified provenance entry and compatible usage basis?
 - Are props/types narrow and explicit?

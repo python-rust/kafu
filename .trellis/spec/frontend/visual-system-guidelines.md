@@ -1,87 +1,91 @@
 # Visual System Guidelines
 
-> Executable visual, typography, layout, and motion contracts for the KAF
-> frontend.
+> Executable visual, typography, layout, gallery, and motion contracts for the
+> KAF frontend.
 
 ---
 
 ## Scope
 
 Read this file before changing homepage colors, typography, spacing, responsive
-composition, sticky behavior, or animation. The current product goal is a KAF-led
-editorial experience, not a generic technology-product landing page.
+composition, sticky behavior, image presentation, or animation. Also read
+[Interface Content Guidelines](./content-guidelines.md) when a visual change
+adds or reorganizes visible copy.
 
-The shared implementation owners are:
+The current product goal is a KAF-specific, image-led archive. It is not a
+generic AI-product landing page, a cyber dashboard, or a pale editorial template.
 
-- `src/styles/tokens.css` — semantic palette, type roles, spacing, radii, and
-  motion constants;
-- `src/styles/base.css` — document-level background, text defaults, focus, and
-  selection;
-- `src/pages/HomePage/sections/*.module.css` — section-specific composition that
-  consumes the global roles;
-- the owning section component — only when real behavior/state is required.
+Shared owners:
 
-Do not add a generic component/design-system directory until more than one route
-or independent owner needs the same component behavior.
+- `src/styles/tokens.css` — semantic palette, type roles, spacing, and motion;
+- `src/styles/base.css` — document background, type defaults, focus, selection;
+- `src/pages/HomePage/components/` — cross-section semantic presentation that
+  has at least two real consumers;
+- `src/pages/HomePage/sections/*.module.css` — section-specific composition;
+- the owning section component — interaction state and external integration.
 
 ---
 
-## KAF Palette Contract
+## KAF Art-Direction Contract
 
-Use the semantic roles already defined in `src/styles/tokens.css`:
+The page foundation is theatrical and warm-dark:
 
 ```css
---color-paper;
---color-paper-soft;
---color-paper-deep;
---color-paper-clean;
---color-ink;
---color-ink-soft;
---color-ink-faint;
+--color-bg;
+--color-bg-deep;
+--color-bg-soft;
+--color-bg-raised;
+--color-bg-warm;
+--color-text;
+--color-text-muted;
+--color-text-faint;
 --color-kaf;
---color-kaf-deep;
---color-kaf-soft;
---color-blue;
---color-blue-deep;
---color-lavender;
---color-violet;
---color-night;
---color-night-soft;
---color-night-text;
---color-night-muted;
+--color-kaf-light;
+--color-blue-light;
+--color-lilac;
 ```
 
 ### Required behavior
 
-- Paper/fog neutrals are the default page foundation.
-- `--color-kaf` / `--color-kaf-deep` are the primary identity signal.
-- Blue and lilac are supporting atmosphere, not competing primary accents.
-- Night surfaces are reserved for deliberate contrast bands or image stages;
-  they are not the default for every section.
-- Licensed KAF imagery should provide most of the visual richness. Gradients may
-  support an image or surface, but must not recreate a repeated neon dashboard.
-- Borders, muted text, captions, and focus states must use semantic tokens rather
-  than new per-section hex values unless a chapter-specific accent has a real
-  content meaning.
+- Warm near-black / plum surfaces form the page structure.
+- Off-white text is primary; muted text remains WCAG-readable at its actual
+  size.
+- KAF pink is a limited action/active-state signal, not a full-page wash.
+- Blue/lilac may distinguish real chapter states; they are not competing brand
+  colors.
+- Licensed KAF artwork supplies the changing color and atmosphere.
+- A media-derived blurred backdrop is allowed behind that media. It must update
+  from the selected image and remain subordinate to the actual artwork.
+- Flat borders, whitespace, cropping, and image scale are preferred over card
+  decoration.
+
+### Forbidden visual shortcuts
+
+- repeated radial glow fields;
+- neon grids, registration corners, faux signal diagrams, and scan lines;
+- glassmorphism / backdrop-filter cards;
+- pills applied to ordinary links, metadata, or section containers;
+- arbitrary rounded containers used to make every block look like a component;
+- independent section palettes that make one page feel like several templates;
+- gradients whose only purpose is to simulate “premium” visual interest.
+
+Linear overlays are allowed for image readability and media-derived atmosphere.
+They are not allowed as a replacement for composition.
 
 ### Wrong vs correct
 
 ```css
-/* Wrong: every section invents another cyber/neon palette. */
+/* Wrong: generic neon atmosphere repeated by every section. */
 .section {
-  --cyan: #64e2f5;
-  --magenta: #f451a5;
-  background: radial-gradient(circle, #7b61ff55, #060711 60%);
+  background:
+    radial-gradient(circle at 80% 20%, #ff3f9d33, transparent 30rem),
+    #060711;
 }
 
-/* Correct: shared brand roles, local composition. */
+/* Correct: stable surface; the section's artwork carries visual variation. */
 .section {
-  background: var(--color-paper-soft);
-  color: var(--color-ink);
-}
-
-.eyebrow {
-  color: var(--color-kaf-deep);
+  background: var(--color-bg-soft);
+  color: var(--color-text);
 }
 ```
 
@@ -89,7 +93,7 @@ Use the semantic roles already defined in `src/styles/tokens.css`:
 
 ## Typography Contract
 
-Use the shared type roles:
+Use the shared roles:
 
 ```css
 --type-label;
@@ -103,147 +107,144 @@ Use the shared type roles:
 
 ### Floors and ceilings
 
-- Normal body copy: at least `1rem`.
-- Repeated labels, nav text, credits, dates, and metadata: at least `0.75rem`.
-- Primary mobile navigation target: at least `2.75rem` (44px) high.
-- Section headings use `--type-section`; do not introduce a section-local
-  viewport-only heading that can exceed the shared ceiling.
-- Only the page identity/Hero may use `--type-display`.
+- Normal body copy: at least `1rem` / 16px at the default root size.
+- Repeated navigation, dates, credits, metadata, and control labels: at least
+  `0.875rem` / 14px.
+- Mobile navigation and gallery controls: at least 44px high.
+- Section headings use `--type-section` and remain at or below 72px at the
+  1440px reference viewport.
+- Only the Hero identity may use `--type-display`.
+- Do not create hierarchy by pairing a 90–110px heading with 9–11px metadata.
 
 ### Fluid type rules
 
-- Anchor every `clamp()` in `rem`/`em`; viewport units may be a modest middle
-  adjustment, never the only font-size input.
-- Preserve browser zoom and user default font-size influence.
-- Keep Chinese/Japanese body line-height around `1.7–1.9`; display text may be
-  tighter but must not clip glyphs.
-- Keep readable line lengths with `max-width` rather than shrinking body text to
-  fit wide tracks.
-
-```css
-/* Wrong: viewport owns the full value and zoom influence is weak. */
-.heading {
-  font-size: 7.5vw;
-}
-
-/* Correct: rem floor/ceiling with a bounded viewport interpolation. */
-.heading {
-  font-size: var(--type-section);
-}
-```
+- Anchor every `clamp()` in `rem`; viewport units may only interpolate between
+  the accessible floor and ceiling.
+- Preserve browser zoom and user default-font influence.
+- Keep Chinese/Japanese body line-height around `1.7–1.9`.
+- Control line length with width and composition, never by shrinking body text.
+- Use weight, grouping, image scale, and contrast before adding another size.
 
 ---
 
 ## Layout and Reflow Contract
 
 - `--page-max`, `--page-gutter`, `--section-space`, and
-  `--section-space-compact` are the shared page rhythm.
-- Editorial variation comes from grid composition, image ratio, and controlled
-  contrast—not independent section spacing scales.
-- Narrow layouts must preserve DOM/source order; do not use CSS ordering that
-  changes reading or keyboard order.
-- Essential headings, paragraphs, links, captions, dates, and credits must wrap
+  `--section-space-compact` define the shared page rhythm.
+- Source/DOM order remains the reading and keyboard order at every viewport.
+- Essential headings, paragraphs, links, credits, dates, and actions wrap
   without horizontal clipping at 320px.
-- The page must remain usable with a 200% root/user text preference. Horizontal
-  scrolling is acceptable only inside explicitly designed controls such as the
-  mobile header navigation, not for the document itself.
-- Sticky elements must release before the following section and must not require
-  every content item to occupy a full viewport unless the product specifically
-  depends on that pacing.
+- The document remains usable with a 200% root/user text preference.
+- Horizontal scrolling is allowed only inside an explicit control such as the
+  header navigation or gallery thumbnail rail; it must not widen the document.
+- Sticky narrative elements release before the following section.
+- Do not make every content item a viewport-height scene. Full-viewport pacing
+  must be justified by the actual narrative, not by a desire to look cinematic.
 
-Current browser assertions live in `tests/e2e/home.spec.ts` and cover:
+---
 
-- 320, 360, 390, 768, 1024, and 1440px viewport widths;
-- document overflow plus essential-content bounding boxes;
-- 200% root text reflow;
-- mobile 44px navigation targets;
-- sticky-stage activation/release.
+## Gallery and Lightbox Contract
+
+The KAF visual archive uses one focal stage and one selectable thumbnail rail.
+It must not regress to eight equally weighted irregular cards.
+
+### Inline gallery
+
+- Render exactly one active stage image.
+- Preserve the active artwork's intrinsic aspect ratio with `object-fit: contain`.
+- Thumbnails may use a consistent crop with `object-fit: cover`.
+- Keep thumbnail controls in source order with `aria-pressed` and explicit
+  image-title names.
+- Minimum thumbnail/control target height is 44px.
+- Selecting a thumbnail updates stage image, title, attribution, selected state,
+  and lightbox starting index.
+- Only opacity and transform animate during active-image changes.
+- A media-derived backdrop may crossfade; blur remains static rather than being
+  animated per frame.
+
+### Lightbox boundary
+
+- Use `yet-another-react-lightbox` for portal, focus, keyboard, Escape, swipe,
+  no-scroll, and finite-carousel behavior. Do not reimplement those concerns.
+- Keep the package behind `GalleryLightbox.tsx` and load it with `React.lazy` so
+  the lightbox JavaScript/CSS ships as a separate chunk.
+- The section owns product state (`activeIndex`, open/closed) and visual
+  composition. The dependency owns dialog mechanics only.
+- Supply intrinsic width/height and alt text for every lightbox slide.
+- Keep inline selection synchronized through `on.view`.
+- Localize visible/accessibility controls for the page language.
+
+### Dependency constraints
+
+- Do not add a masonry/rows package when the required design is one focal image.
+- Do not add another animation runtime, icon library, or design-system package
+  for this gallery.
+- A different lightbox requires evidence that the current package cannot meet a
+  concrete accessibility, format, or performance contract.
 
 ---
 
 ## Motion and Scrolling Contract
 
-### Default mechanism
-
 - Keep native document scrolling and semantic anchors.
-- Reuse the installed Motion package only when CSS alone does not express the
-  required state transition clearly.
-- Use component-local state and native IntersectionObserver for low-frequency
-  active-section/chapter transitions.
+- Reuse Motion for keyed, low-frequency state transitions.
+- Use native IntersectionObserver for chapter activation.
 - Never send per-frame scroll values through React state.
+- Animate transform and opacity by default.
+- `useScroll` / `useTransform` requires a genuine continuous-progress product
+  requirement; it is not a general “premium” effect.
+- A sticky Journey stage renders one active visual. Do not keep previous/current/
+  next layers alive unless a tested transition requires them.
+- Respect `MotionConfig reducedMotion="user"`; all chapters, images, sources,
+  gallery controls, and lightbox actions remain available without motion.
 
-### Animation budget
-
-- Animate `transform` and `opacity` by default.
-- Do not animate layout or paint-heavy properties without measured evidence and
-  a browser performance review.
-- Scroll-linked `useScroll`/`useTransform` is reserved for a requirement that
-  genuinely depends on continuous progress (for example, a progress meter or
-  necessary parallax). It must not be used merely to make a section feel
-  “premium.”
-- A sticky narrative stage should normally render one active visual and change
-  only when the observer's active item changes. Avoid simultaneous previous /
-  current / next layers unless a tested transition requires them.
-- Respect `MotionConfig reducedMotion="user"` and provide complete in-flow
-  content when motion/sticky presentation is disabled.
-
-### Dependency escalation
-
-Do not add Lenis, GSAP, another smooth-scroll wrapper, or another animation
-runtime until all of the following are documented:
-
-1. a measured defect that native scrolling + Motion cannot solve;
-2. the exact behavior contract and supported input devices;
-3. accessibility/reduced-motion/anchor implications;
-4. bundle and browser-test impact;
-5. why reducing content height or animation work is insufficient.
-
-### Wrong vs correct
-
-```tsx
-// Wrong for chapter switching: continuous progress drives several layers.
-const { scrollYProgress } = useScroll({ target: trackRef });
-const opacity = useTransform(scrollYProgress, ranges, values);
-
-// Correct: observer changes one semantic active chapter at low frequency.
-const [activeIndex, setActiveIndex] = useState(0);
-
-<AnimatePresence initial={false}>
-  <motion.figure key={chapters[activeIndex].id}>
-    {/* one active visual */}
-  </motion.figure>
-</AnimatePresence>;
-```
+Do not add Lenis, GSAP, or another smooth-scroll runtime until a measured defect
+cannot be solved by reducing content height, layout work, or existing Motion
+usage.
 
 ---
 
 ## Required Validation
 
-For visual, layout, or motion changes:
+For visual, gallery, responsive, or motion changes:
 
 ```bash
 mise run check
 mise run e2e
 ```
 
-Also verify in the diff:
+The browser suite must cover:
 
-- `package.json` / lockfile did not change unless dependency escalation was
-  explicitly approved;
-- no content URL, media file, provenance record, or intrinsic dimensions changed
-  accidentally;
-- no `useScroll`, `useTransform`, high-frequency listener, or unbounded
-  `will-change` was introduced without a real continuous-progress requirement;
-- reduced-motion users receive all content and semantic anchors;
-- computed body/nav/section sizes still satisfy the tested hierarchy contract.
+- 320, 360, 390, 768, 1024, and 1440px viewport widths;
+- document overflow and essential-content bounding boxes;
+- 200% root text reflow;
+- 14px recurring-text and 16px body floors;
+- section-heading ceiling;
+- dark-system contrast roles and primary-action contrast;
+- Journey sticky activation/release and reduced-motion fallback;
+- eight source-ordered gallery selectors;
+- active gallery selection, lightbox open, keyboard navigation, and Escape close;
+- intrinsic media sizing and one eager/high-priority Hero image.
+
+Also inspect the diff for:
+
+- accidental content URL, media, dimension, or provenance changes;
+- reintroduced eyebrow/template copy;
+- extra runtime dependencies;
+- `useScroll`, `useTransform`, high-frequency listeners, or unbounded
+  `will-change` without measured need.
+
+---
 
 ## Common Mistakes
 
-- Solving a long/heavy page by adding smooth scrolling instead of reducing
+- Changing a generic light template into a generic dark template while keeping
+  the same eyebrows, filler prose, cards, and numbering.
+- Solving a long/heavy page by adding smooth scrolling instead of removing
   viewport-sized tracks and continuous animation work.
-- Making hierarchy through a 100px heading and a 10px label rather than through
-  spacing, weight, line length, imagery, and contrast.
-- Treating every section as an independent “hero,” which produces repeated
-  gradients, giant titles, and inconsistent rhythm.
-- Hiding overflow on a section and assuming the responsive layout is safe; the
-  document can report no overflow while essential text is still clipped.
+- Treating eight images as eight independent cards when the product needs one
+  focal visual path.
+- Hiding overflow and assuming responsive layout is safe; essential content can
+  still be clipped while document scroll width reports no overflow.
+- Writing a custom modal/lightbox despite an installed, tested open-source
+  dialog/gesture implementation.

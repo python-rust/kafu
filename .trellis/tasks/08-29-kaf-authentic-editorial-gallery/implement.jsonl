@@ -1,0 +1,8 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend pre-development checklist and package-level visual/quality routing."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Function component, props, CSS Module, semantic interaction, and page-local reuse rules."}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Narrow ownership and route-local component placement contract."}
+{"file": ".trellis/spec/frontend/hook-guidelines.md", "reason": "Local state/effect cleanup and animation-state ownership rules."}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "Keep gallery/lightbox state in the narrowest component owner."}
+{"file": ".trellis/spec/frontend/visual-system-guidelines.md", "reason": "Current KAF palette, typography, reflow, and motion contracts to revise safely."}
+{"file": ".trellis/tasks/08-29-kaf-authentic-editorial-gallery/research/anti-template-gallery-research.md", "reason": "Local audit, AI-template analysis, content rules, gallery library evaluation, and selected direction."}
