@@ -78,12 +78,14 @@ and that information passes the Visible-String Job Test. The shared
 ```
 
 ```tsx
-// Wrong: duplicated source explanation.
-<span>VISUAL CREDIT</span>
-<a href={sourceUrl}>花譜 / piapro</a>
+// Wrong: every image interrupts the composition with the same source row.
+<figure>
+  <img src={sourceUrl} alt="..." />
+  <figcaption>VISUAL CREDIT — 花譜 / piapro</figcaption>
+</figure>
 
-// Correct: the credit itself is the sourced action.
-<MediaCredit credit="花譜 / piapro" href={sourceUrl} subject="不可解" />
+// Correct: page media stays clean; one bottom index owns source detail.
+<MediaSources media={kafMedia} />
 ```
 
 ---
@@ -108,8 +110,9 @@ and that information passes the Visible-String Job Test. The shared
 
 - The unaffiliated, non-commercial fan-project disclaimer appears once in the
   footer. Do not repeat it in the header, Hero metadata, or every section.
-- Media attribution stays adjacent to the active/visible media or is reachable
-  through the dedicated source link.
+- Media attribution is consolidated in the page-bottom source area. Required
+  creator names remain visible; per-work source and license links remain in the
+  adjacent native disclosure.
 - Never remove a source URL, credit, or license/provenance record merely to make
   a composition cleaner.
 
@@ -122,7 +125,8 @@ When copy hierarchy changes, tests must assert:
 - direct section and navigation names;
 - the absence of removed template strings;
 - the one-footer disclaimer contract;
-- actions and source links through accessible names;
+- no image-source work-page links inside `<main>`;
+- visible bottom creator names and the complete source/license disclosure;
 - no reintroduction of `eyebrow` markup or decorative `data-rhythm` indexes in
   the homepage composition.
 

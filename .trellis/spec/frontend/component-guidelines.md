@@ -73,10 +73,12 @@ The homepage may place shared presentation under
 
 Current examples:
 
-- `MediaCredit` owns the actual credit/source-link contract used by Hero,
+- `ResponsiveArtwork` owns density candidates, intrinsic dimensions, loading,
+  fetch priority, alt text, and thumbnail/high-density role selection for Hero,
   Journey, Works, and Gallery.
 - `SectionHeading` owns the semantic `h2` and shared rule/scale. It deliberately
   has no eyebrow, preheader, or generic description prop.
+- `MediaSources` owns the single page-bottom creator/source/license index.
 
 Do not extract a one-use layout wrapper or a purely cosmetic one-line element.
 Shared components are not a license to create a route-independent design-system
@@ -124,5 +126,7 @@ Current example:
 - Do not duplicate project-wide constants inside component CSS if an existing token already represents the value.
 - Do not recreate a separate visual language for each homepage section; use the shared KAF semantic roles and let composition/media provide variation.
 - Do not add generic `eyebrow`, `overline`, `intro`, or `description` slots to a shared heading component; visible copy must pass the content job test.
+- Do not write raw `<img>` markup in a homepage section; extend the shared
+  responsive-artwork contract when a real media role is missing.
 - Do not hand-build dialog focus trapping, Escape handling, swipe navigation, or body-scroll locking when the approved lightbox dependency already owns them.
 - Do not move static styling into JSX just because inline styles are convenient.

@@ -20,6 +20,7 @@ These files document the codebase as it exists now. Do not treat future possibil
 | [Component Guidelines](./component-guidelines.md) | Function components, props, CSS Modules, accessibility | Active |
 | [Interface Content Guidelines](./content-guidelines.md) | Visible-string jobs and anti-template copy constraints | Active |
 | [Hook Guidelines](./hook-guidelines.md) | Built-in hooks, cleanup, extraction threshold | Active |
+| [Media Guidelines](./media-guidelines.md) | Responsive artwork, derivatives, attribution, and lightbox zoom | Active |
 | [State Management](./state-management.md) | Local React state ownership and escalation rules | Active |
 | [Visual System Guidelines](./visual-system-guidelines.md) | KAF art direction, type hierarchy, gallery, reflow, and motion | Active |
 | [Quality Guidelines](./quality-guidelines.md) | mise workflow, lint/type/test/build requirements | Active |
@@ -36,9 +37,10 @@ Before changing frontend code:
 3. Check whether a real existing pattern already solves the problem before creating a new abstraction/dependency.
 4. Keep implementation details in the narrowest owner instead of leaking them into unrelated route/page state.
 5. For any visible copy, section label, button/link label, caption, or copy-bearing prop, read [Interface Content Guidelines](./content-guidelines.md).
-6. For page visuals, typography, responsive layout, gallery behavior, or motion, read [Visual System Guidelines](./visual-system-guidelines.md) before editing section CSS/animation behavior.
-7. Use `mise run ...` tasks for project commands so the pinned Node/pnpm toolchain is used.
-8. Before adding third-party media, verify its usage terms and add durable provenance metadata alongside the asset set.
+6. For KAF image imports, variants, source links, derivatives, or lightbox image behavior, read [Media Guidelines](./media-guidelines.md).
+7. For page visuals, typography, responsive layout, gallery behavior, or motion, read [Visual System Guidelines](./visual-system-guidelines.md) before editing section CSS/animation behavior.
+8. Use `mise run ...` tasks for project commands so the pinned Node/pnpm toolchain is used.
+9. Before adding third-party media, verify its usage terms and add durable provenance metadata alongside the asset set.
 
 ---
 

@@ -1,0 +1,8 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend quality entry point"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Required project gates and browser coverage"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Shared component contract review"}
+{"file": ".trellis/spec/frontend/visual-system-guidelines.md", "reason": "Responsive media and visual regression review"}
+{"file": ".trellis/spec/frontend/content-guidelines.md", "reason": "Attribution placement and copy review"}
+{"file": ".trellis/tasks/08-29-kaf-image-quality-media-experience/research/image-quality-and-media-ux.md", "reason": "Verify implementation against measured evidence"}
+{"file": ".trellis/spec/frontend/media-guidelines.md", "reason": "Verify responsive media implementation and provenance"}

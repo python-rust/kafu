@@ -59,8 +59,9 @@ Current example:
 ```text
 src/pages/HomePage/
 ├── components/
-│   ├── MediaCredit.tsx
-│   ├── MediaCredit.module.css
+│   ├── MediaSources.tsx
+│   ├── MediaSources.module.css
+│   ├── ResponsiveArtwork.tsx
 │   ├── SectionHeading.tsx
 │   └── SectionHeading.module.css
 ├── HomePage.tsx
@@ -85,9 +86,9 @@ src/pages/HomePage/
 `HomePage.tsx` owns declarative route composition and small production-data adapters. The independently owned homepage sections keep their presentation and responsive behavior in colocated CSS Modules under `sections/`.
 
 `components/` is page-local shared presentation, not a generic component
-bucket. Add a component there only when two or more homepage sections consume
-one stable semantic contract. Current examples are shared media attribution and
-section headings. One-section integrations stay with their section:
+bucket. Add a component there only when multiple homepage owners consume one
+stable semantic contract. Current examples are responsive artwork, the bottom
+source index, and section headings. One-section integrations stay with their section:
 `GalleryLightbox.tsx` is the lazy package/style adapter owned by
 `GallerySection.tsx`.
 
@@ -122,12 +123,23 @@ Current example:
 ```text
 src/assets/kaf/
 ├── ATTRIBUTION.md
+├── generated/
+│   ├── manifest.json
+│   ├── *-2x.webp
+│   ├── *-4x.webp
+│   ├── *-thumb.webp
+│   └── mediaVariants.ts
 ├── hero-kaihou.jpg
 ├── visual-fukakai.jpg
 └── visual-wasurete-shimae.jpg
 ```
 
-An asset whose reuse basis is unclear must not be added to the shipping tree. Removing a third-party asset also requires removing or updating its corresponding provenance entry.
+The original preview files are immutable provenance inputs. Generated display
+variants live only under `generated/`, are reproducible through
+`scripts/generate_kaf_media_variants.py`, and are indexed by the generated
+manifest. An asset whose reuse basis is unclear must not be added to the
+shipping tree. Removing a third-party asset also requires removing or updating
+its provenance entry and derivatives.
 
 ### `src/styles/`
 

@@ -1,0 +1,9 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend pre-development and ownership checklist"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Shared responsive artwork and footer source component rules"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "Asset and page-local component placement"}
+{"file": ".trellis/spec/frontend/visual-system-guidelines.md", "reason": "Image-led visual and motion constraints"}
+{"file": ".trellis/spec/frontend/content-guidelines.md", "reason": "Visible attribution and copy constraints"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Validation and browser test requirements"}
+{"file": ".trellis/tasks/08-29-kaf-image-quality-media-experience/research/image-quality-and-media-ux.md", "reason": "Measured source-density and tool decisions"}
+{"file": ".trellis/spec/frontend/media-guidelines.md", "reason": "Responsive artwork derivative attribution and zoom contracts"}

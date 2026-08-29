@@ -10,7 +10,8 @@
 Read this file before changing homepage colors, typography, spacing, responsive
 composition, sticky behavior, image presentation, or animation. Also read
 [Interface Content Guidelines](./content-guidelines.md) when a visual change
-adds or reorganizes visible copy.
+adds or reorganizes visible copy, and [Media Guidelines](./media-guidelines.md)
+when it changes an image source, density, derivative, or lightbox behavior.
 
 The current product goal is a KAF-specific, image-led archive. It is not a
 generic AI-product landing page, a cyber dashboard, or a pale editorial template.
@@ -156,8 +157,9 @@ It must not regress to eight equally weighted irregular cards.
 - Keep thumbnail controls in source order with `aria-pressed` and explicit
   image-title names.
 - Minimum thumbnail/control target height is 44px.
-- Selecting a thumbnail updates stage image, title, attribution, selected state,
-  and lightbox starting index.
+- Selecting a thumbnail updates stage image, title, selected state, and lightbox
+  starting index. Attribution itself remains in the bottom source index rather
+  than beside the stage.
 - Only opacity and transform animate during active-image changes.
 - A media-derived backdrop may crossfade; blur remains static rather than being
   animated per frame.
@@ -171,6 +173,8 @@ It must not regress to eight equally weighted irregular cards.
 - The section owns product state (`activeIndex`, open/closed) and visual
   composition. The dependency owns dialog mechanics only.
 - Supply intrinsic width/height and alt text for every lightbox slide.
+- Supply the high-density derivative as the lightbox slide source and enable the
+  bundled Zoom plugin through the same lazy adapter.
 - Keep inline selection synchronized through `on.view`.
 - Localize visible/accessibility controls for the page language.
 
@@ -225,6 +229,8 @@ The browser suite must cover:
 - eight source-ordered gallery selectors;
 - active gallery selection, lightbox open, keyboard navigation, and Escape close;
 - intrinsic media sizing and one eager/high-priority Hero image.
+- DPR 1 / DPR 2 Hero source selection, Gallery thumbnail roles, consolidated
+  bottom attribution, and lightbox Zoom.
 
 Also inspect the diff for:
 
