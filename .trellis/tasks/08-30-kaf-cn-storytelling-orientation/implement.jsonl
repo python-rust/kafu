@@ -1,0 +1,7 @@
+{"file":".trellis/spec/frontend/index.md","reason":"Frontend spec entry points and required pre-development reading."}
+{"file":".trellis/spec/frontend/content-guidelines.md","reason":"Visible copy, localization, and anti-template rules."}
+{"file":".trellis/spec/frontend/localization-and-storytelling-guidelines.md","reason":"Simplified Chinese naming, fixed orientation, onboarding, chronology, and narrative-motion contracts."}
+{"file":".trellis/spec/frontend/visual-system-guidelines.md","reason":"KAF art direction, typography, layout, motion, and responsive contracts."}
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"Page-local component reuse and third-party integration boundaries."}
+{"file":".trellis/spec/frontend/media-guidelines.md","reason":"Responsive verified artwork contracts used by the new onboarding story."}
+{"file":".trellis/tasks/08-30-kaf-cn-storytelling-orientation/research/cn-localization-storytelling.md","reason":"Official identity, Chinese localization, and motion research decisions."}

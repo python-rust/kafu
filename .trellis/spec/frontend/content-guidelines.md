@@ -14,7 +14,7 @@ Apply this file whenever a frontend change adds or edits:
 - accessibility names that describe a visible action;
 - component props that invite callers to supply visible copy.
 
-The homepage is an archive about 花譜. Copy must identify the subject, state a
+The homepage is a Simplified Chinese introduction and archive about 花谱. Copy must identify the subject, state a
 fact, enable an action, credit a source, or communicate a legal constraint. It
 must not narrate the interface or manufacture atmosphere through generic labels.
 
@@ -34,7 +34,7 @@ If removing a string does not damage one of those jobs, remove it.
 
 ### Good / base / bad cases
 
-- **Good:** `公式サイト`, `2024.12.25`, `花譜 / piapro`, `軌跡`.
+- **Good:** `开始认识花谱`, `2024.12.25`, `花譜 / piapro`, `成长轨迹`.
 - **Base:** a one-sentence factual summary that adds information not visible in
   the title, media, or adjacent metadata.
 - **Bad:** `KAF / VISUAL NOTES`, `CURRENT WORK`, `ARCHIVE / 01`, or “scroll down
@@ -73,7 +73,7 @@ and that information passes the Visible-String Job Test. The shared
 
 // Correct: direct section identity; the interface reveals its own structure.
 <SectionHeading id="visuals-title" tone="light">
-  視覚
+  视觉档案
 </SectionHeading>
 ```
 
@@ -92,17 +92,24 @@ and that information passes the Visible-String Job Test. The shared
 
 ## Language Rules
 
-- Use Japanese for direct site navigation and section identity on the current
-  KAF homepage.
-- Keep official names, creator credits, and sourced work metadata in their
-  authoritative form; do not translate a proper noun merely for visual
-  consistency.
-- Mixed language is acceptable when the underlying content requires it. Mixed
-  language is not acceptable as decorative texture.
-- Use direct action labels. Avoid vague `Learn more`, `Explore`, `Discover`, or
-  equivalent translations when `公式ページ`, `出典`, or `拡大` states the action.
-- Keep accessibility names in the same language as the visible control unless a
-  sourced proper noun requires otherwise.
+- Use natural Simplified Chinese for navigation, section identity, actions,
+  explanations, accessibility names, generic metadata, and legal copy.
+- Use `花谱` in Chinese prose. Introduce the official Japanese spelling `花譜`
+  and Latin name `KAF` once near the Hero identity.
+- Keep official Japanese work/event names, creator credits, and sourced metadata
+  in their authoritative form; mark separately rendered Japanese text with
+  `lang="ja"`.
+- Mixed language is acceptable only when the underlying proper noun or source
+  requires it. Mixed language is not decorative texture.
+- Use direct Chinese action labels such as `查看官方页面`, `来源`, `放大`, and
+  `关闭`; do not retain Japanese UI strings in aria labels.
+- Do not use Traditional Chinese UI glyphs when a Simplified Chinese interface
+  equivalent exists.
+- Keep accessibility names in the same Chinese language as the visible control,
+  while preserving sourced proper nouns inside the name.
+
+Detailed naming and story rules live in
+[Chinese Localization & Storytelling](./localization-and-storytelling-guidelines.md).
 
 ---
 
@@ -123,6 +130,7 @@ and that information passes the Visible-String Job Test. The shared
 When copy hierarchy changes, tests must assert:
 
 - direct section and navigation names;
+- Simplified Chinese UI plus preserved Japanese proper names;
 - the absence of removed template strings;
 - the one-footer disclaimer contract;
 - no image-source work-page links inside `<main>`;

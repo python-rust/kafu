@@ -11,7 +11,9 @@ Read this file before changing homepage colors, typography, spacing, responsive
 composition, sticky behavior, image presentation, or animation. Also read
 [Interface Content Guidelines](./content-guidelines.md) when a visual change
 adds or reorganizes visible copy, and [Media Guidelines](./media-guidelines.md)
-when it changes an image source, density, derivative, or lightbox behavior.
+when it changes an image source, density, derivative, or lightbox behavior. Read
+[Chinese Localization & Storytelling](./localization-and-storytelling-guidelines.md)
+for fixed navigation, onboarding, chronology, and narrative motion.
 
 The current product goal is a KAF-specific, image-led archive. It is not a
 generic AI-product landing page, a cyber dashboard, or a pale editorial template.
@@ -106,6 +108,11 @@ Use the shared roles:
 --type-display;
 ```
 
+Use `--font-display-zh` for Chinese interface/display text and
+`--font-display-ja` for separately rendered authoritative Japanese names. The
+body/sans stack is Simplified-Chinese-first (`PingFang SC`, `Microsoft YaHei`,
+or an equivalent CJK SC font) before generic Latin/system fallbacks.
+
 ### Floors and ceilings
 
 - Normal body copy: at least `1rem` / 16px at the default root size.
@@ -138,6 +145,8 @@ Use the shared roles:
 - The document remains usable with a 200% root/user text preference.
 - Horizontal scrolling is allowed only inside an explicit control such as the
   header navigation or gallery thumbnail rail; it must not widen the document.
+- The fixed header uses `--header-offset`; every section/anchor scroll margin and
+  document scroll padding must account for it.
 - Sticky narrative elements release before the following section.
 - Do not make every content item a viewport-height scene. Full-viewport pacing
   must be justified by the actual narrative, not by a desire to look cinematic.
@@ -192,13 +201,18 @@ It must not regress to eight equally weighted irregular cards.
 
 - Keep native document scrolling and semantic anchors.
 - Reuse Motion for keyed, low-frequency state transitions.
-- Use native IntersectionObserver for chapter activation.
+- Use native IntersectionObserver for header location, onboarding-step, and
+  chapter activation.
 - Never send per-frame scroll values through React state.
 - Animate transform and opacity by default.
 - `useScroll` / `useTransform` requires a genuine continuous-progress product
   requirement; it is not a general “premium” effect.
 - A sticky Journey stage renders one active visual. Do not keep previous/current/
   next layers alive unless a tested transition requires them.
+- The onboarding stage renders one active image/thesis; its four in-flow
+  articles remain authoritative content.
+- A Journey transformation line may animate with `scaleX` because it represents
+  a real `changeFrom -> changeTo` state.
 - Respect `MotionConfig reducedMotion="user"`; all chapters, images, sources,
   gallery controls, and lightbox actions remain available without motion.
 
@@ -225,7 +239,8 @@ The browser suite must cover:
 - 14px recurring-text and 16px body floors;
 - section-heading ceiling;
 - dark-system contrast roles and primary-action contrast;
-- Journey sticky activation/release and reduced-motion fallback;
+- fixed-header worst-case contrast and five `aria-current` locations;
+- onboarding and Journey sticky activation/release plus reduced-motion fallback;
 - eight source-ordered gallery selectors;
 - active gallery selection, lightbox open, keyboard navigation, and Escape close;
 - intrinsic media sizing and one eager/high-priority Hero image.

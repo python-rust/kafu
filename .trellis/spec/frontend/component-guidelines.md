@@ -53,6 +53,9 @@ Homepage visual, type, responsive, and motion changes must also follow
 section may alias semantic tokens locally, but it must not invent an independent
 brand palette or microtype scale.
 
+Chinese audience, naming, navigation, and narrative components must also follow
+[Chinese Localization & Storytelling](./localization-and-storytelling-guidelines.md).
+
 Inline `style` is reserved for genuinely dynamic values that must cross from React state into CSS.
 
 Do not move static visual declarations into JSX inline styles.
@@ -79,6 +82,10 @@ Current examples:
 - `SectionHeading` owns the semantic `h2` and shared rule/scale. It deliberately
   has no eyebrow, preheader, or generic description prop.
 - `MediaSources` owns the single page-bottom creator/source/license index.
+
+`KafPrimerSection` remains a section-owned product component rather than a
+generic stepper. It owns the four-beat newcomer story, local observer state,
+sticky desktop stage, and complete mobile/reduced-motion flow.
 
 Do not extract a one-use layout wrapper or a purely cosmetic one-line element.
 Shared components are not a license to create a route-independent design-system
@@ -114,8 +121,12 @@ Current patterns include:
 Current example:
 
 ```tsx
-<a className={styles.brand} href="/" aria-label="KAF Observatory 首页">
+<a className={styles.brand} href="#top" aria-label="花谱观察站，返回页面顶部">
 ```
+
+For primary page navigation, use `aria-current="location"` on the observed
+active section. For Journey step navigation, continue to use
+`aria-current="step"`.
 
 ---
 

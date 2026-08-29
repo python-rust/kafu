@@ -69,6 +69,7 @@ Do not document `pnpm run ...` as the normal project workflow. The package manag
 - Preserve accessibility semantics and names used by tests unless the product behavior intentionally changes.
 - Keep third-party media provenance synchronized with the actual files under the owning asset directory.
 - Follow [Interface Content Guidelines](./content-guidelines.md) when changing visible copy, section labels, controls, captions, or copy-bearing component APIs.
+- Follow [Chinese Localization & Storytelling](./localization-and-storytelling-guidelines.md) when changing Chinese/Japanese naming, primary navigation, onboarding, chronology, factual references, or narrative motion.
 - Follow [Media Guidelines](./media-guidelines.md) and run the media manifest
   check when changing KAF images or generated variants.
 - Follow [Visual System Guidelines](./visual-system-guidelines.md) when changing color roles, typography, responsive density, sticky content, or motion.
@@ -94,9 +95,10 @@ run = [
 Use for React behavior that can be verified in the DOM without needing a real browser.
 
 Current reference: `tests/HomePage.test.tsx` verifies section order,
-production chapter/work content, the Japanese anchor contract, one-footer
-disclaimer, absence of banned template copy, hierarchy boundaries, and image
-loading invariants through user-visible content and DOM attributes.
+production onboarding/chapter/work content, the Chinese anchor contract,
+authoritative Japanese proper names, one-footer disclaimer, absence of banned
+template copy, hierarchy boundaries, and image-loading invariants through
+user-visible content and DOM attributes.
 
 Prefer role/name queries over class selectors or implementation details.
 
@@ -105,8 +107,9 @@ Prefer role/name queries over class selectors or implementation details.
 Use for browser-level smoke behavior and routing whose environment matters.
 
 Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies desktop/mobile
-identity, direct Japanese anchors, anti-template copy absence, 14px/16px type
-floors, dark-system contrast, Journey progression/sticky release, the one-stage
+Chinese identity, five fixed navigation locations, worst-case header contrast,
+anti-template/legacy-Japanese-UI absence, 14px/16px type floors, four-step
+onboarding progression, six Journey transformations, the one-stage
 eight-selector Gallery, DPR-aware Hero sources, thumbnail-specific Gallery
 assets, consolidated bottom attribution, lazy lightbox Zoom/keyboard/Escape
 behavior, linear/reduced-motion fallbacks, essential-content clipping, touch
@@ -162,6 +165,10 @@ The provenance document is evidence for this project context, not a blanket lice
 - Is page-specific CSS colocated in a CSS Module instead of becoming global CSS?
 - Are existing CSS custom-property tokens reused where appropriate?
 - Does every visible string pass the identity/fact/action/attribution/legal job test?
+- Is interface copy Simplified Chinese while authoritative Japanese names remain
+  marked and source-faithful?
+- Does a navigation/story change preserve active orientation and equivalent
+  mobile/reduced-motion content?
 - Did the change avoid eyebrow/preheader filler, leading-zero decoration, and interface narration?
 - If presentation repeats across sections, is it using the page-local shared component rather than drifting copies?
 - If an open-source package owns difficult interaction mechanics, is it isolated and lazy-loaded behind the owning section boundary?

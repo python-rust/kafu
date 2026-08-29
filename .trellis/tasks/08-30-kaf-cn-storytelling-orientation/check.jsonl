@@ -1,0 +1,6 @@
+{"file":".trellis/spec/frontend/content-guidelines.md","reason":"Verify Simplified Chinese and visible-string contracts."}
+{"file":".trellis/spec/frontend/localization-and-storytelling-guidelines.md","reason":"Verify Chinese naming, fixed navigation, onboarding, Journey transformations, and reduced-motion equivalence."}
+{"file":".trellis/spec/frontend/visual-system-guidelines.md","reason":"Verify header contrast, storytelling layout, motion, and reflow."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Verify required test and browser quality gates."}
+{"file":".trellis/spec/frontend/media-guidelines.md","reason":"Verify responsive media/loading contracts remain unchanged."}
+{"file":".trellis/tasks/08-30-kaf-cn-storytelling-orientation/research/cn-localization-storytelling.md","reason":"Verify implementation matches researched facts and dependency decisions."}
