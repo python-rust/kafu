@@ -1,6 +1,6 @@
 .section {
   min-width: 0;
-  scroll-margin-top: 5rem;
+  scroll-margin-top: var(--header-offset);
   padding: var(--section-space) var(--page-gutter);
   border-top: 1px solid var(--color-line);
   background: var(--color-bg);

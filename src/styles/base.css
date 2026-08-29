@@ -1,7 +1,7 @@
 html {
   background: var(--color-bg);
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
+  scroll-padding-top: calc(var(--header-offset) + 1rem);
 }
 
 body {

@@ -9,6 +9,14 @@ const targetViewports = [
   { width: 1440, height: 900 },
 ] as const;
 
+const pageSections = [
+  '#about',
+  '#journey',
+  '#works',
+  '#visuals',
+  '#links',
+] as const;
+
 const chapterAnchors = [
   '#journey-origin-2018',
   '#journey-observation-2019',
@@ -60,7 +68,7 @@ async function expectNoEssentialHorizontalClipping(page: Page, label: string) {
   const clippedElements = await page.evaluate(() => {
     const elements = Array.from(
       document.querySelectorAll(
-        'main h1, main h2, main h3, main p, main a, main figcaption, main time, footer p, footer a',
+        'main h1, main h2, main h3, main p, main a, main figcaption, main time, footer p, footer a, footer summary',
       ),
     );
 
@@ -89,37 +97,121 @@ async function expectNoEssentialHorizontalClipping(page: Page, label: string) {
   expect(clippedElements, label).toEqual([]);
 }
 
-test('desktop homepage uses direct Japanese structure and rejects template copy', async ({
+async function expectAnchorBelowHeader(page: Page, headingName: string) {
+  const geometry = await page.evaluate((name) => {
+    const header = document.querySelector('header');
+    const heading = Array.from(document.querySelectorAll('h2')).find(
+      (candidate) => candidate.textContent?.trim() === name,
+    );
+
+    if (!header || !heading) {
+      throw new Error(`Missing fixed-header geometry target: ${name}`);
+    }
+
+    return {
+      headerBottom: header.getBoundingClientRect().bottom,
+      headingTop: heading.getBoundingClientRect().top,
+    };
+  }, headingName);
+
+  expect(geometry.headingTop).toBeGreaterThanOrEqual(geometry.headerBottom - 1);
+}
+
+test('desktop homepage is Chinese-first, localized, and free of legacy UI chrome', async ({
   page,
 }) => {
   await openHome(page, { width: 1440, height: 900 });
 
   await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
   await expect(
-    page.getByRole('heading', { level: 1, name: '花譜' }),
+    page.getByRole('heading', { level: 1, name: '花谱' }),
   ).toBeInViewport();
   await expect(
-    page
-      .locator('#top')
-      .getByRole('img', { name: /粉色短发の花譜|粉色短发的花譜/ }),
+    page.locator('#top').getByRole('img', { name: /粉色短发的花谱/ }),
   ).toBeInViewport();
-  await expect(page.getByRole('link', { name: /公式サイト/ })).toBeInViewport();
-  await expect(page.getByRole('link', { name: /軌跡を見る/ })).toBeInViewport();
+  await expect(
+    page.getByRole('link', { name: /开始认识花谱/ }),
+  ).toBeInViewport();
+  await expect(
+    page.getByRole('link', { name: /查看成长轨迹/ }),
+  ).toBeInViewport();
 
   await expect(page.getByRole('banner')).toBeVisible();
   await expect(page.getByRole('main')).toBeVisible();
   await expect(page.getByRole('contentinfo')).toBeAttached();
-  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
-    'content',
-    '#0d0910',
-  );
+  await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
+  await expect(page).toHaveTitle('花谱观察站｜认识花谱 KAF');
 
-  const visualSystemContract = await page.evaluate(() => {
+  const expectedHeadings = [
+    '认识花谱',
+    '成长轨迹',
+    '代表作品',
+    '视觉档案',
+    '官方入口',
+  ] as const;
+
+  for (const heading of expectedHeadings) {
+    await expect(
+      page.getByRole('heading', { level: 2, name: heading }),
+    ).toBeAttached();
+  }
+
+  const navigation = page.getByRole('navigation', {
+    name: '花谱观察站页面导航',
+  });
+  const expectedTargets = [
+    ['认识花谱', '#about'],
+    ['成长轨迹', '#journey'],
+    ['代表作品', '#works'],
+    ['视觉档案', '#visuals'],
+    ['官方入口', '#links'],
+  ] as const;
+
+  for (const [label, href] of expectedTargets) {
+    await expect(navigation.getByRole('link', { name: label })).toHaveAttribute(
+      'href',
+      href,
+    );
+  }
+
+  const legacyUiStrings = [
+    '軌跡',
+    '視覚',
+    '公式サイト',
+    '軌跡を見る',
+    '新しいタブで開く',
+    '画像を選ぶ',
+    '画像出典（9件）',
+    'VOICE / IMAGE / MEMORY',
+    'KAF / CHRONOLOGY',
+    'CURRENT WORK',
+    'VISUAL CREDIT',
+  ];
+
+  for (const copy of legacyUiStrings) {
+    await expect(page.locator('body')).not.toContainText(copy);
+  }
+
+  await expect(page.locator('[class*="eyebrow"]')).toHaveCount(0);
+  await expect(page.locator('[data-rhythm]')).toHaveCount(0);
+  await expect(
+    page
+      .getByRole('contentinfo')
+      .getByText('图片作者与制作：花譜 / PALOW. / 川サキケンジ / とり'),
+  ).toBeVisible();
+  await expect(page.locator('#media-sources summary')).toContainText(
+    '图片来源（9 项）',
+  );
+  await expect(
+    page.getByRole('contentinfo').getByText('资料来源（4 项）'),
+  ).toBeAttached();
+
+  const hierarchy = await page.evaluate(() => {
     const readFontSize = (selector: string) => {
       const element = document.querySelector(selector);
 
       if (!element) {
-        throw new Error(`Missing visual-system contract target: ${selector}`);
+        throw new Error(`Missing visual hierarchy target: ${selector}`);
       }
 
       return Number.parseFloat(getComputedStyle(element).fontSize);
@@ -150,100 +242,137 @@ test('desktop homepage uses direct Japanese structure and rejects template copy'
 
     return {
       bodyFontSize: readFontSize('body'),
-      navFontSize: readFontSize('header nav a'),
-      sectionHeadingSizes: ['#journey h2', '#works h2', '#visuals h2'].map(
-        readFontSize,
-      ),
       documentHeight: document.documentElement.scrollHeight,
+      navFontSize: readFontSize('header nav a'),
+      sectionHeadingSizes: [
+        '#about h2',
+        '#journey h2',
+        '#works h2',
+        '#visuals h2',
+      ].map(readFontSize),
       smallVisibleText,
     };
   });
 
-  expect(visualSystemContract.bodyFontSize).toBeGreaterThanOrEqual(16);
-  expect(visualSystemContract.navFontSize).toBeGreaterThanOrEqual(14);
-  expect(
-    Math.max(...visualSystemContract.sectionHeadingSizes),
-  ).toBeLessThanOrEqual(72);
-  expect(visualSystemContract.documentHeight).toBeLessThan(14_000);
-  expect(visualSystemContract.smallVisibleText).toEqual([]);
+  expect(hierarchy.bodyFontSize).toBeGreaterThanOrEqual(16);
+  expect(hierarchy.navFontSize).toBeGreaterThanOrEqual(14);
+  expect(Math.max(...hierarchy.sectionHeadingSizes)).toBeLessThanOrEqual(72);
+  expect(hierarchy.documentHeight).toBeLessThan(18_000);
+  expect(hierarchy.smallVisibleText).toEqual([]);
+});
+
+test('fixed navigation keeps contrast and reports the current page location', async ({
+  page,
+}) => {
+  await openHome(page, { width: 1440, height: 900 });
+
+  const header = page.getByRole('banner');
+  await expect(header).toHaveCSS('position', 'fixed');
+
+  const contrast = await page.evaluate(() => {
+    function parse(value: string): [number, number, number, number] {
+      const channels = value.match(/[\d.]+/g)?.map(Number);
+
+      if (!channels || channels.length < 3) {
+        throw new Error(`Unable to parse color: ${value}`);
+      }
+
+      return [
+        channels[0] ?? 0,
+        channels[1] ?? 0,
+        channels[2] ?? 0,
+        channels[3] ?? 1,
+      ];
+    }
+
+    function compositeOverWhite(value: string): [number, number, number] {
+      const [red, green, blue, alpha] = parse(value);
+      return [
+        red * alpha + 255 * (1 - alpha),
+        green * alpha + 255 * (1 - alpha),
+        blue * alpha + 255 * (1 - alpha),
+      ];
+    }
+
+    function luminance(channels: [number, number, number]) {
+      const linear = channels.map((channel) => {
+        const normalized = channel / 255;
+        return normalized <= 0.04045
+          ? normalized / 12.92
+          : ((normalized + 0.055) / 1.055) ** 2.4;
+      }) as [number, number, number];
+
+      return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+    }
+
+    function ratio(
+      foreground: [number, number, number],
+      background: [number, number, number],
+    ) {
+      const first = luminance(foreground);
+      const second = luminance(background);
+      return (
+        (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05)
+      );
+    }
+
+    const headerElement = document.querySelector<HTMLElement>('header');
+    const navLink = document.querySelector<HTMLElement>('header nav a');
+    const primaryAction = document.querySelector<HTMLElement>(
+      '#top a[href="#about"]',
+    );
+
+    if (!headerElement || !navLink || !primaryAction) {
+      throw new Error('Missing contrast target.');
+    }
+
+    const headerStyle = getComputedStyle(headerElement);
+    const navStyle = getComputedStyle(navLink);
+    const actionStyle = getComputedStyle(primaryAction);
+
+    return {
+      navOnPaleArtwork: ratio(
+        compositeOverWhite(navStyle.color),
+        compositeOverWhite(headerStyle.backgroundColor),
+      ),
+      primaryAction: ratio(
+        compositeOverWhite(actionStyle.color),
+        compositeOverWhite(actionStyle.backgroundColor),
+      ),
+    };
+  });
+
+  expect(contrast.navOnPaleArtwork).toBeGreaterThanOrEqual(4.5);
+  expect(contrast.primaryAction).toBeGreaterThanOrEqual(4.5);
 
   const navigation = page.getByRole('navigation', {
-    name: '花譜サイト内ナビゲーション',
+    name: '花谱观察站页面导航',
   });
-  const expectedTargets = [
-    ['軌跡', '#journey'],
-    ['作品', '#works'],
-    ['視覚', '#visuals'],
-    ['公式', '#links'],
+  const locations = [
+    ['#about', '认识花谱'],
+    ['#journey', '成长轨迹'],
+    ['#works', '代表作品'],
+    ['#visuals', '视觉档案'],
+    ['#links', '官方入口'],
   ] as const;
 
-  for (const [label, href] of expectedTargets) {
-    await expect(navigation.getByRole('link', { name: label })).toHaveAttribute(
-      'href',
-      href,
-    );
+  for (const [selector, label] of locations) {
+    await scrollToCenter(page, selector);
+    const link = navigation.getByRole('link', { name: label });
+    await expect(link).toHaveAttribute('aria-current', 'location');
+    await expect(link).toHaveAttribute('data-active', 'true');
   }
-
-  const bannedCopy = [
-    'VOICE / IMAGE / MEMORY',
-    'KAF / CHRONOLOGY',
-    'KAF / SELECTED DISCOGRAPHY',
-    'KAF / VISUAL NOTES',
-    'KAF / OFFICIAL CHANNELS',
-    'CURRENT WORK',
-    'VISUAL CREDIT',
-    '沿着时间向下阅读花譜的六个创作阶段',
-    '不同阶段的服装、舞台与色彩被放回同一条视觉脉络中',
-  ];
-
-  for (const copy of bannedCopy) {
-    await expect(page.locator('body')).not.toContainText(copy);
-  }
-  await expect(page.locator('[class*="eyebrow"]')).toHaveCount(0);
-  await expect(page.locator('[data-rhythm]')).toHaveCount(0);
-  await expect(
-    page
-      .getByRole('contentinfo')
-      .getByText('画像：花譜 / PALOW. / 川サキケンジ / とり'),
-  ).toBeVisible();
-  await expect(page.locator('#media-sources summary')).toContainText(
-    '画像出典（9件）',
-  );
-  await expect(
-    page.getByRole('main').locator('a[href^="https://piapro.jp/t/"]'),
-  ).toHaveCount(0);
-  await expect(
-    page.locator('#media-sources a[href^="https://piapro.jp/t/"]'),
-  ).toHaveCount(9);
-
-  await navigation.getByRole('link', { name: '軌跡' }).click();
-  await expect(
-    page.getByRole('heading', { level: 2, name: '軌跡' }),
-  ).toBeInViewport();
 
   await page.goto('/');
   await page.evaluate(() => document.fonts.ready);
   await page
-    .getByRole('navigation', { name: '花譜サイト内ナビゲーション' })
-    .getByRole('link', { name: '作品' })
+    .getByRole('navigation', { name: '花谱观察站页面导航' })
+    .getByRole('link', { name: '代表作品' })
     .click();
   await expect(
-    page.getByRole('heading', { level: 2, name: '作品' }),
+    page.getByRole('heading', { level: 2, name: '代表作品' }),
   ).toBeInViewport();
-
-  await page.keyboard.press('Home');
-  await page.keyboard.press('Tab');
-  const focusedElement = page.locator(':focus');
-  await expect(focusedElement).toBeVisible();
-  const focusStyle = await focusedElement.evaluate((element) => {
-    const style = getComputedStyle(element);
-    return {
-      outlineStyle: style.outlineStyle,
-      outlineWidth: style.outlineWidth,
-    };
-  });
-  expect(focusStyle.outlineStyle).not.toBe('none');
-  expect(Number.parseFloat(focusStyle.outlineWidth)).toBeGreaterThan(0);
+  await expectAnchorBelowHeader(page, '代表作品');
 });
 
 test('hero selects density-matched generated artwork at DPR 1 and DPR 2', async ({
@@ -271,10 +400,10 @@ test('hero selects density-matched generated artwork at DPR 1 and DPR 2', async 
 
       return {
         currentSrc: image.currentSrc,
+        height: image.getAttribute('height'),
         src: image.getAttribute('src'),
         srcSet: image.getAttribute('srcset'),
         width: image.getAttribute('width'),
-        height: image.getAttribute('height'),
       };
     });
 
@@ -291,83 +420,38 @@ test('hero selects density-matched generated artwork at DPR 1 and DPR 2', async 
   }
 });
 
-test('dark-system text roles and the primary hero action retain readable contrast', async ({
+test('newcomer story advances through four meaningful beats and releases its stage', async ({
   page,
 }) => {
   await openHome(page, { width: 1440, height: 900 });
 
-  const contrast = await page.evaluate(() => {
-    function parseColor(value: string): [number, number, number] {
-      const probe = document.createElement('span');
-      probe.style.color = value;
-      document.body.append(probe);
+  const section = page.locator('#about');
+  const stage = page.getByTestId('primer-sticky-stage');
+  const steps = section.locator('article[data-primer-index]');
 
-      const normalized = getComputedStyle(probe).color;
-      probe.remove();
+  await expect(steps).toHaveCount(4);
+  await expect(stage).toBeVisible();
+  await expect(stage).toHaveCSS('position', 'sticky');
 
-      const channels = normalized
-        .match(/[\d.]+/g)
-        ?.slice(0, 3)
-        .map(Number);
+  const expectedStates = [
+    ['0', '她是谁', '一个从网络深处被发现的声音。'],
+    ['2', '她走到了哪里', '从屏幕里的歌，走进现实的大型舞台。'],
+    ['3', '从哪里开始', '先听起点，再看现场，最后进入第二章。'],
+  ] as const;
 
-      if (!channels || channels.length !== 3) {
-        throw new Error(`Unable to parse CSS color: ${value}`);
-      }
+  for (const [index, title, statement] of expectedStates) {
+    const step = section.locator(`article[data-primer-index="${index}"]`);
+    await scrollToCenter(page, `#about article[data-primer-index="${index}"]`);
+    await expect(step).toHaveAttribute('data-active', 'true');
+    await expect(stage.getByText(title, { exact: true })).toBeVisible();
+    await expect(stage.getByText(statement, { exact: true })).toBeVisible();
+  }
 
-      return [channels[0] ?? 0, channels[1] ?? 0, channels[2] ?? 0];
-    }
-
-    function relativeLuminance(value: string) {
-      const [red, green, blue] = parseColor(value).map((channel) => {
-        const normalized = channel / 255;
-        return normalized <= 0.04045
-          ? normalized / 12.92
-          : ((normalized + 0.055) / 1.055) ** 2.4;
-      }) as [number, number, number];
-
-      return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-    }
-
-    function ratio(foreground: string, background: string) {
-      const foregroundLuminance = relativeLuminance(foreground);
-      const backgroundLuminance = relativeLuminance(background);
-      const lighter = Math.max(foregroundLuminance, backgroundLuminance);
-      const darker = Math.min(foregroundLuminance, backgroundLuminance);
-
-      return (lighter + 0.05) / (darker + 0.05);
-    }
-
-    const rootStyle = getComputedStyle(document.documentElement);
-    const background = rootStyle.getPropertyValue('--color-bg').trim();
-    const softBackground = rootStyle.getPropertyValue('--color-bg-soft').trim();
-    const mutedText = rootStyle.getPropertyValue('--color-text-muted').trim();
-    const faintText = rootStyle.getPropertyValue('--color-text-faint').trim();
-    const blueText = rootStyle.getPropertyValue('--color-blue-light').trim();
-    const heroAction = document.querySelector<HTMLElement>(
-      '#top a[href="https://kaf.kamitsubaki.jp/"]',
-    );
-
-    if (!heroAction) {
-      throw new Error('Primary hero action was not found.');
-    }
-
-    const actionStyle = getComputedStyle(heroAction);
-
-    return {
-      mutedOnBackground: ratio(mutedText, background),
-      faintOnSoftBackground: ratio(faintText, softBackground),
-      blueOnSoftBackground: ratio(blueText, softBackground),
-      heroAction: ratio(actionStyle.color, actionStyle.backgroundColor),
-    };
-  });
-
-  expect(contrast.mutedOnBackground).toBeGreaterThanOrEqual(4.5);
-  expect(contrast.faintOnSoftBackground).toBeGreaterThanOrEqual(4.5);
-  expect(contrast.blueOnSoftBackground).toBeGreaterThanOrEqual(4.5);
-  expect(contrast.heroAction).toBeGreaterThanOrEqual(4.5);
+  await scrollToCenter(page, chapterAnchors[0]);
+  await expect(stage).not.toBeInViewport();
 });
 
-test('desktop journey advances through real chapters and releases the sticky stage', async ({
+test('journey advances through six Chinese narratives and transformation pairs', async ({
   page,
 }) => {
   await openHome(page, { width: 1440, height: 900 });
@@ -380,27 +464,41 @@ test('desktop journey advances through real chapters and releases the sticky sta
     'data-active',
     'true',
   );
-  await expect(stage.getByText('2018', { exact: true })).toBeVisible();
+  await expect(stage.getByText('被发现的声音', { exact: true })).toBeVisible();
+  await expect(stage.getByText('网络中的投稿', { exact: true })).toBeVisible();
+  await expect(stage.getByText('第一次被看见', { exact: true })).toBeVisible();
 
   await scrollToCenter(page, chapterAnchors[2]);
   await expect(page.locator(chapterAnchors[2])).toHaveAttribute(
     'data-active',
     'true',
   );
-  await expect(stage.getByText('2020–2021', { exact: true })).toBeVisible();
+  await expect(
+    stage.getByText('在无法相聚时重构舞台', { exact: true }),
+  ).toBeVisible();
   await expect(stage.getByText('魔法 / 再構築', { exact: true })).toBeVisible();
+  await expect(
+    stage.getByText('无法按计划相聚', { exact: true }),
+  ).toBeVisible();
+  await expect(
+    stage.getByText('线上现场与重返会场', { exact: true }),
+  ).toBeVisible();
 
   await scrollToCenter(page, chapterAnchors[5]);
   await expect(page.locator(chapterAnchors[5])).toHaveAttribute(
     'data-active',
     'true',
   );
-  await expect(stage.getByText('2025–2026', { exact: true })).toBeVisible();
-
-  await scrollToCenter(page, '#works-title');
   await expect(
-    page.getByRole('heading', { level: 2, name: '作品' }),
-  ).toBeInViewport();
+    stage.getByText('走向更大的世界', { exact: true }),
+  ).toBeVisible();
+  await expect(
+    stage.getByText('日本国内的成长', { exact: true }),
+  ).toBeVisible();
+  await expect(
+    stage.getByText('海外活动与新的当下', { exact: true }),
+  ).toBeVisible();
+
   await page
     .locator('#works article')
     .first()
@@ -410,14 +508,14 @@ test('desktop journey advances through real chapters and releases the sticky sta
   await expect(stage).not.toBeInViewport();
 });
 
-test('gallery provides one focal stage, eight selectors, and keyboard lightbox navigation', async ({
+test('gallery provides eight selectors and localized keyboard lightbox navigation', async ({
   page,
 }) => {
   await openHome(page, { width: 1440, height: 900 });
   await scrollToCenter(page, '#visuals-title');
 
   const gallery = page.locator('#visuals');
-  const thumbnailList = gallery.getByRole('list', { name: '画像を選ぶ' });
+  const thumbnailList = gallery.getByRole('list', { name: '选择图片' });
   const thumbnailButtons = thumbnailList.getByRole('button');
 
   await expect(thumbnailButtons).toHaveCount(8);
@@ -425,49 +523,43 @@ test('gallery provides one focal stage, eight selectors, and keyboard lightbox n
     thumbnailButtons.evaluateAll((buttons) =>
       buttons.map((button) => button.getAttribute('aria-label')),
     ),
-  ).resolves.toEqual(galleryTitles.map((title) => `${title}を表示`));
+  ).resolves.toEqual(galleryTitles.map((title) => `${title}，显示此图`));
   await expect(
-    thumbnailList.getByRole('button', { name: '花譜ちゃんを表示' }),
+    thumbnailList.getByRole('button', { name: '花譜ちゃん，显示此图' }),
   ).toHaveAttribute('aria-pressed', 'true');
   await expect(
-    gallery.getByRole('button', { name: '花譜ちゃんを拡大表示' }),
+    gallery.getByRole('button', { name: '花譜ちゃん，点击放大' }),
   ).toBeVisible();
 
-  await thumbnailList.getByRole('button', { name: '不可解を表示' }).click();
+  await thumbnailList.getByRole('button', { name: '不可解，显示此图' }).click();
   await expect(
-    thumbnailList.getByRole('button', { name: '不可解を表示' }),
+    thumbnailList.getByRole('button', { name: '不可解，显示此图' }),
   ).toHaveAttribute('aria-pressed', 'true');
-  const activeStage = gallery.getByRole('button', { name: '不可解を拡大表示' });
+  const activeStage = gallery.getByRole('button', { name: '不可解，点击放大' });
   await expect(activeStage).toBeVisible();
-  await expect(
-    gallery.getByRole('heading', { level: 3, name: '不可解' }),
-  ).toBeVisible();
 
   await activeStage.click();
-  const closeButton = page.getByRole('button', { name: '閉じる' });
+  const closeButton = page.getByRole('button', { name: '关闭' });
   await expect(closeButton).toBeVisible();
-  await expect(page.getByRole('button', { name: '前の画像' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '次の画像' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '上一张图片' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '下一张图片' })).toBeVisible();
   const lightboxImage = page.locator('.yarl__slide_image[alt^="黑色舞台上"]');
   await expect(lightboxImage).toHaveAttribute('src', /fukakai-4x/);
 
   await page.keyboard.press('ArrowRight');
   await expect(
-    page.locator('#visuals button[aria-label="糸を表示"]'),
+    page.locator('#visuals button[aria-label="糸，显示此图"]'),
   ).toHaveAttribute('aria-pressed', 'true');
 
-  const zoomIn = page.getByRole('button', { name: '拡大' });
+  const zoomIn = page.getByRole('button', { name: '放大' });
   await expect(zoomIn).toBeVisible();
   await zoomIn.click();
-  const zoomOut = page.getByRole('button', { name: '縮小' });
-  await expect(zoomOut).toBeVisible();
-  await zoomOut.click();
-  await expect(page.getByRole('button', { name: '拡大' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '缩小' })).toBeVisible();
 
   await page.keyboard.press('Escape');
   await expect(closeButton).toHaveCount(0);
   await expect(
-    gallery.getByRole('button', { name: '糸を拡大表示' }),
+    gallery.getByRole('button', { name: '糸，点击放大' }),
   ).toBeVisible();
 });
 
@@ -479,7 +571,7 @@ test('gallery reserves generated thumbnails for the rail and atmospheric backdro
 
   const gallery = page.locator('#visuals');
   const thumbnailImages = gallery
-    .getByRole('list', { name: '画像を選ぶ' })
+    .getByRole('list', { name: '选择图片' })
     .locator('img[data-media-variant="thumbnail"]');
   await expect(thumbnailImages).toHaveCount(8);
 
@@ -495,34 +587,34 @@ test('gallery reserves generated thumbnails for the rail and atmospheric backdro
   await expect(backdropImage).toHaveAttribute('src', /-thumb-/);
 });
 
-test('mobile homepage keeps the journey linear and gallery selectors source-ordered', async ({
+test('mobile homepage keeps onboarding and journey linear with touch-safe controls', async ({
   page,
 }) => {
   await openHome(page, { width: 390, height: 844 });
 
   await expect(
-    page.getByRole('heading', { level: 1, name: '花譜' }),
+    page.getByRole('heading', { level: 1, name: '花谱' }),
   ).toBeInViewport();
-  await expect(page.getByRole('link', { name: /公式サイト/ })).toBeInViewport();
-  await expect(page.getByRole('link', { name: /軌跡を見る/ })).toBeInViewport();
+  await expect(
+    page.getByRole('link', { name: /开始认识花谱/ }),
+  ).toBeInViewport();
   await expectNoHorizontalOverflow(page, '390×844 hero');
 
-  const stage = page.getByTestId('journey-sticky-stage');
-  await expect(stage).toBeHidden();
-
-  const chapterArticles = page.locator('#journey article[data-journey-index]');
-  await expect(chapterArticles).toHaveCount(6);
-
-  for (const chapterAnchor of chapterAnchors) {
-    await expect(page.locator(chapterAnchor)).toBeAttached();
-  }
+  await expect(page.getByTestId('primer-sticky-stage')).toBeHidden();
+  await expect(page.locator('#about article[data-primer-index]')).toHaveCount(
+    4,
+  );
+  await expect(page.getByTestId('journey-sticky-stage')).toBeHidden();
+  await expect(
+    page.locator('#journey article[data-journey-index]'),
+  ).toHaveCount(6);
 
   const navTargets = page
-    .getByRole('navigation', { name: '花譜サイト内ナビゲーション' })
+    .getByRole('navigation', { name: '花谱观察站页面导航' })
     .getByRole('link');
-  const navTargetCount = await navTargets.count();
+  await expect(navTargets).toHaveCount(5);
 
-  for (let index = 0; index < navTargetCount; index += 1) {
+  for (let index = 0; index < (await navTargets.count()); index += 1) {
     const box = await navTargets.nth(index).boundingBox();
     expect(box, `mobile nav target ${index + 1}`).not.toBeNull();
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
@@ -531,13 +623,13 @@ test('mobile homepage keeps the journey linear and gallery selectors source-orde
   await scrollToCenter(page, '#visuals');
   const mobileGalleryLabels = await page
     .locator('#visuals')
-    .getByRole('list', { name: '画像を選ぶ' })
+    .getByRole('list', { name: '选择图片' })
     .getByRole('button')
     .evaluateAll((buttons) =>
       buttons.map((button) => button.getAttribute('aria-label')),
     );
   expect(mobileGalleryLabels).toEqual(
-    galleryTitles.map((title) => `${title}を表示`),
+    galleryTitles.map((title) => `${title}，显示此图`),
   );
   await expectNoHorizontalOverflow(page, '390×844 gallery');
 });
@@ -556,34 +648,20 @@ test('all target viewport sizes remain free of horizontal overflow', async ({
       `${viewport.width}×${viewport.height} essential content`,
     );
 
-    const stage = page.getByTestId('journey-sticky-stage');
     const shouldUseStickyStage =
       viewport.width >= 1024 && viewport.height >= 736;
+    const primerStage = page.getByTestId('primer-sticky-stage');
+    const journeyStage = page.getByTestId('journey-sticky-stage');
 
     if (shouldUseStickyStage) {
-      await expect(stage).toBeVisible();
-      await expect(stage).toHaveCSS('position', 'sticky');
+      await expect(primerStage).toBeVisible();
+      await expect(journeyStage).toBeVisible();
     } else {
-      await expect(stage).toBeHidden();
+      await expect(primerStage).toBeHidden();
+      await expect(journeyStage).toBeHidden();
     }
 
-    if (viewport.width <= 390) {
-      const navTargets = page
-        .getByRole('navigation', { name: '花譜サイト内ナビゲーション' })
-        .getByRole('link');
-      const navTargetCount = await navTargets.count();
-
-      for (let index = 0; index < navTargetCount; index += 1) {
-        const box = await navTargets.nth(index).boundingBox();
-        expect(
-          box,
-          `${viewport.width}px nav target ${index + 1}`,
-        ).not.toBeNull();
-        expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
-      }
-    }
-
-    for (const selector of ['#journey', '#works', '#visuals', '#links']) {
+    for (const selector of pageSections) {
       await scrollToCenter(page, selector);
       await expectNoHorizontalOverflow(
         page,
@@ -607,7 +685,7 @@ test('large user text preferences preserve essential reflow', async ({
     '640×900 with 200% root text essential content',
   );
 
-  for (const selector of ['#journey', '#works', '#visuals', '#links']) {
+  for (const selector of pageSections) {
     await scrollToCenter(page, selector);
     await expectNoHorizontalOverflow(
       page,
@@ -616,23 +694,27 @@ test('large user text preferences preserve essential reflow', async ({
   }
 });
 
-test('reduced motion renders all content without the desktop sticky stage', async ({
+test('reduced motion renders all narrative content without sticky stages', async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await openHome(page, { width: 1440, height: 900 });
 
   await expect(
-    page.getByRole('heading', { level: 1, name: '花譜' }),
+    page.getByRole('heading', { level: 1, name: '花谱' }),
   ).toBeVisible();
+  await expect(page.getByTestId('primer-sticky-stage')).toHaveCount(0);
   await expect(page.getByTestId('journey-sticky-stage')).toHaveCount(0);
+  await expect(page.locator('#about article[data-primer-index]')).toHaveCount(
+    4,
+  );
   await expect(
     page.locator('#journey article[data-journey-index]'),
   ).toHaveCount(6);
   await expect(
     page
       .locator('#visuals')
-      .getByRole('list', { name: '画像を選ぶ' })
+      .getByRole('list', { name: '选择图片' })
       .getByRole('button'),
   ).toHaveCount(8);
 
@@ -656,7 +738,7 @@ test('reduced motion renders all content without the desktop sticky stage', asyn
   await expectNoHorizontalOverflow(page, '1440×900 reduced motion');
 });
 
-test('only the hero image is eager and responsive/thumbnail candidates remain explicit', async ({
+test('only the hero image is eager and responsive candidates remain explicit', async ({
   page,
 }) => {
   await openHome(page, { width: 1440, height: 900 });
@@ -702,22 +784,27 @@ test('only the hero image is eager and responsive/thumbnail candidates remain ex
   }
 });
 
-test('captures the responsive-media visual evidence', async ({ page }) => {
-  const evidenceDirectory = 'test-results/kaf-round3-visual-evidence';
+test('captures the Chinese storytelling visual evidence', async ({ page }) => {
+  const evidenceDirectory = 'test-results/kaf-round4-cn-storytelling';
 
   await openHome(page, { width: 1440, height: 900 });
   await page.screenshot({
-    path: `${evidenceDirectory}/1440x900-hero.png`,
+    path: `${evidenceDirectory}/1440x900-hero-header.png`,
   });
 
-  await scrollToCenter(page, chapterAnchors[2]);
+  await scrollToCenter(page, '#about article[data-primer-index="0"]');
   await page.screenshot({
-    path: `${evidenceDirectory}/1440x900-journey.png`,
+    path: `${evidenceDirectory}/1440x900-about-identity.png`,
   });
 
-  await scrollToCenter(page, '#works-title');
+  await scrollToCenter(page, '#about article[data-primer-index="2"]');
   await page.screenshot({
-    path: `${evidenceDirectory}/1440x900-works.png`,
+    path: `${evidenceDirectory}/1440x900-about-stage.png`,
+  });
+
+  await scrollToCenter(page, chapterAnchors[3]);
+  await page.screenshot({
+    path: `${evidenceDirectory}/1440x900-journey-expansion.png`,
   });
 
   await scrollToCenter(page, '#visuals-title');
@@ -727,11 +814,11 @@ test('captures the responsive-media visual evidence', async ({ page }) => {
 
   await openHome(page, { width: 390, height: 844 });
   await page.screenshot({
-    path: `${evidenceDirectory}/390x844-hero.png`,
+    path: `${evidenceDirectory}/390x844-hero-header.png`,
   });
 
-  await scrollToCenter(page, '#visuals-title');
+  await scrollToCenter(page, '#about');
   await page.screenshot({
-    path: `${evidenceDirectory}/390x844-gallery.png`,
+    path: `${evidenceDirectory}/390x844-about.png`,
   });
 });

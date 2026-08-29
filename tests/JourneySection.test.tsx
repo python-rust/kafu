@@ -24,8 +24,10 @@ const chapters = [
     id: 'origin',
     period: '2018',
     yearLabel: '2018',
-    titleJa: 'Origin',
-    titleEn: 'Origin English subtitle',
+    titleZh: '被发现的声音',
+    originalTitle: '起源 / 発見',
+    changeFrom: '网络中的投稿',
+    changeTo: '第一次被看见',
     summary: 'Fixture summary for the first journey chapter.',
     theme: 'origin',
     milestones: [
@@ -49,8 +51,10 @@ const chapters = [
     id: 'observation',
     period: '2019',
     yearLabel: '2019',
-    titleJa: 'Observation',
-    titleEn: 'Observation',
+    titleZh: '从网络走向现场',
+    originalTitle: '観測',
+    changeFrom: '屏幕里的歌声',
+    changeTo: '个人现场与首张专辑',
     summary: 'Fixture summary for the second journey chapter.',
     theme: 'observation',
     milestones: [
@@ -74,8 +78,10 @@ const chapters = [
     id: 'rebuild',
     period: '2020–2021',
     yearLabel: '2020–2021',
-    titleJa: 'Magic / Rebuilding',
-    titleEn: 'Magic / Rebuilding',
+    titleZh: '在无法相聚时重构舞台',
+    originalTitle: '魔法 / 再構築',
+    changeFrom: '无法按计划相聚',
+    changeTo: '线上现场与重返会场',
     summary: 'Fixture summary for the third journey chapter.',
     theme: 'rebuild',
     milestones: [
@@ -108,8 +114,10 @@ const chapters = [
     id: 'expansion',
     period: '2022–2023',
     yearLabel: '2022–2023',
-    titleJa: 'Expansion',
-    titleEn: 'Expansion',
+    titleZh: '把虚拟歌声带进武道馆',
+    originalTitle: '拡張',
+    changeFrom: '网络与小型会场',
+    changeTo: '武道馆与更大的表达',
     summary: 'Fixture summary for the fourth journey chapter.',
     theme: 'expansion',
     milestones: [
@@ -133,8 +141,10 @@ const chapters = [
     id: 'fable',
     period: '2024',
     yearLabel: '2024',
-    titleJa: 'Fable / Second Chapter',
-    titleEn: 'Fable / Second Chapter',
+    titleZh: '进入创作的第二章',
+    originalTitle: '寓話 / 第二章',
+    changeFrom: '第一章的制作关系',
+    changeTo: '新的创作体制与“廻花”',
     summary: 'Fixture summary for the fifth journey chapter.',
     theme: 'fable',
     milestones: [
@@ -158,8 +168,10 @@ const chapters = [
     id: 'transcendent',
     period: '2025–2026',
     yearLabel: '2025–2026',
-    titleJa: 'Transcendent Love',
-    titleEn: 'Transcendent Love',
+    titleZh: '走向更大的世界',
+    originalTitle: '深愛',
+    changeFrom: '日本国内的成长',
+    changeTo: '海外活动与新的当下',
     summary: 'Fixture summary for the sixth journey chapter.',
     theme: 'transcendent',
     milestones: [
@@ -194,7 +206,7 @@ describe('JourneySection', () => {
     render(<JourneySection chapters={chapters} />);
 
     const journey = screen.getByRole('region', {
-      name: '軌跡',
+      name: '成长轨迹',
     });
     const articles = within(journey).getAllByRole('article');
     const headings = within(journey).getAllByRole('heading', { level: 3 });
@@ -202,16 +214,16 @@ describe('JourneySection', () => {
     expect(articles).toHaveLength(6);
     expect(headings).toHaveLength(6);
     expect(headings.map((heading) => heading.textContent)).toEqual([
-      'Origin',
-      'Observation',
-      'Magic / Rebuilding',
-      'Expansion',
-      'Fable / Second Chapter',
-      'Transcendent Love',
+      '被发现的声音',
+      '从网络走向现场',
+      '在无法相聚时重构舞台',
+      '把虚拟歌声带进武道馆',
+      '进入创作的第二章',
+      '走向更大的世界',
     ]);
-    expect(
-      within(journey).queryByText('Origin English subtitle'),
-    ).not.toBeInTheDocument();
+    expect(within(journey).getAllByText('起源 / 発見')).toHaveLength(2);
+    expect(within(journey).getAllByText('网络中的投稿')).toHaveLength(2);
+    expect(within(journey).getAllByText('第一次被看见')).toHaveLength(2);
     expect(within(journey).queryByText(/CHAPTER/)).not.toBeInTheDocument();
   });
 
@@ -219,7 +231,7 @@ describe('JourneySection', () => {
     const { container } = render(<JourneySection chapters={chapters} />);
 
     const navigation = screen.getByRole('navigation', {
-      name: '花譜の活動年表',
+      name: '花谱成长阶段',
     });
     const chapterLinks = within(navigation).getAllByRole('link');
 
@@ -238,12 +250,12 @@ describe('JourneySection', () => {
 
     expect(
       screen.queryByRole('link', {
-        name: /Origin visualの画像出典：Origin artist/,
+        name: /Origin visual.*图片来源.*Origin artist/,
       }),
     ).not.toBeInTheDocument();
     expect(
       screen.getByRole('link', {
-        name: /Origin milestoneの出典/,
+        name: /Origin milestone的资料来源/,
       }),
     ).toHaveAttribute('href', 'https://example.com/origin-milestone');
     const rebuildSecondaryVisual = screen.getByRole('img', {
@@ -276,7 +288,7 @@ describe('JourneySection', () => {
     expect(transcendentVisual).toHaveAttribute('loading', 'lazy');
     expect(
       screen.getByRole('link', {
-        name: /Transcendent milestoneの出典/,
+        name: /Transcendent milestone的资料来源/,
       }),
     ).toBeInTheDocument();
   });

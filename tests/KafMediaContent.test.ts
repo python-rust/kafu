@@ -5,6 +5,8 @@ import {
   galleryVisuals,
   journeyChapters,
   kafMedia,
+  primerBeats,
+  referenceSources,
   selectedWorks,
 } from '../src/content/kaf';
 import type { KafMediaVariant } from '../src/content/kaf';
@@ -70,8 +72,10 @@ describe('KAF journey content', () => {
 
   it('provides verified official milestone sources for every chapter', () => {
     for (const chapter of journeyChapters) {
-      expect(chapter.titleJa.trim()).not.toBe('');
-      expect(chapter.titleEn.trim()).not.toBe('');
+      expect(chapter.titleZh.trim()).not.toBe('');
+      expect(chapter.originalTitle.trim()).not.toBe('');
+      expect(chapter.changeFrom.trim()).not.toBe('');
+      expect(chapter.changeTo.trim()).not.toBe('');
       expect(chapter.summary.trim()).not.toBe('');
       expect(chapter.milestones.length).toBeGreaterThanOrEqual(2);
 
@@ -102,13 +106,44 @@ describe('KAF journey content', () => {
     expect(
       expansion.milestones.some(
         (milestone) =>
-          milestone.label.includes('組曲') &&
+          milestone.label.includes('组曲') &&
           milestone.label.includes('MIYAVI'),
       ),
     ).toBe(true);
     expect(
       fable.milestones.some((milestone) => milestone.label.includes('廻花')),
     ).toBe(true);
+  });
+});
+
+describe('KAF Chinese onboarding content', () => {
+  it('provides four sourced newcomer beats with verified local visuals', () => {
+    expect(primerBeats.map((beat) => beat.id)).toEqual([
+      'identity',
+      'voice',
+      'stage',
+      'start',
+    ]);
+
+    for (const beat of primerBeats) {
+      expect(beat.title.trim()).not.toBe('');
+      expect(beat.statement.trim()).not.toBe('');
+      expect(beat.summary.trim()).not.toBe('');
+      expect(kafMedia.some((media) => media.id === beat.visual.id)).toBe(true);
+    }
+  });
+
+  it('keeps official biography and Chinese-account references explicit', () => {
+    expect(referenceSources).toHaveLength(4);
+    expect(
+      referenceSources.some((source) => source.id === 'bilibili-profile'),
+    ).toBe(true);
+
+    for (const source of referenceSources) {
+      expect(source.label.trim()).not.toBe('');
+      expect(source.note.trim()).not.toBe('');
+      expect(new URL(source.href).protocol).toBe('https:');
+    }
   });
 });
 

@@ -23,7 +23,10 @@ interface JourneyChapter {
   id: string;
   period: string;
   yearLabel: string;
-  titleJa: string;
+  titleZh: string;
+  originalTitle: string;
+  changeFrom: string;
+  changeTo: string;
   summary: string;
   theme: JourneyTheme;
   milestones: readonly JourneyMilestone[];
@@ -98,9 +101,22 @@ function JourneyDesktopStage({
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           >
             <span className={styles.stageYear}>{activeChapter.yearLabel}</span>
-            <strong className={styles.stageTitleJa}>
-              {activeChapter.titleJa}
+            <strong className={styles.stageTitleZh}>
+              {activeChapter.titleZh}
             </strong>
+            <span className={styles.stageOriginalTitle} lang="ja">
+              {activeChapter.originalTitle}
+            </span>
+            <span className={styles.stageChange}>
+              <span>{activeChapter.changeFrom}</span>
+              <motion.span
+                className={styles.stageChangeLine}
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+              />
+              <span>{activeChapter.changeTo}</span>
+            </span>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -194,10 +210,10 @@ export function JourneySection({ chapters }: JourneySectionProps) {
     >
       <div className={styles.inner}>
         <SectionHeading id="journey-heading" tone="light">
-          軌跡
+          成长轨迹
         </SectionHeading>
 
-        <nav className={styles.chapterNav} aria-label="花譜の活動年表">
+        <nav className={styles.chapterNav} aria-label="花谱成长阶段">
           <ol>
             {chapters.map((chapter, index) => {
               const isActive = index === safeActiveIndex;
@@ -209,7 +225,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                     aria-current={isActive ? 'step' : undefined}
                   >
                     <span>{chapter.yearLabel}</span>
-                    <span className={styles.srOnly}>{chapter.titleJa}</span>
+                    <span className={styles.srOnly}>{chapter.titleZh}</span>
                   </a>
                 </li>
               );
@@ -249,7 +265,15 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                   >
                     <div className={styles.chapterHeading}>
                       <p className={styles.chapterYear}>{chapter.yearLabel}</p>
-                      <h3 id={titleId}>{chapter.titleJa}</h3>
+                      <h3 id={titleId}>{chapter.titleZh}</h3>
+                      <p className={styles.originalTitle} lang="ja">
+                        {chapter.originalTitle}
+                      </p>
+                      <p className={styles.changePair}>
+                        <span>{chapter.changeFrom}</span>
+                        <span aria-hidden="true">→</span>
+                        <span>{chapter.changeTo}</span>
+                      </p>
                     </div>
 
                     <div className={styles.chapterMedia}>
@@ -263,7 +287,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
 
                     <p className={styles.summary}>{chapter.summary}</p>
 
-                    <ol className={styles.milestones} aria-label="主な出来事">
+                    <ol className={styles.milestones} aria-label="关键节点">
                       {chapter.milestones.map((milestone) => (
                         <li key={`${milestone.date}-${milestone.sourceUrl}`}>
                           <time dateTime={milestone.date}>
@@ -274,9 +298,9 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                             href={milestone.sourceUrl}
                             target="_blank"
                             rel="noreferrer"
-                            aria-label={`${milestone.label}の出典（新しいタブで開く）`}
+                            aria-label={`${milestone.label}的资料来源（在新窗口打开）`}
                           >
-                            出典
+                            来源
                           </a>
                         </li>
                       ))}

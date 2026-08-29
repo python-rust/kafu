@@ -13,7 +13,7 @@
 }
 
 .project {
-  font-family: var(--font-display);
+  font-family: var(--font-display-zh);
   font-size: 1rem;
   font-weight: 650;
   letter-spacing: 0.04em;
@@ -33,6 +33,52 @@
 .sources {
   padding-top: 1.5rem;
   border-top: 1px solid var(--color-line);
+}
+
+.referenceDetails {
+  width: 100%;
+  margin-top: 0.8rem;
+  border-top: 1px solid var(--color-line);
+  color: var(--color-text-muted);
+  font-size: var(--type-label);
+}
+
+.referenceDetails summary {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--color-text);
+  cursor: pointer;
+  font-weight: 650;
+}
+
+.referenceDetails ol {
+  margin: 0;
+  padding: 0 0 0.8rem;
+  list-style: none;
+}
+
+.referenceDetails li + li {
+  border-top: 1px solid var(--color-line);
+}
+
+.referenceDetails a {
+  display: grid;
+  min-height: 2.75rem;
+  padding: 0.75rem 0;
+  gap: 0.2rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.referenceDetails a:hover,
+.referenceDetails a:focus-visible {
+  color: var(--color-text);
+}
+
+.referenceDetails strong {
+  color: var(--color-text);
+  font-weight: 650;
 }
 
 @media (max-width: 48rem) {

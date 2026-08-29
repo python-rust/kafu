@@ -16,10 +16,10 @@ export function MediaSources({ media }: MediaSourcesProps) {
   return (
     <div className={styles.sources} id="media-sources">
       <p className={styles.creatorLine}>
-        画像：花譜 / PALOW. / 川サキケンジ / とり
+        图片作者与制作：花譜 / PALOW. / 川サキケンジ / とり
       </p>
       <details className={styles.details}>
-        <summary>画像出典（{media.length}件）</summary>
+        <summary>图片来源（{media.length} 项）</summary>
         <ol className={styles.list}>
           {media.map((item) => (
             <li key={item.id}>
@@ -29,17 +29,17 @@ export function MediaSources({ media }: MediaSourcesProps) {
                 href={item.sourceUrl}
                 target="_blank"
                 rel="noreferrer"
-                aria-label={`${item.title}の作品ページ（新しいタブで開く）`}
+                aria-label={`${item.title}的作品页面（在新窗口打开）`}
               >
-                作品ページ
+                作品页面
               </a>
               <a
                 href={item.licenseUrl}
                 target="_blank"
                 rel="noreferrer"
-                aria-label={`${item.title}の利用条件（新しいタブで開く）`}
+                aria-label={`${item.title}的使用条件（在新窗口打开）`}
               >
-                利用条件
+                使用条件
               </a>
             </li>
           ))}

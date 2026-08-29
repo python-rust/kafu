@@ -12,11 +12,11 @@ export interface HeroSectionProps {
   visual: HeroVisual;
   statement: string;
   description: string;
-  officialUrl: string;
-  titleJa?: string;
-  officialLabel?: string;
-  journeyHref?: `#${string}`;
-  journeyLabel?: string;
+  title?: string;
+  primaryHref?: `#${string}`;
+  primaryLabel?: string;
+  secondaryHref?: `#${string}`;
+  secondaryLabel?: string;
 }
 
 const revealTransition = {
@@ -28,11 +28,11 @@ export function HeroSection({
   visual,
   statement,
   description,
-  officialUrl,
-  titleJa = '花譜',
-  officialLabel = '公式サイト',
-  journeyHref = '#journey',
-  journeyLabel = '軌跡を見る',
+  title = '花谱',
+  primaryHref = '#about',
+  primaryLabel = '开始认识花谱',
+  secondaryHref = '#journey',
+  secondaryLabel = '查看成长轨迹',
 }: HeroSectionProps) {
   const shouldReduceMotion = useReducedMotion();
   const shouldAnimate = shouldReduceMotion === false;
@@ -64,21 +64,19 @@ export function HeroSection({
           animate={{ opacity: 1, y: 0 }}
           transition={shouldAnimate ? revealTransition : { duration: 0 }}
         >
-          <h1 id="hero-title">{titleJa}</h1>
+          <h1 id="hero-title">{title}</h1>
+          <p className={styles.identityLine}>
+            日文名：<span lang="ja">花譜</span> / KAF
+          </p>
           <p className={styles.statement}>{statement}</p>
           <p className={styles.description}>{description}</p>
 
           <div className={styles.actions}>
-            <a
-              className={styles.officialLink}
-              href={officialUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {officialLabel} <span aria-hidden="true">↗</span>
+            <a className={styles.primaryLink} href={primaryHref}>
+              {primaryLabel} <span aria-hidden="true">↓</span>
             </a>
-            <a className={styles.journeyLink} href={journeyHref}>
-              {journeyLabel} <span aria-hidden="true">↓</span>
+            <a className={styles.secondaryLink} href={secondaryHref}>
+              {secondaryLabel} <span aria-hidden="true">→</span>
             </a>
           </div>
         </motion.div>

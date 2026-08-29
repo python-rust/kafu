@@ -118,6 +118,21 @@ const mediaSources = [
   },
 ] as const;
 
+const referenceSources = [
+  {
+    id: 'profile',
+    label: '花谱官方人物介绍',
+    note: '身份与活动概况',
+    href: 'https://example.com/profile',
+  },
+  {
+    id: 'history',
+    label: '花谱官方活动记录',
+    note: '重要时间节点',
+    href: 'https://example.com/history',
+  },
+] as const;
+
 const officialLinks = [
   {
     label: 'News',
@@ -145,7 +160,7 @@ describe('homepage editorial sections', () => {
   it('renders one featured work and a consistent supporting-work collection', () => {
     render(<WorksSection works={works} />);
 
-    const section = screen.getByRole('region', { name: '作品' });
+    const section = screen.getByRole('region', { name: '代表作品' });
     expect(within(section).getAllByRole('article')).toHaveLength(3);
     expect(
       within(section).getByRole('heading', { name: 'Current Work' }),
@@ -167,7 +182,7 @@ describe('homepage editorial sections', () => {
 
     expect(
       within(section).getByRole('link', {
-        name: /Current Workの公式ページ/,
+        name: /Current Work的官方页面/,
       }),
     ).toHaveAttribute('href', 'https://example.com/works/current');
     expect(within(section).queryByText('CURRENT WORK')).not.toBeInTheDocument();
@@ -176,28 +191,28 @@ describe('homepage editorial sections', () => {
   it('uses one active gallery stage and updates it from source-ordered thumbnails', async () => {
     const { container } = render(<GallerySection visuals={visuals} />);
 
-    const section = screen.getByRole('region', { name: '視覚' });
+    const section = screen.getByRole('region', { name: '视觉档案' });
     const thumbnailButtons = within(section).getAllByRole('button', {
-      name: /を表示$/,
+      name: /显示此图$/,
     });
 
     expect(thumbnailButtons).toHaveLength(3);
     expect(
       thumbnailButtons.map((button) => button.getAttribute('aria-label')),
     ).toEqual([
-      'Signal Portraitを表示',
-      'Stage Fieldを表示',
-      'Chapter Fragmentを表示',
+      'Signal Portrait，显示此图',
+      'Stage Field，显示此图',
+      'Chapter Fragment，显示此图',
     ]);
     expect(thumbnailButtons[0]).toHaveAttribute('aria-pressed', 'true');
     expect(
       within(section).getByRole('button', {
-        name: 'Signal Portraitを拡大表示',
+        name: 'Signal Portrait，点击放大',
       }),
     ).toBeInTheDocument();
     expect(
       within(section).queryByRole('link', {
-        name: /Signal Portraitの画像出典/,
+        name: /Signal Portrait.*图片来源/,
       }),
     ).not.toBeInTheDocument();
 
@@ -211,13 +226,15 @@ describe('homepage editorial sections', () => {
 
     await waitFor(() => {
       expect(
-        within(section).getByRole('button', { name: 'Stage Fieldを拡大表示' }),
+        within(section).getByRole('button', {
+          name: 'Stage Field，点击放大',
+        }),
       ).toBeInTheDocument();
     });
     expect(secondThumbnail).toHaveAttribute('aria-pressed', 'true');
     expect(
       within(section).queryByRole('link', {
-        name: /Stage Fieldの画像出典/,
+        name: /Stage Field.*图片来源/,
       }),
     ).not.toBeInTheDocument();
 
@@ -236,7 +253,7 @@ describe('homepage editorial sections', () => {
   it('renders direct official destinations without explanatory filler copy', () => {
     render(<OfficialLinksSection links={officialLinks} />);
 
-    const section = screen.getByRole('region', { name: '公式' });
+    const section = screen.getByRole('region', { name: '官方入口' });
     expect(
       within(section).queryByText(/新闻、日程、完整作品目录与社交动态/),
     ).not.toBeInTheDocument();
@@ -244,7 +261,7 @@ describe('homepage editorial sections', () => {
     for (const link of officialLinks) {
       expect(
         within(section).getByRole('link', {
-          name: `${link.label}：${link.note}（新しいタブで開く）`,
+          name: `${link.label}：${link.note}（在新窗口打开）`,
         }),
       ).toHaveAttribute('href', link.href);
     }
@@ -252,21 +269,26 @@ describe('homepage editorial sections', () => {
 
   it('states the fan-project disclaimer once and exposes media provenance', () => {
     render(
-      <SiteFooter projectLabel="KAF OBSERVATORY" mediaSources={mediaSources} />,
+      <SiteFooter
+        projectLabel="花谱观察站"
+        mediaSources={mediaSources}
+        referenceSources={referenceSources}
+      />,
     );
 
     const footer = screen.getByRole('contentinfo');
     expect(
+      within(footer).getByText(/这是一个面向中文读者的非官方、非营利粉丝页面/),
+    ).toBeVisible();
+    expect(
       within(footer).getByText(
-        '花譜およびKAMITSUBAKI STUDIOとは関係のない、非公式・非営利のファンサイトです。',
+        '图片作者与制作：花譜 / PALOW. / 川サキケンジ / とり',
       ),
     ).toBeVisible();
+    expect(within(footer).getByText('图片来源（2 项）')).toBeInTheDocument();
+    expect(within(footer).getByText('资料来源（2 项）')).toBeInTheDocument();
     expect(
-      within(footer).getByText('画像：花譜 / PALOW. / 川サキケンジ / とり'),
-    ).toBeVisible();
-    expect(within(footer).getByText('画像出典（2件）')).toBeInTheDocument();
-    expect(
-      within(footer).getAllByRole('link', { name: /の作品ページ/ }),
+      within(footer).getAllByRole('link', { name: /的作品页面/ }),
     ).toHaveLength(2);
   });
 });

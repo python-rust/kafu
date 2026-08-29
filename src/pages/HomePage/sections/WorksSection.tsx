@@ -33,7 +33,7 @@ function WorkMeta({ work }: { work: WorkItem }) {
   );
 }
 
-export function WorksSection({ works, title = '作品' }: WorksSectionProps) {
+export function WorksSection({ works, title = '代表作品' }: WorksSectionProps) {
   const featuredWorks = works.filter((work) => work.featured);
   const [featuredWork] = featuredWorks;
 
@@ -82,9 +82,9 @@ export function WorksSection({ works, title = '作品' }: WorksSectionProps) {
               href={featuredWork.sourceUrl}
               target="_blank"
               rel="noreferrer"
-              aria-label={`${featuredWork.title}の公式ページ（新しいタブで開く）`}
+              aria-label={`${featuredWork.title}的官方页面（在新窗口打开）`}
             >
-              公式ページ <span aria-hidden="true">↗</span>
+              查看官方页面 <span aria-hidden="true">↗</span>
             </a>
           </div>
         </article>
@@ -119,9 +119,9 @@ export function WorksSection({ works, title = '作品' }: WorksSectionProps) {
                   href={work.sourceUrl}
                   target="_blank"
                   rel="noreferrer"
-                  aria-label={`${work.title}の公式ページ（新しいタブで開く）`}
+                  aria-label={`${work.title}的官方页面（在新窗口打开）`}
                 >
-                  公式ページ <span aria-hidden="true">↗</span>
+                  查看官方页面 <span aria-hidden="true">↗</span>
                 </a>
               </div>
             </article>

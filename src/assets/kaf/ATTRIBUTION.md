@@ -178,7 +178,7 @@ These derivatives improve display density and reduce browser enlargement. They d
 ## Usage boundary
 
 - Keep the site explicitly unofficial and non-commercial while these images ship.
-- Keep required creator names visible in the page-bottom source line and retain the per-work source/license entries in the adjacent `画像出典` disclosure.
+- Keep required creator names visible in the page-bottom source line and retain the per-work source/license entries in the adjacent `图片来源` disclosure.
 - Re-check the exact work page before materially changing distribution context or creating a new derivative.
 - Remove the corresponding local file and content reference if its source terms become incompatible.
 - Do not treat this provenance record as blanket permission for unrelated KAF/KAMITSUBAKI official images, campaign materials, album covers, social-media reposts, logos, screenshots, or wallpapers.

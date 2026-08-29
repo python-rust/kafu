@@ -30,7 +30,7 @@ const stageTransition = {
 
 export function GallerySection({
   visuals,
-  title = '視覚',
+  title = '视觉档案',
 }: GallerySectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -106,7 +106,7 @@ export function GallerySection({
             onClick={openLightbox}
             onFocus={() => void loadGalleryLightbox()}
             onPointerEnter={() => void loadGalleryLightbox()}
-            aria-label={`${activeVisual.title}を拡大表示`}
+            aria-label={`${activeVisual.title}，点击放大`}
           >
             <AnimatePresence initial={false} mode="wait">
               <motion.span
@@ -129,7 +129,7 @@ export function GallerySection({
               </motion.span>
             </AnimatePresence>
             <span className={styles.expandIcon} aria-hidden="true">
-              拡大
+              放大
             </span>
           </button>
 
@@ -138,7 +138,7 @@ export function GallerySection({
           </div>
         </div>
 
-        <ol className={styles.thumbnailRail} aria-label="画像を選ぶ">
+        <ol className={styles.thumbnailRail} aria-label="选择图片">
           {visuals.map((visual, index) => {
             const isActive = index === safeActiveIndex;
 
@@ -149,7 +149,7 @@ export function GallerySection({
                   className={styles.thumbnailButton}
                   data-selected={isActive ? 'true' : undefined}
                   aria-pressed={isActive}
-                  aria-label={`${visual.title}を表示`}
+                  aria-label={`${visual.title}，显示此图`}
                   onClick={() => changeActiveVisual(index)}
                 >
                   <span className={styles.thumbnailImage}>
@@ -185,16 +185,16 @@ export function GallerySection({
             }}
             animation={{ fade: 220, swipe: 320, navigation: 280, zoom: 280 }}
             labels={{
-              Previous: '前の画像',
-              Next: '次の画像',
-              Close: '閉じる',
-              Slide: '画像',
-              Carousel: '画像一覧',
-              Lightbox: '画像を拡大表示',
-              'Photo gallery': '花譜の視覚資料',
-              '{index} of {total}': '{total}枚中{index}枚',
-              'Zoom in': '拡大',
-              'Zoom out': '縮小',
+              Previous: '上一张图片',
+              Next: '下一张图片',
+              Close: '关闭',
+              Slide: '图片',
+              Carousel: '图片列表',
+              Lightbox: '放大查看图片',
+              'Photo gallery': '花谱视觉档案',
+              '{index} of {total}': '第{index}张，共{total}张',
+              'Zoom in': '放大',
+              'Zoom out': '缩小',
             }}
             on={{
               view: ({ index }) => setActiveIndex(index),

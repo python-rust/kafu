@@ -13,11 +13,11 @@ function renderHomePage() {
 }
 
 describe('home page', () => {
-  it('composes the final KAF journey with direct Japanese navigation and no template copy', () => {
+  it('composes a Chinese-first KAF introduction with direct navigation and no template copy', () => {
     const { container } = renderHomePage();
 
     expect(
-      screen.getByRole('heading', { level: 1, name: '花譜' }),
+      screen.getByRole('heading', { level: 1, name: '花谱' }),
     ).toBeInTheDocument();
 
     const main = screen.getByRole('main');
@@ -25,16 +25,29 @@ describe('home page', () => {
       .filter((element) => element.tagName === 'SECTION')
       .map((element) => element.id);
 
-    expect(sectionIds).toEqual(['top', 'journey', 'works', 'visuals', 'links']);
+    expect(sectionIds).toEqual([
+      'top',
+      'about',
+      'journey',
+      'works',
+      'visuals',
+      'links',
+    ]);
 
-    for (const heading of ['軌跡', '作品', '視覚', '公式']) {
+    for (const heading of [
+      '认识花谱',
+      '成长轨迹',
+      '代表作品',
+      '视觉档案',
+      '官方入口',
+    ]) {
       expect(
         screen.getByRole('heading', { level: 2, name: heading }),
       ).toBeInTheDocument();
     }
 
     const journeySection = screen
-      .getByRole('heading', { level: 2, name: '軌跡' })
+      .getByRole('heading', { level: 2, name: '成长轨迹' })
       .closest('section');
     expect(journeySection).not.toBeNull();
 
@@ -43,12 +56,12 @@ describe('home page', () => {
     }
 
     for (const chapterTitle of [
-      '起源 / 発見',
-      '観測',
-      '魔法 / 再構築',
-      '拡張',
-      '寓話 / 第二章',
-      '深愛',
+      '被发现的声音',
+      '从网络走向现场',
+      '在无法相聚时重构舞台',
+      '把虚拟歌声带进武道馆',
+      '进入创作的第二章',
+      '走向更大的世界',
     ]) {
       expect(
         within(journeySection).getByRole('heading', {
@@ -59,7 +72,7 @@ describe('home page', () => {
     }
 
     const worksSection = screen
-      .getByRole('heading', { level: 2, name: '作品' })
+      .getByRole('heading', { level: 2, name: '代表作品' })
       .closest('section');
     expect(worksSection).not.toBeNull();
 
@@ -73,13 +86,14 @@ describe('home page', () => {
       ).toBeInTheDocument();
     }
 
-    expect(screen.getByRole('link', { name: /公式サイト/ })).toHaveAttribute(
-      'href',
-      'https://kaf.kamitsubaki.jp/',
-    );
     expect(
       screen.getByRole('link', {
-        name: /不可解\(再\).*出典/,
+        name: '官方网站：最新消息、日程与作品入口（在新窗口打开）',
+      }),
+    ).toHaveAttribute('href', 'https://kaf.kamitsubaki.jp/');
+    expect(
+      screen.getByRole('link', {
+        name: /不可解\(再\).*资料来源/,
       }),
     ).toHaveAttribute(
       'href',
@@ -91,14 +105,15 @@ describe('home page', () => {
     );
 
     const expectedAnchors = new Map([
-      ['軌跡', '#journey'],
-      ['作品', '#works'],
-      ['視覚', '#visuals'],
-      ['公式', '#links'],
+      ['认识花谱', '#about'],
+      ['成长轨迹', '#journey'],
+      ['代表作品', '#works'],
+      ['视觉档案', '#visuals'],
+      ['官方入口', '#links'],
     ]);
 
     const navigation = screen.getByRole('navigation', {
-      name: '花譜サイト内ナビゲーション',
+      name: '花谱观察站页面导航',
     });
 
     for (const [label, href] of expectedAnchors) {
@@ -109,14 +124,15 @@ describe('home page', () => {
 
     const footer = screen.getByRole('contentinfo');
     expect(
-      within(footer).getByText(
-        '花譜およびKAMITSUBAKI STUDIOとは関係のない、非公式・非営利のファンサイトです。',
-      ),
+      within(footer).getByText(/这是一个面向中文读者的非官方、非营利粉丝页面/),
     ).toBeInTheDocument();
     expect(
-      within(footer).getByText('画像：花譜 / PALOW. / 川サキケンジ / とり'),
+      within(footer).getByText(
+        '图片作者与制作：花譜 / PALOW. / 川サキケンジ / とり',
+      ),
     ).toBeVisible();
-    expect(within(footer).getByText('画像出典（9件）')).toBeInTheDocument();
+    expect(within(footer).getByText('图片来源（9 项）')).toBeInTheDocument();
+    expect(within(footer).getByText('资料来源（4 项）')).toBeInTheDocument();
     expect(footer.querySelectorAll('#media-sources a')).toHaveLength(18);
     expect(
       main.querySelectorAll('a[href^="https://piapro.jp/t/"]'),
@@ -141,7 +157,8 @@ describe('home page', () => {
 
     expect(container.querySelector('[class*="eyebrow"]')).toBeNull();
     expect(container.querySelector('[data-rhythm]')).toBeNull();
-    expect(container.querySelector('#about')).toBeNull();
+    expect(container.querySelector('#about')).not.toBeNull();
+    expect(screen.getAllByRole('article').length).toBeGreaterThanOrEqual(14);
   });
 
   it('uses all verified local visuals while only prioritizing the hero image', () => {

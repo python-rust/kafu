@@ -14,7 +14,7 @@ interface OfficialLinksSectionProps {
 
 export function OfficialLinksSection({
   links,
-  title = '公式',
+  title = '官方入口',
 }: OfficialLinksSectionProps) {
   return (
     <section
@@ -34,7 +34,7 @@ export function OfficialLinksSection({
                 href={link.href}
                 target="_blank"
                 rel="noreferrer"
-                aria-label={`${link.label}：${link.note}（新しいタブで開く）`}
+                aria-label={`${link.label}：${link.note}（在新窗口打开）`}
               >
                 <strong>{link.label}</strong>
                 <span className={styles.note}>{link.note}</span>
