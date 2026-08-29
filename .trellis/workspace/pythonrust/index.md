@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 7
+- **Total Sessions**: 8
 - **Last Active**: 2026-08-29
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~158 | Active |
+| `journal-1.md` | ~180 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 8 | 2026-08-29 | Redesign KAF editorial gallery and remove AI-template copy | `f647c2e0938155b256e5dacc5671780d510ec500`, `f623daf146f406e79dc330b54ac5323e9931fbfc` | `main` |
 | 7 | 2026-08-29 | Refine KAF visual system and scrolling | `544013d0883f0a8f9229fd21f61b64312a4c2ec5`, `c1282c7c84526686787ebe1fcff5a3f6e6c21b62` | `main` |
 | 6 | 2026-08-29 | Refine KAF visual system and scrolling | `544013d0883f0a8f9229fd21f61b64312a4c2ec5`, `c1282c7c84526686787ebe1fcff5a3f6e6c21b62` | `main` |
 | 5 | 2026-08-25 | Integrate immersive KAF homepage | `7f280b4`, `f532371` | `feat/kaf-immersive-integration` |

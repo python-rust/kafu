@@ -156,3 +156,25 @@ Rebuilt the homepage around a restrained KAF editorial palette and readable type
 ### Status
 
 [OK] **Completed**
+
+
+## Session 8: Redesign KAF editorial gallery and remove AI-template copy
+
+**Date**: 2026-08-29
+**Task**: Redesign KAF editorial gallery and remove AI-template copy
+**Branch**: `main`
+
+### Summary
+
+Removed decorative English microcopy, interface-narrating prose, leading-zero/index patterns, and repeated eyebrow hierarchy; rebuilt the page with warm dark KAF art direction, direct Japanese navigation, page-local shared heading/credit components, and a one-stage eight-image gallery using a lazy React-19-compatible open-source lightbox. Added full unit/E2E coverage and executable frontend content/visual/component constraints.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f647c2e0938155b256e5dacc5671780d510ec500` | (see git log) |
+| `f623daf146f406e79dc330b54ac5323e9931fbfc` | (see git log) |
+
+### Status
+
+[OK] **Completed**
