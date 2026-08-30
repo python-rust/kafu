@@ -1,0 +1,2 @@
+{"file":".trellis/spec/frontend/visual-system-guidelines.md","reason":"Review the CJK heading sizing and wrap regression contract."}
+{"file":".trellis/tasks/08-30-kaf-journey-cjk-heading-wrap/research/cjk-heading-line-break.md","reason":"Verify the implementation matches the measured cause and selected solution."}

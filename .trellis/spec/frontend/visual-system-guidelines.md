@@ -136,6 +136,16 @@ with section-local family names.
 - Keep Chinese/Japanese body line-height around `1.7–1.9`.
 - Control line length with width and composition, never by shrinking body text.
 - Use weight, grouping, image scale, and contrast before adding another size.
+- Do not use `ch` to cap Simplified Chinese or Japanese display headings. `ch`
+  reflects the `0` glyph width and can fit materially fewer CJK ideographs than
+  the numeric value suggests.
+- Short CJK headings use the full inline size of their owning container. Apply
+  `line-break: strict` and `text-wrap: balance` as a fallback for genuinely
+  constrained layouts rather than forcing content-specific `<br>` elements or
+  `nowrap` overflow.
+- At the default root size, the current Journey titles
+  `在无法相聚时重构舞台` and `把虚拟歌声带进武道馆` remain single-line from
+  the 320px supported viewport upward. Browser tests own this regression.
 
 ---
 
