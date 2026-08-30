@@ -239,3 +239,39 @@ Reframed the KAF homepage as a Simplified Chinese newcomer product with stable f
 ### Next Steps
 
 - No pending implementation work; task archived under archive/2026-08.
+
+
+## Session 11: Refine KAF editorial copy and era theatre
+
+**Date**: 2026-08-30
+**Task**: Refine KAF editorial copy and era theatre
+**Branch**: `main`
+
+### Summary
+
+Removed explanatory GPT-like copy, replaced the sticky newcomer story with a factual profile, rebuilt Journey as accessible Radix era tabs, and restored the third album.
+
+### Main Changes
+
+- Hero now contains factual identity plus direct profile/works actions.
+- Static KafProfileSection replaces four slogan-driven sticky steps.
+- Journey uses six Radix tabs with keyboard and previous/next controls.
+- Representative works now include 狂想β without an unverified cover.
+- Frontend SPEC now forbids page-explaining/rhetorical slogan copy and codifies era tabs.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0d178b47e3d3b97f455b684094da9c58f75d3763` | (see git log) |
+| `c45b9b4bf3ce1a59bec7785261103f86929f1297` | (see git log) |
+
+### Testing
+
+- [OK] mise run check passed: 7 Vitest files / 26 tests.
+- [OK] mise run e2e passed: 12 Chromium tests.
+- [OK] 320px, 200% text, reduced motion, DPR media, Gallery, and zero document overflow passed.
+
+### Status
+
+[OK] **Completed**

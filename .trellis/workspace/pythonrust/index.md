@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 10
+- **Total Sessions**: 11
 - **Last Active**: 2026-08-30
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~241 | Active |
+| `journal-1.md` | ~277 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 11 | 2026-08-30 | Refine KAF editorial copy and era theatre | `0d178b47e3d3b97f455b684094da9c58f75d3763`, `c45b9b4bf3ce1a59bec7785261103f86929f1297` | `main` |
 | 10 | 2026-08-30 | Localize KAF storytelling for Chinese audiences | `659e31a1a65f2b9fa33f8ebd83c95b828c89d5b8`, `faa73027098ba09fd969d4e35e7e871e2b74887d` | `main` |
 | 9 | 2026-08-30 | Improve KAF image quality and media inspection | `ddb29a9daae3860931ddcaac0ab6b8e37a5c88df`, `b1516fc0b01b28fe71c35bc1c7f38d715a3288a9` | `main` |
 | 8 | 2026-08-29 | Redesign KAF editorial gallery and remove AI-template copy | `f647c2e0938155b256e5dacc5671780d510ec500`, `f623daf146f406e79dc330b54ac5323e9931fbfc` | `main` |
