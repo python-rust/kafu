@@ -313,3 +313,37 @@ Replaced click-required era tabs with Scrollama-guided native scrolling across d
 ### Next Steps
 
 - No active task remains; remote is intentionally unchanged.
+
+
+## Session 13: Polish mobile Hero and Journey viewport UX
+
+**Date**: 2026-08-30
+**Task**: Polish mobile Hero and Journey viewport UX
+**Branch**: `main`
+
+### Summary
+
+Redesigned the portrait mobile Hero as a stable full-viewport contained-artwork composition and converted the compact Journey stage into a flush full-bleed media dock with measured Scrollama activation.
+
+### Main Changes
+
+- Replaced the fixed 48rem portrait Hero and extreme cover crop with 100svh, contained high-density artwork, and a lazy generated-thumbnail ambience.
+- Removed the header-to-Journey seam, removed the floating-card treatment, and derived compact Scrollama offsets from rendered header and stage geometry.
+- Expanded viewport contracts for short/tall phones, portrait tablet, short landscape, 200% text, reduced motion, and whole-site overflow/touch behavior.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `46e51394b0cac7a77cb36f44e711923fb1061ad0` | (see git log) |
+| `2e43aff50f0aa29fcd68d0a79dfe791fe4853e2e` | (see git log) |
+
+### Testing
+
+- [OK] mise run check
+- [OK] mise run e2e (13 Chromium tests)
+- [OK] Trellis context validation and git diff --check
+
+### Status
+
+[OK] **Completed**
