@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 11
+- **Total Sessions**: 12
 - **Last Active**: 2026-08-30
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~277 | Active |
+| `journal-1.md` | ~315 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 12 | 2026-08-30 | Guide KAF journey through responsive scrollytelling | `caa931cdc427af149e3f86f0de29a39472af7ee1`, `f2b7ff0e0fd63b67c6e5faae3352766e5d80da03` | `main` |
 | 11 | 2026-08-30 | Refine KAF editorial copy and era theatre | `0d178b47e3d3b97f455b684094da9c58f75d3763`, `c45b9b4bf3ce1a59bec7785261103f86929f1297` | `main` |
 | 10 | 2026-08-30 | Localize KAF storytelling for Chinese audiences | `659e31a1a65f2b9fa33f8ebd83c95b828c89d5b8`, `faa73027098ba09fd969d4e35e7e871e2b74887d` | `main` |
 | 9 | 2026-08-30 | Improve KAF image quality and media inspection | `ddb29a9daae3860931ddcaac0ab6b8e37a5c88df`, `b1516fc0b01b28fe71c35bc1c7f38d715a3288a9` | `main` |

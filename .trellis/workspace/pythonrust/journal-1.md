@@ -275,3 +275,41 @@ Removed explanatory GPT-like copy, replaced the sticky newcomer story with a fac
 ### Status
 
 [OK] **Completed**
+
+
+## Session 12: Guide KAF journey through responsive scrollytelling
+
+**Date**: 2026-08-30
+**Task**: Guide KAF journey through responsive scrollytelling
+**Branch**: `main`
+
+### Summary
+
+Replaced click-required era tabs with Scrollama-guided native scrolling across desktop and mobile, removed secondary Journey imagery, and expanded responsive regression coverage.
+
+### Main Changes
+
+- Replaced Radix Tabs with scrollama@3.2.0 and one-image sticky Journey stages.
+- Added downward/upward six-era activation, compact pixel offsets, orientation recalibration, and progressive reduced-motion/observer fallbacks.
+- Expanded mobile validation to 320/360/390/430 portrait, 844x390 landscape, tablet, desktop, and 200% text.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `caa931cdc427af149e3f86f0de29a39472af7ee1` | (see git log) |
+| `f2b7ff0e0fd63b67c6e5faae3352766e5d80da03` | (see git log) |
+
+### Testing
+
+- [OK] mise run check: 7 test files / 26 tests passed; lint/typecheck/build passed.
+- [OK] mise run e2e: 13 Chromium tests passed.
+- [OK] Media manifest, Trellis validation, git diff check, and production audit passed with no known vulnerabilities.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- No active task remains; remote is intentionally unchanged.
