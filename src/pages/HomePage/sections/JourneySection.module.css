@@ -125,11 +125,15 @@
 }
 
 .stageMeta strong {
+  width: 100%;
+  max-width: none;
   font-family: var(--font-display-zh);
   font-size: clamp(1.75rem, 1.35rem + 1.25vw, 2.75rem);
   font-weight: 650;
   letter-spacing: -0.02em;
+  line-break: strict;
   line-height: 1.2;
+  text-wrap: balance;
 }
 
 .stageProgress {
@@ -234,13 +238,16 @@
 }
 
 .stepHeader h3 {
-  max-width: 15ch;
+  width: 100%;
+  max-width: none;
   margin: 0.7rem 0 0;
   font-family: var(--font-display-zh);
   font-size: var(--type-card-title);
   font-weight: 650;
   letter-spacing: -0.02em;
+  line-break: strict;
   line-height: 1.18;
+  text-wrap: balance;
 }
 
 .summary {
@@ -372,7 +379,6 @@
   }
 
   .stageMeta strong {
-    max-width: 17ch;
     font-size: clamp(1.35rem, 1.1rem + 1.2vw, 1.9rem);
   }
 
@@ -416,7 +422,8 @@
   }
 
   .step {
-    padding: clamp(1.25rem, 4vw, 1.75rem);
+    padding-block: clamp(1.25rem, 4vw, 1.75rem);
+    padding-inline: clamp(1rem, 4vw, 1.75rem);
     border: 1px solid var(--color-line-strong);
     border-left-width: 2px;
     background: rgb(13 9 16 / 96%);

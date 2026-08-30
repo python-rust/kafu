@@ -188,6 +188,23 @@ async function expectMinimumTargetHeight(
   }
 }
 
+async function expectSingleRenderedLine(locator: Locator, label: string) {
+  await expect(locator).toBeVisible();
+
+  const lineCount = await locator.evaluate((element) => {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+
+    return new Set(
+      Array.from(range.getClientRects()).map(
+        (rect) => Math.round(rect.top * 10) / 10,
+      ),
+    ).size;
+  });
+
+  expect(lineCount, label).toBe(1);
+}
+
 async function expectAnchorBelowHeader(page: Page, headingName: string) {
   const geometry = await page.evaluate((name) => {
     const header = document.querySelector('header');
@@ -607,6 +624,15 @@ test('journey follows downward and upward native scrolling through all six eras'
 
   await activateJourneyStep(page, 2);
   await expect(stage).toContainText('在无法相聚时重构舞台');
+  await expectSingleRenderedLine(
+    stage.locator('strong'),
+    'desktop Journey stage title should use its full line',
+  );
+  await activateJourneyStep(page, 3);
+  await expectSingleRenderedLine(
+    stage.locator('strong'),
+    'desktop 武道馆 stage title should not orphan characters',
+  );
   await activateJourneyStep(page, 1);
   await expect(stage).toContainText('从网络走向现场');
 
@@ -914,6 +940,16 @@ test('all target viewport sizes remain free of horizontal overflow', async ({
     await expect(
       page.getByTestId('journey-sticky-stage').locator('img'),
     ).toHaveCount(1);
+
+    for (const title of ['在无法相聚时重构舞台', '把虚拟歌声带进武道馆']) {
+      await expectSingleRenderedLine(
+        page.locator('#journey').getByRole('heading', {
+          level: 3,
+          name: title,
+        }),
+        `${viewport.width}×${viewport.height} Journey title: ${title}`,
+      );
+    }
 
     await activateJourneyStep(page, 0);
     const stageGeometry = await page
