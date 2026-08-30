@@ -495,3 +495,41 @@ Added progressive same-origin artwork placeholders and loading feedback, width-b
 ### Next Steps
 
 - No immediate follow-up; future Pages releases remain manual through deploy-pages.yml.
+
+
+## Session 18: Fix cached artwork transitions and Hero reveal
+
+**Date**: 2026-08-30
+**Task**: Fix cached artwork transitions and Hero reveal
+**Branch**: `main`
+
+### Summary
+
+Removed the Hero decode visibility deadlock, reused inline ambience instead of a second request, added exact responsive-request cache state, preserved clear Journey artwork during uncached transitions, prevented LQIP flashes on cached revisits, delayed adjacent prefetch until actual Journey entry, and successfully redeployed GitHub Pages.
+
+### Main Changes
+
+- ResponsiveArtwork now reveals on native load and recognizes complete/cached exact requests before paint.
+- Hero now uses one network image with request-free inline placeholder ambience.
+- Journey separates active and displayed visuals, retains the previous clear image while loading, and prefetches one neighbor only after Scrollama entry.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `91bd7208ab6f575b767d28a2f76a0287198a7a09` | (see git log) |
+| `5f266b2933324a9be87314018296748c005334a1` | (see git log) |
+| `f101f816b2a8425d8a43dad5209e5e1fe88fc743` | (see git log) |
+
+### Testing
+
+- [OK] Vitest: 9 files / 34 tests passed; Chromium Playwright: 16 tests passed.
+- [OK] GitHub Pages run 33314071965 succeeded; public decode-deadlock, delayed-Hero, same-origin, and cached-Journey audits passed.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- No immediate follow-up; future Pages releases remain manual through deploy-pages.yml.

@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 17
+- **Total Sessions**: 18
 - **Last Active**: 2026-08-30
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~497 | Active |
+| `journal-1.md` | ~535 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 18 | 2026-08-30 | Fix cached artwork transitions and Hero reveal | `91bd7208ab6f575b767d28a2f76a0287198a7a09`, `5f266b2933324a9be87314018296748c005334a1`, `f101f816b2a8425d8a43dad5209e5e1fe88fc743` | `main` |
 | 17 | 2026-08-30 | Improve weak-network artwork loading | `377b0950d8b6fbeb99f13eb847aba350bf07ac72`, `39d774df3e45b6d245b653a656a775b22817d092`, `45b439f50355acf26367dfcfd2eddef4e1d7f0e8` | `main` |
 | 16 | 2026-08-30 | Deploy KAF site to GitHub Pages manually | `6ab73f9b7c7ac45477201e3fdc10b1688afdeae6`, `97107e11610e125575b25a5ccfc72333ba2adbc0`, `7ac7e1ef2baf82cff97609c360b7d463855c650d` | `main` |
 | 15 | 2026-08-30 | Fix Journey Chinese heading line breaks | `a75bd68c83a341b9cfbcdedc8be0fe0bf883a234`, `482ed710d47bfd38540f517f2fba9fea917d92fb` | `main` |
