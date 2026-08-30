@@ -418,3 +418,42 @@ Removed Latin ch-based width caps from Journey Chinese titles, let headings use 
 ### Next Steps
 
 - None.
+
+
+## Session 16: Deploy KAF site to GitHub Pages manually
+
+**Date**: 2026-08-30
+**Task**: Deploy KAF site to GitHub Pages manually
+**Branch**: `main`
+
+### Summary
+
+Added a manual-only, immutable-action GitHub Pages pipeline; made Vite and React Router repository-subpath aware; enabled Pages, deployed the current site, and verified the live same-origin image/font runtime.
+
+### Main Changes
+
+- Added .github/workflows/deploy-pages.yml with workflow_dispatch only, pinned Actions, mise-managed validation, Pages artifact upload, and OIDC deployment.
+- Added VITE_BASE_PATH handling, BrowserRouter basename normalization, workflow/artifact policy verifiers, README instructions, and deployment SPEC.
+- Enabled GitHub Pages for python-rust/kafu, fast-forward pushed main, and completed the first manual deployment.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6ab73f9b7c7ac45477201e3fdc10b1688afdeae6` | (see git log) |
+| `97107e11610e125575b25a5ccfc72333ba2adbc0` | (see git log) |
+| `7ac7e1ef2baf82cff97609c360b7d463855c650d` | (see git log) |
+
+### Testing
+
+- [OK] mise run check passed: 8 Vitest files and 27 tests, plus format/lint/typecheck/build.
+- [OK] mise run e2e passed: 14 Chromium tests.
+- [OK] The /kafu/ artifact and live site passed same-origin asset, Router basename, image, font, HTTP 200, and console/request smoke checks.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Future releases remain manual: Actions -> Deploy GitHub Pages -> Run workflow, or gh workflow run deploy-pages.yml --ref main.

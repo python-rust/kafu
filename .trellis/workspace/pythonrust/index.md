@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 15
+- **Total Sessions**: 16
 - **Last Active**: 2026-08-30
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~420 | Active |
+| `journal-1.md` | ~459 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 16 | 2026-08-30 | Deploy KAF site to GitHub Pages manually | `6ab73f9b7c7ac45477201e3fdc10b1688afdeae6`, `97107e11610e125575b25a5ccfc72333ba2adbc0`, `7ac7e1ef2baf82cff97609c360b7d463855c650d` | `main` |
 | 15 | 2026-08-30 | Fix Journey Chinese heading line breaks | `a75bd68c83a341b9cfbcdedc8be0fe0bf883a234`, `482ed710d47bfd38540f517f2fba9fea917d92fb` | `main` |
 | 14 | 2026-08-30 | Refine KAF typography with open web fonts | `5af6d338d46a1a5491bf2caff7119136b78d5c97`, `efaffa7f7d4fec796fd33ce44d74e9e87e66e690` | `main` |
 | 13 | 2026-08-30 | Polish mobile Hero and Journey viewport UX | `46e51394b0cac7a77cb36f44e711923fb1061ad0`, `2e43aff50f0aa29fcd68d0a79dfe791fe4853e2e` | `main` |
