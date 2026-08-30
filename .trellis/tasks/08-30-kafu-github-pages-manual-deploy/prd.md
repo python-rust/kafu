@@ -56,22 +56,22 @@ compatible with a repository subpath.
 
 ## Acceptance Criteria
 
-- [ ] GitHub Pages reports `build_type: workflow` and the URL
+- [x] GitHub Pages reports `build_type: workflow` and the URL
       `https://python-rust.github.io/kafu/`.
-- [ ] `.github/workflows/deploy-pages.yml` has only `workflow_dispatch`.
-- [ ] All five Actions are pinned to reviewed full SHAs.
-- [ ] The workflow builds with `/kafu/`, uploads `dist`, and deploys through the
+- [x] `.github/workflows/deploy-pages.yml` has only `workflow_dispatch`.
+- [x] All five Actions are pinned to reviewed full SHAs.
+- [x] The workflow builds with `/kafu/`, uploads `dist`, and deploys through the
       official Pages artifact/deployment actions.
-- [ ] `BrowserRouter` receives a normalized basename derived from
+- [x] `BrowserRouter` receives a normalized basename derived from
       `import.meta.env.BASE_URL`.
-- [ ] A local Pages-mode build has a root `index.html`, `/kafu/assets/`
+- [x] A local Pages-mode build has a root `index.html`, `/kafu/assets/`
       references, and no runtime external asset URLs.
-- [ ] `mise run check` and `mise run e2e` pass locally.
-- [ ] `main` is pushed without force and has no local/remote divergence.
-- [ ] The manual workflow completes successfully.
-- [ ] The public URL returns HTTP 200 and renders the KAF homepage with local
+- [x] `mise run check` and `mise run e2e` pass locally.
+- [x] `main` is pushed without force and has no local/remote divergence.
+- [x] The manual workflow completes successfully.
+- [x] The public URL returns HTTP 200 and renders the KAF homepage with local
       images and fonts.
-- [ ] Deployment constraints and the manual release procedure are recorded in
+- [x] Deployment constraints and the manual release procedure are recorded in
       frontend SPEC/README documentation.
 
 ## Out of Scope

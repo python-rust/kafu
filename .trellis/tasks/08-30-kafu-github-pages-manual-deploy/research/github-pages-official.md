@@ -41,3 +41,11 @@ base, a router basename derived from Vite, and the project's existing mise
 toolchain through `jdx/mise-action@v4.2.5`. Do not create a `gh-pages` branch,
 commit `dist`, add OSS, or add a separate runtime deployment dependency.
 
+## Live result
+
+The first manual workflow run (`33307698551`) completed successfully on
+2026-08-30. GitHub Pages returned HTTP 200 at
+`https://python-rust.github.io/kafu/`; browser inspection observed only
+same-origin `/kafu/` runtime resources, including local WebP images and Noto
+WOFF2 fonts.
+

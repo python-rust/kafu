@@ -51,3 +51,35 @@ gh run watch <run-id> --exit-status
 - No remote image/font requests are introduced.
 - Push is a normal fast-forward push; never force-push.
 
+## Completion evidence
+
+- Pages configuration was created through the GitHub API with
+  `build_type=workflow`, HTTPS enforced, and public URL
+  `https://python-rust.github.io/kafu/`.
+- Local validation:
+  - `mise run check`: passed, 8 Vitest files / 27 tests;
+  - `mise run e2e`: passed, 14 Chromium tests;
+  - Pages artifact verifier: 2 HTML entry resources and 198 CSS resources;
+  - local `/kafu/` browser smoke: 46 same-origin resources, no external runtime
+    requests, 8 responsive images, 40 loaded font faces.
+- Git safety:
+  - `git fetch origin --prune` completed;
+  - `origin/main...main` was `0 30` before push;
+  - `git push origin main` was a normal fast-forward from `68ffc5c` to
+    `97107e1`.
+- Manual deployment:
+  - workflow run ID: `33307698551`;
+  - event: `workflow_dispatch`;
+  - source commit: `97107e11610e125575b25a5ccfc72333ba2adbc0`;
+  - Validate and build: success in 35 seconds;
+  - Deploy: success in 10 seconds;
+  - run URL: `https://github.com/python-rust/kafu/actions/runs/33307698551`.
+- Public verification:
+  - root response: HTTP 200 with HTTPS/HSTS;
+  - hashed JS and CSS: HTTP 200 with correct MIME types;
+  - live browser path: `/kafu/`;
+  - title/H1 rendered correctly;
+  - no failed requests or browser console errors;
+  - all observed runtime resources were same-origin and under `/kafu/`;
+  - local WebP images and Noto WOFF2 fonts loaded successfully.
+
