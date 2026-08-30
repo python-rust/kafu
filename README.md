@@ -1,73 +1,64 @@
-# KAF Observatory
+# 花谱观察站
 
-非公式花譜粉丝交互网站的前端工程原型。
+面向中文读者的花谱（花譜 / KAF）非官方资料站。项目整理人物简介、2018 年以来的活动轨迹、代表专辑、视觉作品和官方平台入口；资料与图片来源集中列在页面底部。
 
-## 在线站点
+**[访问花谱观察站](https://python-rust.github.io/kafu/)**
 
-GitHub Pages：
+## 页面内容
 
-```text
-https://python-rust.github.io/kafu/
-```
+- **人物介绍**：花谱的基本资料、所属团队和主要活动形式。
+- **成长轨迹**：按年份整理重要作品、演出和活动节点。
+- **代表作品**：收录《観測α》《魔法α》《狂想β》《寓話》《深愛》等原创专辑。
+- **视觉档案**：浏览站内收录的插画与演出视觉，并支持放大查看。
+- **官方入口**：汇总官方网站、哔哩哔哩、YouTube 等官方账号。
 
-页面的图片、字体、JavaScript 和 CSS 都由同一个 GitHub Pages 站点提供；
-Piapro、KAMITSUBAKI 等外部地址只作为用户主动点击的资料来源链接。
+## 技术实现
 
-## 开发环境
+- React 19、TypeScript、Vite
+- Motion 与 Scrollama
+- Yet Another React Lightbox
+- Noto Sans SC、Noto Serif SC 自托管字体
+- Vitest、Testing Library、Playwright
 
-本项目使用 `mise` 隔离 Node.js、pnpm 和所有开发任务。不要把系统 Node/pnpm 当作项目运行环境，也不要把 `pnpm run ...` 作为日常入口。
+页面支持桌面端和移动端。系统开启“减少动态效果”后，成长轨迹会改为普通列表，内容不会缺失。
+
+## 本地开发
+
+项目使用 `mise` 固定 Node.js 和 pnpm 版本。安装好 `mise` 后，在仓库目录运行：
 
 ```bash
 mise run install
 mise run dev
 ```
 
-常用任务：
+常用命令：
 
-```bash
-mise run dev
-mise run env
-mise run build
-mise run test
-mise run lint
-mise run typecheck
-mise run check
-mise run e2e-install
-mise run e2e
-```
+| 命令                   | 用途                           |
+| ---------------------- | ------------------------------ |
+| `mise run dev`         | 启动本地开发服务器             |
+| `mise run build`       | 类型检查并生成生产构建         |
+| `mise run test`        | 运行 Vitest 测试               |
+| `mise run check`       | 运行格式、Lint、测试和构建检查 |
+| `mise run e2e-install` | 安装 Playwright Chromium       |
+| `mise run e2e`         | 运行浏览器端回归测试           |
 
-## 手动部署
+使用 `mise tasks ls` 可以查看全部任务。
 
-部署不会在提交代码时自动触发。需要发布时，在 GitHub 仓库中打开：
+## 目录结构
 
-```text
-Actions → Deploy GitHub Pages → Run workflow → main
-```
+| 路径                  | 内容                                     |
+| --------------------- | ---------------------------------------- |
+| `src/content/kaf.ts`  | 人物、时间线、专辑和官方链接数据         |
+| `src/pages/HomePage/` | 首页组件与各内容区块                     |
+| `src/assets/kaf/`     | 图片素材、响应式派生文件和来源记录       |
+| `tests/`              | 单元测试、组件测试和 Playwright 回归测试 |
 
-也可以使用已登录的 GitHub CLI：
+## 内容与素材
 
-```bash
-gh workflow run deploy-pages.yml --ref main
-gh run list --workflow deploy-pages.yml --limit 1
-```
-
-工作流会先运行格式、Lint、单元测试和生产构建，再以 `/kafu/` 为基础路径
-生成 `dist`，最后通过 GitHub 官方 Pages artifact/deploy Actions 发布。
-
-需要在本地验证同样的 Pages 构建时：
-
-```bash
-VITE_BASE_PATH=/kafu/ mise run build
-python3 scripts/verify_pages_build.py dist /kafu/
-python3 scripts/verify_pages_workflow.py .github/workflows/deploy-pages.yml
-```
-
-GitHub Pages 的发布源必须保持为 **GitHub Actions**。工作流文件位于：
-
-```text
-.github/workflows/deploy-pages.yml
-```
+人物和作品资料集中维护在 `src/content/kaf.ts`。新增或替换图片时，需要同步记录来源、署名和使用条件，详见 [素材来源与使用说明](src/assets/kaf/ATTRIBUTION.md)。
 
 ## 版权说明
 
-本仓库定位为非商业粉丝项目，不包含从官方应用或页面提取的模型资源。
+本项目是非官方、非商业粉丝站，与花谱及 KAMITSUBAKI STUDIO 无隶属关系。花谱、KAMITSUBAKI STUDIO、作品名称、图片及其他相关素材的权利归各自权利人所有。项目所用字体和第三方依赖遵循各自许可证。
+
+如权利人希望调整或移除相关内容，请通过仓库的 [Issue](https://github.com/python-rust/kafu/issues) 联系。
