@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/media-guidelines.md","reason":"Verify width candidates, placeholders, loading roles, and no provenance drift."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Verify delayed-image UX, existing E2E contracts, and full quality gates."}
+{"file":".trellis/spec/frontend/deployment-guidelines.md","reason":"Verify Pages artifact remains same-origin, subpath-correct, and manual-only."}
+{"file":".trellis/tasks/08-30-kafu-image-loading-feedback/research/weak-network-images.md","reason":"Check implementation against selected native approach and rejected dependency tradeoffs."}

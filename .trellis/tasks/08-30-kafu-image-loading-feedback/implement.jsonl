@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/media-guidelines.md","reason":"Responsive media variants, loading roles, provenance, and generated metadata contract."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Required unit/browser checks, weak-network validation, and deployment quality gates."}
+{"file":".trellis/spec/frontend/deployment-guidelines.md","reason":"Manual-only GitHub Pages deployment and same-origin /kafu/ artifact constraints."}
+{"file":".trellis/tasks/08-30-kafu-image-loading-feedback/research/weak-network-images.md","reason":"Primary-source findings and dependency review for progressive loading and priority."}

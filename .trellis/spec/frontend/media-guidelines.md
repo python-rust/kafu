@@ -43,6 +43,7 @@ interface KafMedia {
   readonly display: KafMediaVariant;
   readonly highDensity: KafMediaVariant;
   readonly thumbnail: KafMediaVariant;
+  readonly placeholderDataUrl: string;
   readonly alt: string;
   readonly credit: string;
   readonly sourceUrl: string;
@@ -55,17 +56,21 @@ interface KafMedia {
 
 Field meaning:
 
-- `preview` — unchanged public Piapro preview used as the provenance input;
-- `display` — conservative 2× derivative used as the `1x` page candidate;
-- `highDensity` — conservative 4× derivative used as the `2x` page candidate
-  and full lightbox source;
+- `preview` — unchanged verified local provenance input;
+- `display` — normal page candidate appropriate to the verified source;
+- `highDensity` — larger page/lightbox candidate appropriate to the verified
+  source;
 - `thumbnail` — longest-edge 480px derivative used only for thumbnail/backdrop
   roles;
+- `placeholderDataUrl` — generated longest-edge 32px WebP embedded inline for
+  immediate weak-network feedback without another request;
 - source/license fields — retained regardless of where attribution is rendered.
 
-All variants preserve the preview aspect ratio exactly. `display` dimensions
-are 2× preview dimensions and `highDensity` dimensions are 4× preview
-dimensions.
+All variants preserve the preview aspect ratio exactly. The nine Piapro preview
+inputs keep the established 2× display / 4× high-density contract. A reviewed
+source-native asset may instead downsample the verified source; the current
+`狂想β` cover uses 800px display, 1600px high-density, and 480px thumbnail
+variants rather than artificial upscaling.
 
 ---
 
@@ -75,7 +80,7 @@ The public work page may report a larger original while exposing only a smaller
 preview without authentication. Never bypass source authentication or replace a
 verified work with an unverified repost.
 
-The approved local derivative process is:
+The approved Piapro-preview derivative process is:
 
 ```text
 tool: waifu2x-ncnn-vulkan 20250915 (official portable macOS build)
@@ -109,6 +114,19 @@ The script must:
 4. write derivative SHA-256 and byte size to `generated/manifest.json`;
 5. generate and verify `generated/mediaVariants.ts` from the same dimensions so
    runtime imports cannot drift from the manifest.
+6. generate and verify a tiny inline WebP placeholder for every media record.
+
+Reviewed source-native images use the same manifest/type pipeline without
+waifu2x. Generate those independently with:
+
+```bash
+python3 scripts/generate_kaf_media_variants.py --refresh-native-sources
+```
+
+The current source-native exception is the official 1600×1600 `狂想β` album
+cover. Only technical resize/format derivatives are permitted for that asset;
+its provenance and non-commercial usage boundary remain explicit in
+`src/assets/kaf/ATTRIBUTION.md`.
 
 Upscaling improves delivery density; it does not restore inaccessible source
 pixels. Documentation and UI must never call a derivative an “original” or
@@ -126,34 +144,43 @@ Default output:
 ```tsx
 <img
   src={media.display.src}
-  srcSet={`${media.display.src} 1x, ${media.highDensity.src} 2x`}
+  srcSet={`${media.thumbnail.src} 480w, ${media.display.src} 1720w, ${media.highDensity.src} 3440w`}
+  sizes="...layout-specific CSS width..."
   width={media.display.width}
   height={media.display.height}
   alt={media.alt}
 />
 ```
 
-The density descriptors are intentional. Desktop/landscape Hero uses
-`object-fit: cover`; portrait mobile uses the same responsive candidate as a
-contained foreground. Source-pixel demand therefore depends on the rendered
-role and device density, not CSS width alone.
+Responsive images use width descriptors plus an explicit caller-owned `sizes`
+expression. This allows the browser to combine layout width, DPR, connection,
+and available candidates rather than assuming every DPR 2/3 device must fetch
+the largest file. At 390px/DPR 3, the 1720px Hero is sufficient; at
+1440px/DPR 2, the 3440px candidate remains available.
 
 ### Role matrix
 
 | Role | Variant | Loading | Priority |
 | --- | --- | --- | --- |
 | Hero foreground | responsive display/high-density | eager | high |
-| Hero portrait ambience | thumbnail | lazy | normal |
-| Journey stage and linear media | responsive display/high-density | lazy | normal |
-| Works media | responsive display/high-density | lazy | normal |
-| Gallery active stage | responsive display/high-density | lazy | normal |
-| Gallery backdrop | thumbnail | lazy | normal |
-| Gallery rail | thumbnail | lazy | normal |
+| Hero portrait ambience | thumbnail | lazy | low |
+| Profile | responsive width candidates | lazy | auto |
+| Active Journey stage | responsive width candidates | lazy | auto |
+| Linear/reduced-motion Journey media | responsive width candidates | lazy | low |
+| Works media | responsive width candidates | lazy | low |
+| Gallery active stage | responsive width candidates | lazy | low |
+| Gallery backdrop | thumbnail | lazy | low |
+| Gallery rail | thumbnail | lazy | low |
 | Gallery lightbox | high-density | interaction-only | lazy chunk |
 
 Only the Hero foreground may set `fetchPriority="high"`. The portrait ambience
 is decorative (`alt=""`, `aria-hidden`) and never receives a `srcset`. Every
 rendered image keeps explicit intrinsic width and height.
+
+The Hero foreground additionally has one responsive `<link rel="preload"
+as="image">` in `index.html`. The preload `href`, `imagesrcset`, `imagesizes`,
+and `fetchpriority="high"` must describe the same candidates as the rendered
+Hero image and remain valid after Vite rewrites the Pages `/kafu/` base path.
 
 ### Wrong vs correct
 
@@ -166,6 +193,7 @@ rendered image keeps explicit intrinsic width and height.
   source={media}
   loading="eager"
   fetchPriority="high"
+  sizes="100vw"
 />
 ```
 
@@ -176,6 +204,29 @@ rendered image keeps explicit intrinsic width and height.
 // Correct: fixed small role.
 <ResponsiveArtwork source={media} variant="thumbnail" alt="" />
 ```
+
+---
+
+## Weak-Network Loading Contract
+
+Every `ResponsiveArtwork` renders one semantic `<img>` inside one progressive
+shell. The shell must:
+
+- reserve the final aspect ratio before transfer completes;
+- paint `placeholderDataUrl` immediately as a blurred same-bundle background;
+- expose `data-artwork-status=loading|loaded|error`;
+- use `aria-busy="true"` only while loading;
+- show an honest indeterminate line and delayed `图片加载中` text for normal
+  artwork surfaces;
+- keep compact thumbnail feedback visual-only to avoid repeated labels;
+- reveal the final image after `load` and `decode()` without a layout shift;
+- recognize `complete && naturalWidth > 0` cached images immediately;
+- retain the placeholder and show `图片加载失败` on error;
+- suppress indeterminate animation under `prefers-reduced-motion`.
+
+Do not display fake percentages. Do not replace native responsive image loading
+with a fetch/blob pipeline merely to calculate byte progress. Do not render a
+second network-backed `<img>` as the placeholder.
 
 ---
 
@@ -191,6 +242,8 @@ rendered image keeps explicit intrinsic width and height.
   verified provenance exists. Resolution switching is not art direction.
 - Keep exactly one eager/high-priority image. The ambience is lazy and
   decorative.
+- Preload the responsive foreground from HTML so discovery does not wait for
+  React execution on a slow route.
 - Do not add a fractional image scale to hide seams; it unnecessarily resamples
   the artwork.
 - At the 1440×900 reference viewport, DPR 1 selects the 1720×968 Hero and DPR 2
@@ -208,7 +261,7 @@ The image-led page remains clean by consolidating attribution at the bottom:
 
 - Hero, Journey, Works, and Gallery do not render per-image credit rows;
 - required creator names remain visibly present in the footer source line;
-- `MediaSources` provides one native `<details>` list with all nine titles,
+- `MediaSources` provides one native `<details>` list with all ten titles,
   credits, work pages, and license references;
 - source and license metadata remain in `KafMedia` even when the disclosure is
   closed;
@@ -245,17 +298,24 @@ Do not implement custom pan/zoom math, focus trapping, or body scroll locking.
 
 Automated checks must assert:
 
-- source preview hashes and 27 derivative dimensions/hashes;
+- ten source hashes, 30 derivative dimensions/hashes, and ten inline
+  placeholder payloads;
 - variant dimensions and filenames in typed content;
-- Hero current source at DPR 1 and DPR 2;
+- Hero current source at desktop DPR 1/DPR 2 and 390px mobile DPR 3;
+- one same-origin responsive Hero preload whose candidates all exist in the
+  Pages artifact;
 - one eager/high-priority Hero foreground, one lazy thumbnail ambience on
   portrait mobile, and lazy offscreen images;
 - mobile Hero equals or exceeds the stable initial viewport, does not expose
   `#about`, and uses `contain` for the portrait foreground;
-- responsive `srcset` on display images;
+- width-descriptor `srcset` plus realistic `sizes` on responsive images;
+- delayed-response loading/loaded states, inline placeholder visibility, and
+  stable element geometry;
 - thumbnail-only sources for Gallery rail/backdrop;
 - no Piapro work-page credit links inside `<main>`;
-- nine bottom source links and visible required creator names;
+- ten bottom source/license records and visible required creator names;
+- the `狂想β` work card uses the verified local official cover and its
+  source-native 480/800/1600 candidates;
 - lightbox high-density source, Zoom control, previous/next, synchronization,
   and Escape close;
 - existing viewport, 200% text, reduced-motion, contrast, and overflow gates.

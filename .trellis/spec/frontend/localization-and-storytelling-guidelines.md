@@ -237,8 +237,11 @@ The representative original-album sequence currently includes:
 
 - `深愛` remains the single featured/current work while that is the intended
   homepage emphasis.
-- A work without a verified local cover uses the deliberate typographic
-  fallback. Never present an unrelated visual as its official cover.
+- `狂想β` uses the reviewed official 1600×1600 cover from its KAF discography
+  page. It remains a local, non-commercial fan-site asset with source-native
+  technical derivatives and explicit provenance.
+- A future work without a verified local cover uses the deliberate typographic
+  fallback. Never present an unrelated visual as an official cover.
 - Album order, release date, ordinal, and source URL must be covered by content
   tests.
 
@@ -323,7 +326,8 @@ Tests must verify:
   and no document-level horizontal overflow;
 - reduced-motion linear chronology with six in-flow images;
 - the complete five-album sequence including `狂想β` and its official URL;
-- no image assigned to the third album without a verified asset;
+- the third album uses the verified `kyousou-beta` local media record rather
+  than the former typographic fallback;
 - fixed-header contrast/current section;
 - 320×568, 360×640, 360×800, 390×844, 430×932, 768×1024,
   844×390, 1024×768, 1440×900, and 200% reflow;

@@ -50,7 +50,8 @@ The GitHub repository Pages source remains `build_type=workflow`.
   Action references, permissions, and required commands.
 - `scripts/verify_pages_build.py` verifies artifact-root `index.html`, target
   base paths, same-origin HTML/CSS resources, file existence, JavaScript/CSS
-  entry resources, and self-hosted WOFF2 output.
+  entry resources, the responsive Hero preload and all of its width candidates,
+  and self-hosted WOFF2 output.
 
 External GitHub Actions must be pinned to full 40-character commit SHAs. Keep a
 release comment such as `# v6.0.0` beside each pin. Upgrading an Action requires
@@ -89,6 +90,8 @@ The deployable page must render without fetching required assets from external
 origins:
 
 - images are Vite-managed local assets;
+- tiny weak-network placeholders are inline WebP data URLs generated from those
+  local assets and require no additional origin or request;
 - Noto fonts are self-hosted WOFF2 build assets;
 - application JavaScript and CSS are hashed Vite assets;
 - Piapro, KAMITSUBAKI, Bilibili, YouTube, and social URLs are user-initiated
@@ -122,6 +125,8 @@ After deployment:
 - confirm the Pages API reports `build_type=workflow` and HTTPS enforcement;
 - request the public URL and at least one hashed JS, CSS, image, and WOFF2
   resource;
+- confirm the Hero preload and `srcset` candidates use `/kafu/assets/` and the
+  page exposes no required external runtime resource;
 - perform a browser smoke check at `/kafu/` and confirm no required external
   runtime resource requests.
 
