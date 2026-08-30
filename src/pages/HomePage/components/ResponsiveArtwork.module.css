@@ -131,6 +131,12 @@
   }
 }
 
+@media (max-width: 56rem) and (orientation: portrait) {
+  .root[data-artwork-status='loaded'][data-preserve-placeholder='true']::before {
+    opacity: 0.48;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .root::before,
   .root > .image,

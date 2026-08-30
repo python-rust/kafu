@@ -45,22 +45,13 @@ export function HeroSection({
         transition={shouldAnimate ? { duration: 0.9 } : { duration: 0 }}
       >
         <ResponsiveArtwork
-          className={styles.ambientImage}
-          source={visual}
-          variant="thumbnail"
-          alt=""
-          aria-hidden="true"
-          loading="lazy"
-          fetchPriority="low"
-          decoding="async"
-        />
-        <ResponsiveArtwork
           className={styles.visualImage}
           source={visual}
           loading="eager"
           fetchPriority="high"
           decoding="async"
           sizes="100vw"
+          preservePlaceholder
         />
       </motion.figure>
 

@@ -123,6 +123,15 @@ async function activateJourneyStep(page: Page, index: number) {
   await expect(step).toHaveAttribute('data-active', 'true');
 }
 
+async function waitForJourneyVisual(page: Page, index: number) {
+  const stage = page.getByTestId('journey-sticky-stage');
+  await expect(stage).toHaveAttribute(
+    'data-displayed-visual-index',
+    String(index),
+  );
+  await expect(stage).toHaveAttribute('data-stage-load-status', 'idle');
+}
+
 async function expectNoHorizontalOverflow(page: Page, label: string) {
   const dimensions = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
@@ -206,23 +215,25 @@ async function expectSingleRenderedLine(locator: Locator, label: string) {
 }
 
 async function expectAnchorBelowHeader(page: Page, headingName: string) {
-  const geometry = await page.evaluate((name) => {
-    const header = document.querySelector('header');
-    const heading = Array.from(document.querySelectorAll('h2')).find(
-      (candidate) => candidate.textContent?.trim() === name,
-    );
+  await expect
+    .poll(async () => {
+      return page.evaluate((name) => {
+        const header = document.querySelector('header');
+        const heading = Array.from(document.querySelectorAll('h2')).find(
+          (candidate) => candidate.textContent?.trim() === name,
+        );
 
-    if (!header || !heading) {
-      throw new Error(`Missing fixed-header geometry target: ${name}`);
-    }
+        if (!header || !heading) {
+          throw new Error(`Missing fixed-header geometry target: ${name}`);
+        }
 
-    return {
-      headerBottom: header.getBoundingClientRect().bottom,
-      headingTop: heading.getBoundingClientRect().top,
-    };
-  }, headingName);
-
-  expect(geometry.headingTop).toBeGreaterThanOrEqual(geometry.headerBottom - 1);
+        return (
+          heading.getBoundingClientRect().top -
+          header.getBoundingClientRect().bottom
+        );
+      }, headingName);
+    })
+    .toBeGreaterThanOrEqual(-1);
 }
 
 test('desktop homepage uses factual artist copy and a complete five-album sequence', async ({
@@ -633,6 +644,16 @@ test('slow image responses keep visible feedback and stable layout before reveal
   let heroRequestIntercepted = false;
   let thirdAlbumRequestIntercepted = false;
 
+  await page.addInitScript(() => {
+    Object.defineProperty(HTMLImageElement.prototype, 'decode', {
+      configurable: true,
+      value: () =>
+        new Promise<void>(() => {
+          // Intentionally unresolved: native load must still reveal the image.
+        }),
+    });
+  });
+
   await page.route(/\/assets\/kaihou-(?:2x|4x)-[^/]+\.webp$/, async (route) => {
     heroRequestIntercepted = true;
     const response = await route.fetch();
@@ -656,8 +677,10 @@ test('slow image responses keep visible feedback and stable layout before reveal
   const heroShell = page.locator(
     '#top [data-artwork-id="kaihou"][data-artwork-variant="responsive"]',
   );
+  await expect(page.locator('#top img[data-media-id="kaihou"]')).toHaveCount(1);
   await expect(heroShell).toHaveAttribute('data-artwork-status', 'loading');
   await expect(heroShell).toHaveAttribute('aria-busy', 'true');
+  await expect(heroShell.locator('img')).toHaveCSS('opacity', '0');
   await expect(heroShell.getByText('图片加载中')).toBeVisible();
   const placeholder = await heroShell.evaluate((element) =>
     getComputedStyle(element).getPropertyValue('--artwork-placeholder').trim(),
@@ -669,6 +692,7 @@ test('slow image responses keep visible feedback and stable layout before reveal
   releaseHero();
   await expect(heroShell).toHaveAttribute('data-artwork-status', 'loaded');
   await expect(heroShell).not.toHaveAttribute('aria-busy');
+  await expect(heroShell.locator('img')).toHaveCSS('opacity', '1');
   const heroAfter = await heroShell.boundingBox();
   expect(heroBefore).not.toBeNull();
   expect(heroAfter).not.toBeNull();
@@ -695,7 +719,7 @@ test('slow image responses keep visible feedback and stable layout before reveal
     'srcset',
     /kyousou-beta-thumb.*480w.*kyousou-beta-display.*800w.*kyousou-beta-high.*1600w/,
   );
-  expect(thirdAlbumRequestIntercepted).toBe(true);
+  await expect.poll(() => thirdAlbumRequestIntercepted).toBe(true);
 
   releaseThirdAlbum();
   await expect(thirdAlbumShell).toHaveAttribute(
@@ -727,6 +751,7 @@ test('journey follows downward and upward native scrolling through all six eras'
     }
 
     await activateJourneyStep(page, index);
+    await waitForJourneyVisual(page, index);
     await expect(page.locator(stageRecord.selector)).toHaveAttribute(
       'data-active',
       'true',
@@ -736,18 +761,74 @@ test('journey follows downward and upward native scrolling through all six eras'
     await expect(stage.locator('img')).toHaveCount(1);
   }
 
+  await page.evaluate(() => {
+    const stage = document.querySelector<HTMLElement>(
+      '[data-testid="journey-sticky-stage"]',
+    );
+    if (!stage) throw new Error('Missing Journey stage for cache audit.');
+
+    const auditWindow = window as typeof window & {
+      __journeyLoadingAudit?: {
+        values: string[];
+        observer: MutationObserver;
+      };
+    };
+    const values: string[] = [];
+    const record = () => {
+      values.push(stage.getAttribute('data-stage-load-status') ?? '');
+      for (const shell of stage.querySelectorAll<HTMLElement>(
+        '[data-artwork-status]',
+      )) {
+        values.push(shell.getAttribute('data-artwork-status') ?? '');
+      }
+    };
+    const observer = new MutationObserver(record);
+    observer.observe(stage, {
+      attributes: true,
+      attributeFilter: ['data-stage-load-status', 'data-artwork-status'],
+      childList: true,
+      subtree: true,
+    });
+    record();
+    auditWindow.__journeyLoadingAudit = { values, observer };
+  });
+
+  for (const index of [4, 3, 2, 1, 0]) {
+    await activateJourneyStep(page, index);
+    await waitForJourneyVisual(page, index);
+    await expect(stage.locator('[data-artwork-status="loading"]')).toHaveCount(
+      0,
+    );
+  }
+
+  const cachedTransitionStates = await page.evaluate(() => {
+    const auditWindow = window as typeof window & {
+      __journeyLoadingAudit?: {
+        values: string[];
+        observer: MutationObserver;
+      };
+    };
+    const audit = auditWindow.__journeyLoadingAudit;
+    audit?.observer.disconnect();
+    return audit?.values ?? [];
+  });
+  expect(cachedTransitionStates).not.toContain('loading');
+
   await activateJourneyStep(page, 2);
+  await waitForJourneyVisual(page, 2);
   await expect(stage).toContainText('在无法相聚时重构舞台');
   await expectSingleRenderedLine(
     stage.locator('strong'),
     'desktop Journey stage title should use its full line',
   );
   await activateJourneyStep(page, 3);
+  await waitForJourneyVisual(page, 3);
   await expectSingleRenderedLine(
     stage.locator('strong'),
     'desktop 武道馆 stage title should not orphan characters',
   );
   await activateJourneyStep(page, 1);
+  await waitForJourneyVisual(page, 1);
   await expect(stage).toContainText('从网络走向现场');
 
   await expect(journey).not.toContainText('网络中的投稿');
@@ -755,6 +836,61 @@ test('journey follows downward and upward native scrolling through all six eras'
 
   await page.locator('#works article').first().scrollIntoViewIfNeeded();
   await expect(stage).not.toBeInViewport();
+});
+
+test('Journey keeps the previous clear image while an uncached next era transfers', async ({
+  page,
+}) => {
+  let releaseNextImage: () => void = () => {};
+  const nextImageGate = new Promise<void>((resolve) => {
+    releaseNextImage = resolve;
+  });
+  let interceptedRequests = 0;
+
+  await page.route(
+    /\/assets\/observation-past-(?:2x|4x)-[^/]+\.webp$/,
+    async (route) => {
+      interceptedRequests += 1;
+      await nextImageGate;
+      await route.continue();
+    },
+  );
+
+  await openHome(page, { width: 1440, height: 900 });
+  const stage = page.getByTestId('journey-sticky-stage');
+  await page.waitForTimeout(500);
+  expect(interceptedRequests).toBe(0);
+
+  await activateJourneyStep(page, 0);
+  await waitForJourneyVisual(page, 0);
+  await expect(stage.locator('[data-artwork-id="origin-ito"]')).toHaveAttribute(
+    'data-artwork-status',
+    'loaded',
+  );
+  await expect.poll(() => interceptedRequests).toBeGreaterThan(0);
+
+  await activateJourneyStep(page, 1);
+  await expect(stage).toHaveAttribute('data-active-index', '1');
+  await expect(stage).toHaveAttribute('data-displayed-visual-index', '0');
+  await expect(stage).toHaveAttribute('data-stage-load-status', 'loading');
+  await expect(stage).toContainText('下一阶段图片加载中');
+  const retainedImage = stage.locator('img[data-media-id="origin-ito"]');
+  await expect(retainedImage).toHaveCount(1);
+  await expect(retainedImage).toHaveCSS('opacity', '1');
+  await expect(stage.locator('[data-artwork-status="loading"]')).toHaveCount(0);
+
+  releaseNextImage();
+  await waitForJourneyVisual(page, 1);
+  await expect(
+    stage.locator('[data-artwork-id="observation-past"]'),
+  ).toHaveAttribute('data-artwork-status', 'loaded');
+  await expect(stage.locator('[data-artwork-status="loading"]')).toHaveCount(0);
+  await expect(stage).not.toContainText('下一阶段图片加载中');
+
+  await activateJourneyStep(page, 0);
+  await waitForJourneyVisual(page, 0);
+  await expect(stage).toHaveAttribute('data-stage-load-status', 'idle');
+  await expect(stage.locator('[data-artwork-status="loading"]')).toHaveCount(0);
 });
 
 test('gallery provides eight selectors and localized keyboard lightbox navigation', async ({
@@ -832,23 +968,26 @@ test('mobile profile and guided Journey remain contained, readable, and touch-sa
   const heroGeometry = await page.evaluate(() => {
     const hero = document.querySelector<HTMLElement>('#top');
     const about = document.querySelector<HTMLElement>('#about');
-    const ambient = document.querySelector<HTMLImageElement>(
-      '#top img[data-media-variant="thumbnail"]',
+    const artwork = document.querySelector<HTMLElement>(
+      '#top [data-artwork-id="kaihou"][data-artwork-variant="responsive"]',
     );
-    const foreground = document.querySelector<HTMLImageElement>(
-      '#top img[data-media-variant="responsive"]',
-    );
+    const foreground = artwork?.querySelector<HTMLImageElement>('img');
 
-    if (!hero || !about || !ambient || !foreground) {
+    if (!hero || !about || !artwork || !foreground) {
       throw new Error('Missing mobile Hero art-direction targets.');
     }
 
     return {
       aboutTop: about.getBoundingClientRect().top,
-      ambientDisplay: getComputedStyle(ambient).display,
-      ambientSource: ambient.getAttribute('src'),
       foregroundFit: getComputedStyle(foreground).objectFit,
       heroBottom: hero.getBoundingClientRect().bottom,
+      imageCount: hero.querySelectorAll('img').length,
+      placeholderImage: getComputedStyle(artwork)
+        .getPropertyValue('--artwork-placeholder')
+        .trim(),
+      placeholderOpacity: Number(getComputedStyle(artwork, '::before').opacity),
+      preservesPlaceholder:
+        artwork.getAttribute('data-preserve-placeholder') === 'true',
       viewportHeight: window.visualViewport?.height ?? window.innerHeight,
     };
   });
@@ -859,8 +998,10 @@ test('mobile profile and guided Journey remain contained, readable, and touch-sa
     heroGeometry.viewportHeight - 1,
   );
   expect(heroGeometry.foregroundFit).toBe('contain');
-  expect(heroGeometry.ambientDisplay).not.toBe('none');
-  expect(heroGeometry.ambientSource).toContain('-thumb');
+  expect(heroGeometry.imageCount).toBe(1);
+  expect(heroGeometry.preservesPlaceholder).toBe(true);
+  expect(heroGeometry.placeholderImage).toContain('data:image/webp;base64');
+  expect(heroGeometry.placeholderOpacity).toBeGreaterThan(0);
 
   await expect(
     page.locator('#about [data-testid="primer-sticky-stage"]'),
@@ -1002,22 +1143,28 @@ test('all target viewport sizes remain free of horizontal overflow', async ({
     const heroGeometry = await page.evaluate(() => {
       const hero = document.querySelector<HTMLElement>('#top');
       const about = document.querySelector<HTMLElement>('#about');
-      const ambient = document.querySelector<HTMLImageElement>(
-        '#top img[data-media-variant="thumbnail"]',
+      const artwork = document.querySelector<HTMLElement>(
+        '#top [data-artwork-id="kaihou"][data-artwork-variant="responsive"]',
       );
-      const foreground = document.querySelector<HTMLImageElement>(
-        '#top img[data-media-variant="responsive"]',
-      );
+      const foreground = artwork?.querySelector<HTMLImageElement>('img');
 
-      if (!hero || !about || !ambient || !foreground) {
+      if (!hero || !about || !artwork || !foreground) {
         throw new Error('Missing viewport Hero geometry targets.');
       }
 
       return {
         aboutTop: about.getBoundingClientRect().top,
-        ambientDisplay: getComputedStyle(ambient).display,
         foregroundFit: getComputedStyle(foreground).objectFit,
         heroBottom: hero.getBoundingClientRect().bottom,
+        imageCount: hero.querySelectorAll('img').length,
+        placeholderImage: getComputedStyle(artwork)
+          .getPropertyValue('--artwork-placeholder')
+          .trim(),
+        placeholderOpacity: Number(
+          getComputedStyle(artwork, '::before').opacity,
+        ),
+        preservesPlaceholder:
+          artwork.getAttribute('data-preserve-placeholder') === 'true',
         viewportHeight: window.visualViewport?.height ?? window.innerHeight,
       };
     });
@@ -1035,7 +1182,10 @@ test('all target viewport sizes remain free of horizontal overflow', async ({
 
     if (usesPortraitArtDirection) {
       expect(heroGeometry.foregroundFit).toBe('contain');
-      expect(heroGeometry.ambientDisplay).not.toBe('none');
+      expect(heroGeometry.imageCount).toBe(1);
+      expect(heroGeometry.preservesPlaceholder).toBe(true);
+      expect(heroGeometry.placeholderImage).toContain('data:image/webp;base64');
+      expect(heroGeometry.placeholderOpacity).toBeGreaterThan(0);
     }
 
     await expectNoHorizontalOverflow(

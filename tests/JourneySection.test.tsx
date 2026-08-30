@@ -1,7 +1,125 @@
-import { act, cleanup, render, screen, within } from '@testing-library/react';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const motionPreference = vi.hoisted(() => ({ reduced: false }));
+
+const artworkLoadHarness = vi.hoisted(() => {
+  interface Variant {
+    src: string;
+    width: number;
+  }
+
+  interface Source {
+    id: string;
+    display: Variant;
+    highDensity: Variant;
+    thumbnail: Variant;
+  }
+
+  interface PendingRequest {
+    key: string;
+    resolve: (value: string) => void;
+    reject: (error: Error) => void;
+    promise: Promise<string>;
+  }
+
+  const loadedRequests = new Set<string>();
+  const pendingRequests = new Map<string, PendingRequest>();
+  const preload = vi.fn();
+
+  const sourceSet = (source: Source) =>
+    [source.thumbnail, source.display, source.highDensity]
+      .sort((first, second) => first.width - second.width)
+      .map((variant) => `${variant.src} ${variant.width}w`)
+      .join(', ');
+
+  const requestKey = (
+    source: Source,
+    role: 'responsive' | 'highDensity' | 'thumbnail',
+    sizes?: string,
+  ) => `${source.id}|${role}|${sizes ?? ''}|1024x1`;
+
+  preload.mockImplementation(
+    (source: Source, sizes: string, _priority: 'auto' | 'high' | 'low') => {
+      const key = requestKey(source, 'responsive', sizes);
+
+      if (loadedRequests.has(key)) {
+        return Promise.resolve(source.display.src);
+      }
+
+      const existing = pendingRequests.get(source.id);
+      if (existing) {
+        return existing.promise;
+      }
+
+      let resolveRequest!: (value: string) => void;
+      let rejectRequest!: (error: Error) => void;
+      const promise = new Promise<string>((resolve, reject) => {
+        resolveRequest = resolve;
+        rejectRequest = reject;
+      });
+      pendingRequests.set(source.id, {
+        key,
+        resolve: resolveRequest,
+        reject: rejectRequest,
+        promise,
+      });
+      return promise;
+    },
+  );
+
+  return {
+    module: {
+      artworkRequestKey: requestKey,
+      responsiveArtworkSourceSet: sourceSet,
+      hasLoadedArtwork: (
+        source: Source,
+        role: 'responsive' | 'highDensity' | 'thumbnail',
+        sizes?: string,
+      ) => loadedRequests.has(requestKey(source, role, sizes)),
+      markArtworkElementLoaded: (image: HTMLImageElement, key: string) => {
+        loadedRequests.add(key);
+        return image.currentSrc || image.src;
+      },
+      preloadResponsiveArtwork: preload,
+      __resetArtworkLoadCacheForTests: () => {
+        loadedRequests.clear();
+        pendingRequests.clear();
+      },
+    },
+    preload,
+    resolve(sourceId: string) {
+      const pending = pendingRequests.get(sourceId);
+      if (!pending) {
+        throw new Error(`No pending artwork request for ${sourceId}.`);
+      }
+      loadedRequests.add(pending.key);
+      pendingRequests.delete(sourceId);
+      pending.resolve(`/resolved/${sourceId}.webp`);
+    },
+    reject(sourceId: string) {
+      const pending = pendingRequests.get(sourceId);
+      if (!pending) {
+        throw new Error(`No pending artwork request for ${sourceId}.`);
+      }
+      pendingRequests.delete(sourceId);
+      pending.reject(new Error(`Rejected ${sourceId}`));
+    },
+    reset() {
+      loadedRequests.clear();
+      pendingRequests.clear();
+      preload.mockClear();
+    },
+  };
+});
 
 const scrollamaHarness = vi.hoisted(() => {
   type Direction = 'up' | 'down';
@@ -61,6 +179,11 @@ const scrollamaHarness = vi.hoisted(() => {
     },
   };
 });
+
+vi.mock(
+  '../src/pages/HomePage/components/artworkLoadCache',
+  () => artworkLoadHarness.module,
+);
 
 vi.mock('scrollama', () => ({ default: scrollamaHarness.factory }));
 
@@ -167,6 +290,7 @@ describe('JourneySection', () => {
   beforeEach(() => {
     motionPreference.reduced = false;
     scrollamaHarness.reset();
+    artworkLoadHarness.reset();
     stubBrowserLayout(true);
   });
 
@@ -206,34 +330,102 @@ describe('JourneySection', () => {
     expect(scrollamaHarness.instance.destroy).toHaveBeenCalledOnce();
   });
 
-  it('updates the active era in both downward and upward scroll directions', () => {
+  it('keeps the previous clear stage while a new era loads, then reuses cached eras', async () => {
     render(<JourneySection chapters={chapters} />);
+
+    let stage = screen.getByTestId('journey-sticky-stage');
+    const initialImage = stage.querySelector('img');
+    if (!initialImage) throw new Error('Missing initial Journey image.');
+    expect(artworkLoadHarness.preload).not.toHaveBeenCalled();
+    fireEvent.load(initialImage);
+
+    expect(stage).toHaveAttribute('data-displayed-visual-index', '0');
+    expect(stage).toHaveAttribute('data-stage-load-status', 'idle');
+    expect(artworkLoadHarness.preload).not.toHaveBeenCalled();
+
+    act(() => scrollamaHarness.enter(0, 'down'));
+    await waitFor(() => {
+      expect(artworkLoadHarness.preload).toHaveBeenCalledWith(
+        chapters[1].primaryVisual,
+        expect.any(String),
+        'low',
+      );
+    });
 
     act(() => scrollamaHarness.enter(2, 'down'));
 
-    let stage = screen.getByTestId('journey-sticky-stage');
-    expect(stage).toHaveAttribute('data-active-index', '2');
-    expect(document.querySelectorAll('[data-active="true"]')).not.toHaveLength(
-      0,
-    );
-    expect(document.querySelector('[data-journey-index="2"]')).toHaveAttribute(
-      'data-active',
-      'true',
-    );
-
-    act(() => scrollamaHarness.enter(1, 'up'));
-
     stage = screen.getByTestId('journey-sticky-stage');
-    expect(stage).toHaveAttribute('data-active-index', '1');
-    expect(document.querySelector('[data-journey-index="1"]')).toHaveAttribute(
+    expect(stage).toHaveAttribute('data-active-index', '2');
+    expect(stage).toHaveAttribute('data-displayed-visual-index', '0');
+    expect(stage).toHaveAttribute('data-stage-load-status', 'loading');
+    expect(stage).toHaveTextContent('被发现的声音');
+    expect(stage).toHaveTextContent('下一阶段图片加载中');
+    expect(
+      stage.querySelector('[data-artwork-id="origin-visual"]'),
+    ).toHaveAttribute('data-artwork-status', 'loaded');
+    expect(artworkLoadHarness.preload).toHaveBeenCalledWith(
+      chapters[2].primaryVisual,
+      expect.any(String),
+      'auto',
+    );
+
+    await act(async () => artworkLoadHarness.resolve('rebuild-visual'));
+
+    await waitFor(() => {
+      expect(stage).toHaveAttribute('data-displayed-visual-index', '2');
+    });
+    expect(stage).toHaveAttribute('data-stage-load-status', 'idle');
+    expect(
+      stage.querySelector('[data-artwork-id="rebuild-visual"]'),
+    ).toHaveAttribute('data-artwork-status', 'loaded');
+    expect(stage).not.toHaveTextContent('下一阶段图片加载中');
+
+    const activeRequestCountBeforeRevisit =
+      artworkLoadHarness.preload.mock.calls.filter(
+        ([source, , priority]) =>
+          source === chapters[0].primaryVisual && priority === 'auto',
+      ).length;
+
+    act(() => scrollamaHarness.enter(0, 'up'));
+
+    await waitFor(() => {
+      expect(stage).toHaveAttribute('data-displayed-visual-index', '0');
+    });
+    expect(stage).toHaveAttribute('data-stage-load-status', 'idle');
+    expect(
+      stage.querySelector('[data-artwork-id="origin-visual"]'),
+    ).toHaveAttribute('data-artwork-status', 'loaded');
+    expect(
+      artworkLoadHarness.preload.mock.calls.filter(
+        ([source, , priority]) =>
+          source === chapters[0].primaryVisual && priority === 'auto',
+      ),
+    ).toHaveLength(activeRequestCountBeforeRevisit);
+    expect(document.querySelector('[data-journey-index="0"]')).toHaveAttribute(
       'data-active',
       'true',
     );
+  });
+
+  it('shows a restrained stage error without replacing the previous clear image', async () => {
+    render(<JourneySection chapters={chapters} />);
+    const stage = screen.getByTestId('journey-sticky-stage');
+    const initialImage = stage.querySelector('img');
+    if (!initialImage) throw new Error('Missing initial Journey image.');
+    fireEvent.load(initialImage);
+
+    act(() => scrollamaHarness.enter(3, 'down'));
+    await act(async () => artworkLoadHarness.reject('expansion-visual'));
+
+    await waitFor(() => {
+      expect(stage).toHaveAttribute('data-stage-load-status', 'error');
+    });
+    expect(stage).toHaveAttribute('data-displayed-visual-index', '0');
+    expect(stage).toHaveTextContent('被发现的声音');
+    expect(stage).toHaveTextContent('图片暂未加载');
     expect(
-      screen.getByRole('link', {
-        name: /从网络走向现场关键节点的资料来源/,
-      }),
-    ).toHaveAttribute('href', 'https://example.com/observation-milestone');
+      stage.querySelector('[data-artwork-id="origin-visual"]'),
+    ).toHaveAttribute('data-artwork-status', 'loaded');
   });
 
   it('uses a compact pixel offset and renders all six images in reduced motion', () => {

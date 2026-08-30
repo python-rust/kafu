@@ -1,5 +1,5 @@
 import {
-  useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -7,6 +7,13 @@ import {
   type SyntheticEvent,
 } from 'react';
 
+import {
+  artworkRequestKey,
+  hasLoadedArtwork,
+  markArtworkElementLoaded,
+  responsiveArtworkSourceSet,
+  type ArtworkVariantRole,
+} from './artworkLoadCache';
 import styles from './ResponsiveArtwork.module.css';
 
 export interface ArtworkVariant {
@@ -42,20 +49,7 @@ interface ResponsiveArtworkProps extends Omit<
   variant?: 'responsive' | 'highDensity' | 'thumbnail';
   objectPosition?: string;
   style?: CSSProperties;
-}
-
-function responsiveSourceSet(source: ResponsiveArtworkSource) {
-  const candidates = [source.thumbnail, source.display, source.highDensity];
-  const uniqueCandidates = new Map<number, ArtworkVariant>();
-
-  for (const candidate of candidates) {
-    uniqueCandidates.set(candidate.width, candidate);
-  }
-
-  return [...uniqueCandidates.values()]
-    .sort((first, second) => first.width - second.width)
-    .map((candidate) => `${candidate.src} ${candidate.width}w`)
-    .join(', ');
+  preservePlaceholder?: boolean;
 }
 
 export function ResponsiveArtwork({
@@ -68,6 +62,7 @@ export function ResponsiveArtwork({
   className,
   onLoad,
   onError,
+  preservePlaceholder = false,
   ...imageProps
 }: ResponsiveArtworkProps) {
   const selected =
@@ -77,53 +72,56 @@ export function ResponsiveArtwork({
         ? source.highDensity
         : source.display;
   const srcSet =
-    variant === 'responsive' ? responsiveSourceSet(source) : undefined;
+    variant === 'responsive' ? responsiveArtworkSourceSet(source) : undefined;
   const resolvedSizes =
     variant === 'responsive' ? (sizes ?? '100vw') : undefined;
   const resolvedStyle = objectPosition ? { ...style, objectPosition } : style;
-  const requestKey = `${selected.src}|${srcSet ?? ''}|${resolvedSizes ?? ''}`;
+  const role = variant satisfies ArtworkVariantRole;
+  const requestKey = artworkRequestKey(source, role, resolvedSizes);
   const imageRef = useRef<HTMLImageElement>(null);
-  const requestKeyRef = useRef(requestKey);
-  const [status, setStatus] = useState<ArtworkStatus>('loading');
-  requestKeyRef.current = requestKey;
+  const initialStatus: ArtworkStatus = hasLoadedArtwork(
+    source,
+    role,
+    resolvedSizes,
+  )
+    ? 'loaded'
+    : 'loading';
+  const [loadState, setLoadState] = useState<{
+    requestKey: string;
+    status: ArtworkStatus;
+  }>(() => ({ requestKey, status: initialStatus }));
+  const status =
+    loadState.requestKey === requestKey ? loadState.status : initialStatus;
 
-  const revealLoadedImage = (image: HTMLImageElement, expectedKey: string) => {
-    const markLoaded = () => {
-      if (requestKeyRef.current === expectedKey) {
-        setStatus('loaded');
-      }
-    };
-
-    if (typeof image.decode !== 'function') {
-      markLoaded();
-      return;
-    }
-
-    void image.decode().then(markLoaded, markLoaded);
-  };
-
-  useEffect(() => {
-    setStatus('loading');
+  useLayoutEffect(() => {
     const image = imageRef.current;
 
-    if (!image?.complete) {
+    if (image?.complete) {
+      if (image.naturalWidth > 0) {
+        markArtworkElementLoaded(image, requestKey);
+        setLoadState({ requestKey, status: 'loaded' });
+      } else {
+        setLoadState({ requestKey, status: 'error' });
+      }
       return;
     }
 
-    if (image.naturalWidth > 0) {
-      revealLoadedImage(image, requestKey);
-    } else {
-      setStatus('error');
-    }
-  }, [requestKey]);
+    setLoadState({
+      requestKey,
+      status: hasLoadedArtwork(source, role, resolvedSizes)
+        ? 'loaded'
+        : 'loading',
+    });
+  }, [requestKey, role, source]);
 
   const handleLoad = (event: SyntheticEvent<HTMLImageElement>) => {
+    markArtworkElementLoaded(event.currentTarget, requestKey);
+    setLoadState({ requestKey, status: 'loaded' });
     onLoad?.(event);
-    revealLoadedImage(event.currentTarget, requestKey);
   };
 
   const handleError = (event: SyntheticEvent<HTMLImageElement>) => {
-    setStatus('error');
+    setLoadState({ requestKey, status: 'error' });
     onError?.(event);
   };
 
@@ -140,6 +138,7 @@ export function ResponsiveArtwork({
       data-artwork-id={source.id}
       data-artwork-status={status}
       data-artwork-variant={variant}
+      data-preserve-placeholder={preservePlaceholder ? 'true' : undefined}
       aria-busy={status === 'loading' ? true : undefined}
       style={shellStyle}
     >

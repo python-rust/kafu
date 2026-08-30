@@ -1,12 +1,7 @@
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { __resetArtworkLoadCacheForTests } from '../src/pages/HomePage/components/artworkLoadCache';
 import { ResponsiveArtwork } from '../src/pages/HomePage/components/ResponsiveArtwork';
 import { createMediaFixture } from './fixtures/media';
 
@@ -76,6 +71,7 @@ function restoreImageState() {
 afterEach(() => {
   cleanup();
   restoreImageState();
+  __resetArtworkLoadCacheForTests();
 });
 
 describe('ResponsiveArtwork', () => {
@@ -109,17 +105,87 @@ describe('ResponsiveArtwork', () => {
     expect(shell).not.toHaveAttribute('aria-busy');
   });
 
-  it('recognizes a decoded cached image without leaving stale loading feedback', async () => {
+  it('reveals on load even when decode never settles', () => {
+    const decode = vi.fn(
+      () =>
+        new Promise<void>(() => {
+          // Intentionally unresolved: visibility must not depend on decode().
+        }),
+    );
+    stubImageState({ complete: false, naturalWidth: 0, decode });
+    const { container } = render(<ResponsiveArtwork source={artwork} />);
+    const shell = container.querySelector('[data-artwork-id="slow-artwork"]');
+
+    fireEvent.load(screen.getByRole('img', { name: '弱网测试图片' }));
+
+    expect(shell).toHaveAttribute('data-artwork-status', 'loaded');
+    expect(shell).not.toHaveAttribute('aria-busy');
+    expect(decode).not.toHaveBeenCalled();
+  });
+
+  it('recognizes a complete cached image before paint without calling decode', () => {
     const decode = vi.fn().mockResolvedValue(undefined);
     stubImageState({ complete: true, naturalWidth: 1720, decode });
     const { container } = render(<ResponsiveArtwork source={artwork} />);
     const shell = container.querySelector('[data-artwork-id="slow-artwork"]');
 
-    await waitFor(() => {
-      expect(shell).toHaveAttribute('data-artwork-status', 'loaded');
-    });
-    expect(decode).toHaveBeenCalledTimes(1);
+    expect(shell).toHaveAttribute('data-artwork-status', 'loaded');
     expect(shell).not.toHaveAttribute('aria-busy');
+    expect(decode).not.toHaveBeenCalled();
+  });
+
+  it('starts a remounted image in the loaded state from the exact request cache', () => {
+    stubImageState({ complete: false, naturalWidth: 0 });
+    const firstRender = render(
+      <ResponsiveArtwork
+        source={artwork}
+        sizes="(max-width: 40rem) 100vw, 40rem"
+      />,
+    );
+    fireEvent.load(screen.getByRole('img', { name: '弱网测试图片' }));
+    firstRender.unmount();
+
+    const secondRender = render(
+      <ResponsiveArtwork
+        source={artwork}
+        sizes="(max-width: 40rem) 100vw, 40rem"
+      />,
+    );
+    const shell = secondRender.container.querySelector(
+      '[data-artwork-id="slow-artwork"]',
+    );
+
+    expect(shell).toHaveAttribute('data-artwork-status', 'loaded');
+    expect(shell).not.toHaveAttribute('aria-busy');
+  });
+
+  it('does not reuse a responsive loaded-state record after the selection context changes', () => {
+    stubImageState({ complete: false, naturalWidth: 0 });
+    const initialWidth = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 390,
+    });
+
+    const firstRender = render(<ResponsiveArtwork source={artwork} />);
+    fireEvent.load(screen.getByRole('img', { name: '弱网测试图片' }));
+    firstRender.unmount();
+
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 1440,
+    });
+    const secondRender = render(<ResponsiveArtwork source={artwork} />);
+    const shell = secondRender.container.querySelector(
+      '[data-artwork-id="slow-artwork"]',
+    );
+
+    expect(shell).toHaveAttribute('data-artwork-status', 'loading');
+
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: initialWidth,
+    });
   });
 
   it('keeps the placeholder and reports a failed image request', () => {

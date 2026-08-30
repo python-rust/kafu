@@ -6,6 +6,10 @@ import {
   ResponsiveArtwork,
   type ResponsiveArtworkSource,
 } from '../components/ResponsiveArtwork';
+import {
+  hasLoadedArtwork,
+  preloadResponsiveArtwork,
+} from '../components/artworkLoadCache';
 import { SectionHeading } from '../components/SectionHeading';
 import styles from './JourneySection.module.css';
 
@@ -71,6 +75,8 @@ const stageTransition = {
   duration: 0.42,
   ease: [0.22, 1, 0.36, 1],
 } as const;
+const JOURNEY_STAGE_SIZES =
+  '(max-width: 64rem) 100vw, (max-width: 88rem) 46vw, 40rem';
 
 function getChapterAnchorId(id: string) {
   return `journey-${id}`;
@@ -104,6 +110,12 @@ function getTriggerOffset(
 
 export function JourneySection({ chapters }: JourneySectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [displayedVisualIndex, setDisplayedVisualIndex] = useState(0);
+  const [stageLoadStatus, setStageLoadStatus] = useState<
+    'idle' | 'loading' | 'error'
+  >('idle');
+  const [displayedVisualReady, setDisplayedVisualReady] = useState(false);
+  const [journeyActivated, setJourneyActivated] = useState(false);
   const [scrollDirection, setScrollDirection] =
     useState<ScrollDirection>('down');
   const shouldReduceMotion = useReducedMotion();
@@ -114,6 +126,11 @@ export function JourneySection({ chapters }: JourneySectionProps) {
     Math.max(chapters.length - 1, 0),
   );
   const activeChapter = chapters[safeActiveIndex];
+  const safeDisplayedVisualIndex = Math.min(
+    displayedVisualIndex,
+    Math.max(chapters.length - 1, 0),
+  );
+  const displayedChapter = chapters[safeDisplayedVisualIndex] ?? activeChapter;
   const reducedMotion = shouldReduceMotion === true;
   const supportsScrollytelling =
     typeof window !== 'undefined' &&
@@ -150,6 +167,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
           return;
         }
 
+        setJourneyActivated(true);
         setScrollDirection(direction);
         setActiveIndex((currentIndex) =>
           currentIndex === index ? currentIndex : index,
@@ -187,7 +205,97 @@ export function JourneySection({ chapters }: JourneySectionProps) {
     };
   }, [chapters.length, linearJourney]);
 
-  if (!activeChapter) {
+  useEffect(() => {
+    if (linearJourney || !activeChapter) {
+      return;
+    }
+
+    const activeVisualLoaded = hasLoadedArtwork(
+      activeChapter.primaryVisual,
+      'responsive',
+      JOURNEY_STAGE_SIZES,
+    );
+
+    if (safeDisplayedVisualIndex === safeActiveIndex) {
+      if (activeVisualLoaded) {
+        setDisplayedVisualReady(true);
+      }
+      setStageLoadStatus('idle');
+      return;
+    }
+
+    if (activeVisualLoaded) {
+      setDisplayedVisualIndex(safeActiveIndex);
+      setDisplayedVisualReady(true);
+      setStageLoadStatus('idle');
+      return;
+    }
+
+    let cancelled = false;
+    setStageLoadStatus('loading');
+
+    void preloadResponsiveArtwork(
+      activeChapter.primaryVisual,
+      JOURNEY_STAGE_SIZES,
+      'auto',
+    ).then(
+      () => {
+        if (!cancelled) {
+          setDisplayedVisualIndex(safeActiveIndex);
+          setDisplayedVisualReady(true);
+          setStageLoadStatus('idle');
+        }
+      },
+      () => {
+        if (!cancelled) {
+          setStageLoadStatus('error');
+        }
+      },
+    );
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeChapter, linearJourney, safeActiveIndex, safeDisplayedVisualIndex]);
+
+  useEffect(() => {
+    if (
+      linearJourney ||
+      stageLoadStatus !== 'idle' ||
+      !displayedChapter ||
+      !displayedVisualReady ||
+      !journeyActivated
+    ) {
+      return;
+    }
+
+    const adjacentIndex =
+      safeDisplayedVisualIndex + (scrollDirection === 'down' ? 1 : -1);
+    const adjacentChapter = chapters[adjacentIndex];
+
+    if (!adjacentChapter) {
+      return;
+    }
+
+    void preloadResponsiveArtwork(
+      adjacentChapter.primaryVisual,
+      JOURNEY_STAGE_SIZES,
+      'low',
+    ).catch(() => {
+      // Adjacent preloading is opportunistic; the active transition retries it.
+    });
+  }, [
+    chapters,
+    displayedChapter,
+    displayedVisualReady,
+    journeyActivated,
+    linearJourney,
+    safeDisplayedVisualIndex,
+    scrollDirection,
+    stageLoadStatus,
+  ]);
+
+  if (!activeChapter || !displayedChapter) {
     return null;
   }
 
@@ -211,35 +319,52 @@ export function JourneySection({ chapters }: JourneySectionProps) {
               className={styles.stage}
               data-testid="journey-sticky-stage"
               data-active-index={safeActiveIndex}
+              data-displayed-visual-index={safeDisplayedVisualIndex}
+              data-stage-load-status={stageLoadStatus}
               aria-hidden="true"
             >
               <div className={styles.stageFrame}>
                 <div className={styles.visualStack}>
-                  <AnimatePresence initial={false} mode="wait">
+                  <AnimatePresence initial={false}>
                     <motion.figure
                       className={styles.stageVisual}
-                      key={activeChapter.id}
+                      key={displayedChapter.id}
                       initial={{ opacity: 0, scale: 1.012 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.995 }}
                       transition={stageTransition}
                     >
                       <ResponsiveArtwork
-                        source={activeChapter.primaryVisual}
+                        source={displayedChapter.primaryVisual}
                         alt=""
                         loading="lazy"
                         fetchPriority="auto"
                         decoding="async"
-                        sizes="(max-width: 64rem) 100vw, (max-width: 88rem) 46vw, 40rem"
+                        sizes={JOURNEY_STAGE_SIZES}
+                        onLoad={() => setDisplayedVisualReady(true)}
                       />
                     </motion.figure>
                   </AnimatePresence>
                 </div>
 
+                {stageLoadStatus !== 'idle' ? (
+                  <div
+                    className={styles.stageLoading}
+                    data-status={stageLoadStatus}
+                  >
+                    <span className={styles.stageLoadingLine} />
+                    <span>
+                      {stageLoadStatus === 'error'
+                        ? '图片暂未加载'
+                        : '下一阶段图片加载中'}
+                    </span>
+                  </div>
+                ) : null}
+
                 <AnimatePresence initial={false} mode="wait">
                   <motion.div
                     className={styles.stageMeta}
-                    key={activeChapter.id}
+                    key={displayedChapter.id}
                     initial={{
                       opacity: 0,
                       y: scrollDirection === 'down' ? 12 : -12,
@@ -254,8 +379,8 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                       ease: [0.22, 1, 0.36, 1],
                     }}
                   >
-                    <span>{activeChapter.yearLabel}</span>
-                    <strong>{activeChapter.titleZh}</strong>
+                    <span>{displayedChapter.yearLabel}</span>
+                    <strong>{displayedChapter.titleZh}</strong>
                   </motion.div>
                 </AnimatePresence>
 
