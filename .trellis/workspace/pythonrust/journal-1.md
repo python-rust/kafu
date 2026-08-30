@@ -381,3 +381,40 @@ Adopted a self-hosted, OFL-licensed Noto Sans/Serif SC typography system with Ch
 ### Status
 
 [OK] **Completed**
+
+
+## Session 15: Fix Journey Chinese heading line breaks
+
+**Date**: 2026-08-30
+**Task**: Fix Journey Chinese heading line breaks
+**Branch**: `main`
+
+### Summary
+
+Removed Latin ch-based width caps from Journey Chinese titles, let headings use the full container, added balanced CJK fallback wrapping and browser line-count regressions.
+
+### Main Changes
+
+- Journey article and sticky-stage titles now use full available inline width.
+- Compact card horizontal padding was reduced from 20px to 16px at the narrowest supported width without shrinking type.
+- Frontend SPEC now forbids ch-based width caps for CJK display headings.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a75bd68c83a341b9cfbcdedc8be0fe0bf883a234` | (see git log) |
+| `482ed710d47bfd38540f517f2fba9fea917d92fb` | (see git log) |
+
+### Testing
+
+- [OK] mise run check passed: 26 Vitest tests, lint, typecheck, and production build.
+- [OK] mise run e2e passed: 14 Chromium tests across the responsive matrix.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None.
