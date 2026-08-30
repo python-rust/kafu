@@ -119,10 +119,10 @@
 
 .activeMeta h3 {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-display-ja);
   font-size: var(--type-card-title);
   font-weight: 600;
-  letter-spacing: -0.035em;
+  letter-spacing: 0;
   line-height: 1.16;
 }
 
@@ -197,6 +197,7 @@
   display: block;
   margin-top: 0.65rem;
   overflow-wrap: anywhere;
+  font-family: var(--font-display-ja);
   font-size: var(--type-label);
   font-weight: 600;
   line-height: 1.45;

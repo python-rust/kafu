@@ -362,6 +362,76 @@ test('desktop homepage uses factual artist copy and a complete five-album sequen
   expect(hierarchy.smallVisibleText).toEqual([]);
 });
 
+test('self-hosted typography assigns reading, display, and Japanese-name roles', async ({
+  page,
+}) => {
+  await openHome(page, { width: 1440, height: 900 });
+
+  const typography = await page.evaluate(() => {
+    const readFamily = (selector: string) => {
+      const element = document.querySelector<HTMLElement>(selector);
+
+      if (!element) {
+        throw new Error(`Missing typography target: ${selector}`);
+      }
+
+      return getComputedStyle(element).fontFamily;
+    };
+
+    const fontResources = performance
+      .getEntriesByType('resource')
+      .map((entry) => entry.toJSON())
+      .filter((entry) => String(entry.name).includes('noto-'));
+
+    return {
+      bodyFamily: readFamily('body'),
+      heroFamily: readFamily('#top h1'),
+      identityFamily: readFamily('#top [class*="identityLine"]'),
+      sectionFamily: readFamily('#about h2'),
+      workTitleFamily: readFamily('#works h3'),
+      galleryTitleFamily: readFamily('#visuals h3'),
+      journeyYearFamily: readFamily('#journey [data-journey-step] header p'),
+      sansLoaded: document.fonts.check(
+        '400 16px "Noto Sans SC Variable"',
+        '花谱观察站成长轨迹',
+      ),
+      serifLoaded: document.fonts.check(
+        '600 48px "Noto Serif SC Variable"',
+        '花谱成长轨迹代表作品',
+      ),
+      fontOrigins: Array.from(
+        new Set(fontResources.map((entry) => new URL(entry.name).origin)),
+      ),
+      fontRequestCount: fontResources.length,
+      fontResourcesAreWoff2: fontResources.every((entry) =>
+        new URL(String(entry.name)).pathname.endsWith('.woff2'),
+      ),
+      fontTransferBytes: fontResources.reduce(
+        (sum, entry) => sum + (entry.transferSize || 0),
+        0,
+      ),
+    };
+  });
+
+  expect(typography.bodyFamily).toContain('Noto Sans SC Variable');
+  expect(typography.heroFamily).toContain('Noto Serif SC Variable');
+  expect(typography.identityFamily).toContain('Hiragino Mincho ProN');
+  expect(typography.sectionFamily).toContain('Noto Serif SC Variable');
+  expect(typography.workTitleFamily).toContain('Hiragino Mincho ProN');
+  expect(typography.galleryTitleFamily).toContain('Hiragino Mincho ProN');
+  expect(typography.journeyYearFamily).toContain('Noto Serif SC Variable');
+  expect(typography.sansLoaded).toBe(true);
+  expect(typography.serifLoaded).toBe(true);
+  expect(typography.fontOrigins).toEqual(['http://127.0.0.1:4173']);
+  expect(typography.fontRequestCount).toBeLessThanOrEqual(60);
+  expect(typography.fontResourcesAreWoff2).toBe(true);
+  expect(typography.fontTransferBytes).toBeLessThanOrEqual(3_500_000);
+
+  const license = await page.request.get('/font-licenses/Noto-OFL-1.1.txt');
+  expect(license.ok()).toBe(true);
+  expect(await license.text()).toContain('SIL OPEN FONT LICENSE Version 1.1');
+});
+
 test('fixed navigation keeps contrast and reports the current page location', async ({
   page,
 }) => {

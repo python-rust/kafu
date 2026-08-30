@@ -65,19 +65,22 @@
   font-family: var(--font-display-zh);
   font-size: var(--type-display);
   font-weight: 650;
-  letter-spacing: -0.065em;
+  letter-spacing: -0.035em;
   line-height: 0.95;
 }
 
 .identityLine {
   margin: 0.9rem 0 0;
   color: var(--color-text-muted);
+  font-family: var(--font-display-ja);
   font-size: var(--type-body-small);
+  font-weight: 600;
+  letter-spacing: 0.035em;
   line-height: 1.6;
 }
 
 .identityLine span[lang='ja'] {
-  font-family: var(--font-display-ja);
+  font-family: inherit;
 }
 
 .role {

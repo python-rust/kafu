@@ -134,7 +134,7 @@ export function GallerySection({
           </button>
 
           <div className={styles.activeMeta} aria-live="polite">
-            <h3>{activeVisual.title}</h3>
+            <h3 lang="ja">{activeVisual.title}</h3>
           </div>
         </div>
 
@@ -161,7 +161,9 @@ export function GallerySection({
                       decoding="async"
                     />
                   </span>
-                  <span className={styles.thumbnailTitle}>{visual.title}</span>
+                  <span className={styles.thumbnailTitle} lang="ja">
+                    {visual.title}
+                  </span>
                 </button>
               </li>
             );

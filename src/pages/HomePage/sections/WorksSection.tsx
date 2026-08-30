@@ -75,7 +75,7 @@ export function WorksSection({ works, title = '代表作品' }: WorksSectionProp
 
           <div className={styles.featuredCopy}>
             <WorkMeta work={featuredWork} />
-            <h3>{featuredWork.title}</h3>
+            <h3 lang="ja">{featuredWork.title}</h3>
             <p>{featuredWork.description}</p>
             <a
               className={styles.officialLink}
@@ -112,7 +112,7 @@ export function WorksSection({ works, title = '代表作品' }: WorksSectionProp
 
               <div className={styles.supportingCopy}>
                 <WorkMeta work={work} />
-                <h3>{work.title}</h3>
+                <h3 lang="ja">{work.title}</h3>
                 <p>{work.description}</p>
                 <a
                   className={styles.officialLink}
