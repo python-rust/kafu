@@ -37,13 +37,7 @@ function stubReducedMotion(matches: boolean) {
 }
 
 function renderHero() {
-  return render(
-    <HeroSection
-      visual={visualFixture}
-      statement="她从网络里被听见，也把虚拟歌声带进了现实舞台。"
-      description="这里用几分钟讲清花谱是谁、她经历了什么，以及第一次认识她可以从哪里开始。"
-    />,
-  );
+  return render(<HeroSection visual={visualFixture} />);
 }
 
 afterEach(() => {
@@ -60,23 +54,18 @@ describe('HeroSection', () => {
       screen.getByRole('heading', { level: 1, name: '花谱' }),
     ).toBeVisible();
     expect(screen.getByRole('img', { name: visualFixture.alt })).toBeVisible();
-    expect(screen.getByRole('link', { name: /开始认识花谱/ })).toBeVisible();
-    expect(screen.getByRole('link', { name: /查看成长轨迹/ })).toBeVisible();
+    expect(screen.getByRole('link', { name: '人物介绍' })).toBeVisible();
+    expect(screen.getByRole('link', { name: '代表作品' })).toBeVisible();
   });
 
-  it('renders direct KAF identity, responsive artwork, and both destinations without inline credits', () => {
+  it('renders factual artist identity and direct destinations without page-explaining copy', () => {
     renderHero();
 
     expect(
       screen.getByRole('heading', { level: 1, name: '花谱' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText('她从网络里被听见，也把虚拟歌声带进了现实舞台。'),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        '这里用几分钟讲清花谱是谁、她经历了什么，以及第一次认识她可以从哪里开始。',
-      ),
+      screen.getByText('日本虚拟歌手，KAMITSUBAKI STUDIO 旗下艺人。'),
     ).toBeInTheDocument();
 
     const visual = screen.getByRole('img', { name: visualFixture.alt });
@@ -88,20 +77,23 @@ describe('HeroSection', () => {
     );
     expect(visual).toHaveAttribute('fetchpriority', 'high');
 
-    expect(screen.getByRole('link', { name: /开始认识花谱/ })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: '人物介绍' })).toHaveAttribute(
       'href',
       '#about',
     );
-    expect(screen.getByRole('link', { name: /查看成长轨迹/ })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: '代表作品' })).toHaveAttribute(
       'href',
-      '#journey',
+      '#works',
     );
-    expect(screen.getByText(/日文名：/)).toHaveTextContent(
-      '日文名：花譜 / KAF',
+    expect(screen.getByText('花譜').parentElement).toHaveTextContent(
+      '花譜 / KAF',
     );
     expect(
       screen.queryByRole('link', { name: /Fixture artist \/ source/ }),
     ).not.toBeInTheDocument();
+
+    expect(screen.queryByText(/她从网络里被听见/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/这里用几分钟讲清/)).not.toBeInTheDocument();
 
     expect(
       screen.queryByText('VOICE / IMAGE / MEMORY'),

@@ -76,21 +76,13 @@
   font-family: var(--font-display-ja);
 }
 
-.statement {
+.role {
   max-width: 32rem;
   margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
-  font-family: var(--font-display);
   font-size: var(--type-lead);
-  font-weight: 550;
-  line-height: 1.7;
-}
-
-.description {
-  max-width: 33rem;
-  margin: 1rem 0 0;
   color: var(--color-text-muted);
-  font-size: var(--type-body);
-  line-height: 1.8;
+  font-weight: 550;
+  line-height: 1.65;
 }
 
 .actions {
@@ -190,7 +182,7 @@
     font-size: clamp(4rem, 22vw, 5.5rem);
   }
 
-  .statement {
+  .role {
     max-width: 22rem;
     font-size: clamp(1.08rem, 4.8vw, 1.3rem);
   }

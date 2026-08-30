@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { BrowserRouter } from 'react-router';
 import { describe, expect, it } from 'vitest';
 
@@ -55,21 +55,35 @@ describe('home page', () => {
       throw new Error('Journey section was not rendered.');
     }
 
-    for (const chapterTitle of [
-      '被发现的声音',
-      '从网络走向现场',
-      '在无法相聚时重构舞台',
-      '把虚拟歌声带进武道馆',
-      '进入创作的第二章',
-      '走向更大的世界',
-    ]) {
-      expect(
-        within(journeySection).getByRole('heading', {
-          level: 3,
-          name: chapterTitle,
-        }),
-      ).toBeInTheDocument();
-    }
+    const eraTabs = within(journeySection).getAllByRole('tab');
+    expect(eraTabs).toHaveLength(6);
+    expect(eraTabs.map((tab) => tab.textContent)).toEqual([
+      '2018',
+      '2019',
+      '2020–2021',
+      '2022–2023',
+      '2024',
+      '2025–2026',
+    ]);
+    expect(
+      within(journeySection).getByRole('heading', {
+        level: 3,
+        name: '被发现的声音',
+      }),
+    ).toBeInTheDocument();
+
+    fireEvent.mouseDown(
+      within(journeySection).getByRole('tab', {
+        name: '2020–2021：在无法相聚时重构舞台',
+      }),
+      { button: 0, ctrlKey: false },
+    );
+    expect(
+      within(journeySection).getByRole('heading', {
+        level: 3,
+        name: '在无法相聚时重构舞台',
+      }),
+    ).toBeInTheDocument();
 
     const worksSection = screen
       .getByRole('heading', { level: 2, name: '代表作品' })
@@ -80,11 +94,20 @@ describe('home page', () => {
       throw new Error('Works section was not rendered.');
     }
 
-    for (const workTitle of ['深愛', '寓話', '魔法α', '観測α']) {
+    for (const workTitle of ['深愛', '寓話', '狂想β', '魔法α', '観測α']) {
       expect(
         within(worksSection).getByRole('heading', { name: workTitle }),
       ).toBeInTheDocument();
     }
+
+    expect(
+      within(worksSection).getByRole('link', {
+        name: /狂想β的官方页面/,
+      }),
+    ).toHaveAttribute(
+      'href',
+      'https://kaf.kamitsubaki.jp/discography/20230308/199/',
+    );
 
     expect(
       screen.getByRole('link', {
@@ -147,6 +170,14 @@ describe('home page', () => {
       'CURRENT WORK',
       'VISUAL CREDIT',
       '沿着时间向下阅读花譜的六个创作阶段。',
+      '她从网络里被听见',
+      '这里用几分钟讲清',
+      '一个从网络深处被发现的声音',
+      '虚拟形象是入口',
+      '从屏幕里的歌',
+      '先听起点',
+      '网络中的投稿',
+      '第一次被看见',
     ];
 
     for (const copy of bannedCopy) {
@@ -158,7 +189,17 @@ describe('home page', () => {
     expect(container.querySelector('[class*="eyebrow"]')).toBeNull();
     expect(container.querySelector('[data-rhythm]')).toBeNull();
     expect(container.querySelector('#about')).not.toBeNull();
-    expect(screen.getAllByRole('article').length).toBeGreaterThanOrEqual(14);
+    expect(
+      container.querySelector('[data-testid="primer-sticky-stage"]'),
+    ).toBeNull();
+    expect(
+      container.querySelector('[data-testid="journey-sticky-stage"]'),
+    ).toBeNull();
+    expect(
+      screen.getByText('日本虚拟歌手，KAMITSUBAKI STUDIO 旗下艺人。'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('出道年龄')).toBeVisible();
+    expect(screen.getByText('14 岁')).toBeVisible();
   });
 
   it('uses all verified local visuals while only prioritizing the hero image', () => {

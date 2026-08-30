@@ -1,4 +1,5 @@
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import * as Tabs from '@radix-ui/react-tabs';
+import { motion, useReducedMotion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 
 import {
@@ -24,10 +25,7 @@ interface JourneyChapter {
   period: string;
   yearLabel: string;
   titleZh: string;
-  originalTitle: string;
-  changeFrom: string;
-  changeTo: string;
-  summary: string;
+  summary: readonly string[];
   theme: JourneyTheme;
   milestones: readonly JourneyMilestone[];
   primaryVisual: JourneyVisual;
@@ -38,174 +36,74 @@ interface JourneySectionProps {
   chapters: readonly JourneyChapter[];
 }
 
-interface JourneyDesktopStageProps {
-  activeIndex: number;
-  chapters: readonly JourneyChapter[];
-}
-
-const CHAPTER_OBSERVER_ROOT_MARGIN = '-44% 0px -44% 0px';
-
-const stageVisualTransition = {
-  duration: 0.46,
+const panelTransition = {
+  duration: 0.42,
   ease: [0.22, 1, 0.36, 1],
 } as const;
 
-function getChapterAnchorId(id: string) {
-  return `journey-${id}`;
-}
-
-function JourneyDesktopStage({
-  activeIndex,
-  chapters,
-}: JourneyDesktopStageProps) {
+export function JourneySection({ chapters }: JourneySectionProps) {
+  const firstChapterId = chapters[0]?.id ?? '';
+  const [activeId, setActiveId] = useState(firstChapterId);
+  const [direction, setDirection] = useState(1);
+  const shouldReduceMotion = useReducedMotion();
+  const tabListRef = useRef<HTMLDivElement>(null);
+  const activeIndex = Math.max(
+    chapters.findIndex((chapter) => chapter.id === activeId),
+    0,
+  );
   const activeChapter = chapters[activeIndex];
+
+  useEffect(() => {
+    if (!chapters.some((chapter) => chapter.id === activeId)) {
+      setActiveId(chapters[0]?.id ?? '');
+    }
+  }, [activeId, chapters]);
+
+  useEffect(() => {
+    const activeTrigger = tabListRef.current?.querySelector<HTMLElement>(
+      `[data-era-id="${activeId}"]`,
+    );
+
+    if (typeof activeTrigger?.scrollIntoView === 'function') {
+      activeTrigger.scrollIntoView({
+        behavior: shouldReduceMotion ? 'auto' : 'smooth',
+        block: 'nearest',
+        inline: 'nearest',
+      });
+    }
+  }, [activeId, shouldReduceMotion]);
 
   if (!activeChapter) {
     return null;
   }
 
-  return (
-    <aside
-      className={styles.stage}
-      aria-hidden="true"
-      data-testid="journey-sticky-stage"
-    >
-      <div className={styles.stageFrame}>
-        <div className={styles.visualStack}>
-          <AnimatePresence initial={false} mode="sync">
-            <motion.figure
-              key={activeChapter.id}
-              className={styles.visualLayer}
-              initial={{ opacity: 0, scale: 1.018 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.992 }}
-              transition={stageVisualTransition}
-            >
-              <ResponsiveArtwork
-                source={activeChapter.primaryVisual}
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
-            </motion.figure>
-          </AnimatePresence>
-        </div>
+  const selectChapter = (nextId: string) => {
+    const nextIndex = chapters.findIndex((chapter) => chapter.id === nextId);
 
-        <AnimatePresence initial={false} mode="wait">
-          <motion.div
-            key={activeChapter.id}
-            className={styles.stageMeta}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <span className={styles.stageYear}>{activeChapter.yearLabel}</span>
-            <strong className={styles.stageTitleZh}>
-              {activeChapter.titleZh}
-            </strong>
-            <span className={styles.stageOriginalTitle} lang="ja">
-              {activeChapter.originalTitle}
-            </span>
-            <span className={styles.stageChange}>
-              <span>{activeChapter.changeFrom}</span>
-              <motion.span
-                className={styles.stageChangeLine}
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-              />
-              <span>{activeChapter.changeTo}</span>
-            </span>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-    </aside>
-  );
-}
-
-function ChapterVisual({ visual }: { visual: JourneyVisual }) {
-  return (
-    <figure className={styles.chapterFigure}>
-      <ResponsiveArtwork source={visual} loading="lazy" decoding="async" />
-    </figure>
-  );
-}
-
-export function JourneySection({ chapters }: JourneySectionProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const shouldReduceMotion = useReducedMotion();
-  const chapterRefs = useRef<Array<HTMLElement | null>>([]);
-  const safeActiveIndex = Math.min(
-    activeIndex,
-    Math.max(chapters.length - 1, 0),
-  );
-  const activeChapter = chapters[safeActiveIndex];
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+    if (nextIndex < 0 || nextId === activeId) {
       return;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const viewportCenter = window.innerHeight / 2;
-        const activeEntry = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((left, right) => {
-            const leftCenter =
-              left.boundingClientRect.top + left.boundingClientRect.height / 2;
-            const rightCenter =
-              right.boundingClientRect.top +
-              right.boundingClientRect.height / 2;
+    setDirection(nextIndex > activeIndex ? 1 : -1);
+    setActiveId(nextId);
+  };
 
-            return (
-              Math.abs(leftCenter - viewportCenter) -
-              Math.abs(rightCenter - viewportCenter)
-            );
-          })[0];
+  const goToChapter = (nextIndex: number) => {
+    const nextChapter = chapters[nextIndex];
 
-        if (!activeEntry) {
-          return;
-        }
+    if (nextChapter) {
+      selectChapter(nextChapter.id);
+    }
+  };
 
-        const rawIndex = activeEntry.target.getAttribute('data-journey-index');
-        const nextIndex = rawIndex === null ? Number.NaN : Number(rawIndex);
-
-        if (
-          !Number.isInteger(nextIndex) ||
-          nextIndex < 0 ||
-          nextIndex >= chapters.length
-        ) {
-          return;
-        }
-
-        setActiveIndex((currentIndex) =>
-          currentIndex === nextIndex ? currentIndex : nextIndex,
-        );
-      },
-      {
-        root: null,
-        rootMargin: CHAPTER_OBSERVER_ROOT_MARGIN,
-        threshold: 0,
-      },
-    );
-
-    const chapterNodes = chapterRefs.current.slice(0, chapters.length);
-    chapterNodes.forEach((node) => {
-      if (node) {
-        observer.observe(node);
-      }
-    });
-
-    return () => observer.disconnect();
-  }, [chapters.length]);
+  const previousChapter = chapters[activeIndex - 1];
+  const nextChapter = chapters[activeIndex + 1];
 
   return (
     <section
       id="journey"
       className={styles.journey}
-      data-theme={activeChapter?.theme}
+      data-theme={activeChapter.theme}
       aria-labelledby="journey-heading"
     >
       <div className={styles.inner}>
@@ -213,81 +111,82 @@ export function JourneySection({ chapters }: JourneySectionProps) {
           成长轨迹
         </SectionHeading>
 
-        <nav className={styles.chapterNav} aria-label="花谱成长阶段">
-          <ol>
-            {chapters.map((chapter, index) => {
-              const isActive = index === safeActiveIndex;
+        <Tabs.Root
+          className={styles.theatre}
+          value={activeId}
+          onValueChange={selectChapter}
+          activationMode="automatic"
+        >
+          <Tabs.List
+            className={styles.eraRail}
+            aria-label="花谱成长阶段"
+            ref={tabListRef}
+          >
+            {chapters.map((chapter) => (
+              <Tabs.Trigger
+                className={styles.eraTrigger}
+                data-era-id={chapter.id}
+                key={chapter.id}
+                value={chapter.id}
+                aria-label={`${chapter.yearLabel}：${chapter.titleZh}`}
+              >
+                {chapter.yearLabel}
+              </Tabs.Trigger>
+            ))}
+          </Tabs.List>
 
-              return (
-                <li key={chapter.id}>
-                  <a
-                    href={`#${getChapterAnchorId(chapter.id)}`}
-                    aria-current={isActive ? 'step' : undefined}
-                  >
-                    <span>{chapter.yearLabel}</span>
-                    <span className={styles.srOnly}>{chapter.titleZh}</span>
-                  </a>
-                </li>
-              );
-            })}
-          </ol>
-        </nav>
+          {chapters.map((chapter) => (
+            <Tabs.Content
+              className={styles.panel}
+              key={chapter.id}
+              value={chapter.id}
+            >
+              <motion.article
+                className={styles.panelInner}
+                data-testid="journey-era-panel"
+                initial={
+                  shouldReduceMotion ? false : { opacity: 0, x: direction * 24 }
+                }
+                animate={{ opacity: 1, x: 0 }}
+                transition={
+                  shouldReduceMotion ? { duration: 0 } : panelTransition
+                }
+              >
+                <div className={styles.visualCollage}>
+                  <figure className={styles.primaryVisual}>
+                    <ResponsiveArtwork
+                      source={chapter.primaryVisual}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </figure>
 
-        <div className={styles.track}>
-          {shouldReduceMotion === true ? null : (
-            <JourneyDesktopStage
-              activeIndex={safeActiveIndex}
-              chapters={chapters}
-            />
-          )}
+                  {chapter.secondaryVisual ? (
+                    <figure className={styles.secondaryVisual}>
+                      <ResponsiveArtwork
+                        source={chapter.secondaryVisual}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </figure>
+                  ) : null}
+                </div>
 
-          <ol className={styles.chapterList}>
-            {chapters.map((chapter, index) => {
-              const anchorId = getChapterAnchorId(chapter.id);
-              const titleId = `${anchorId}-title`;
-              const isActive = index === safeActiveIndex;
-              const visuals = chapter.secondaryVisual
-                ? [chapter.primaryVisual, chapter.secondaryVisual]
-                : [chapter.primaryVisual];
+                <div className={styles.story}>
+                  <header className={styles.storyHeader}>
+                    <p className={styles.year}>{chapter.yearLabel}</p>
+                    <h3>{chapter.titleZh}</h3>
+                  </header>
 
-              return (
-                <li key={chapter.id} className={styles.chapterItem}>
-                  <article
-                    id={anchorId}
-                    ref={(node) => {
-                      chapterRefs.current[index] = node;
-                    }}
-                    className={styles.chapterArticle}
-                    data-active={isActive ? 'true' : undefined}
-                    data-theme={chapter.theme}
-                    data-journey-index={index}
-                    aria-labelledby={titleId}
-                  >
-                    <div className={styles.chapterHeading}>
-                      <p className={styles.chapterYear}>{chapter.yearLabel}</p>
-                      <h3 id={titleId}>{chapter.titleZh}</h3>
-                      <p className={styles.originalTitle} lang="ja">
-                        {chapter.originalTitle}
-                      </p>
-                      <p className={styles.changePair}>
-                        <span>{chapter.changeFrom}</span>
-                        <span aria-hidden="true">→</span>
-                        <span>{chapter.changeTo}</span>
-                      </p>
-                    </div>
+                  <div className={styles.summary}>
+                    {chapter.summary.map((paragraph) => (
+                      <p key={paragraph}>{paragraph}</p>
+                    ))}
+                  </div>
 
-                    <div className={styles.chapterMedia}>
-                      {visuals.map((visual) => (
-                        <ChapterVisual
-                          key={`${chapter.id}-${visual.id}`}
-                          visual={visual}
-                        />
-                      ))}
-                    </div>
-
-                    <p className={styles.summary}>{chapter.summary}</p>
-
-                    <ol className={styles.milestones} aria-label="关键节点">
+                  <div className={styles.milestoneBlock}>
+                    <h4>关键节点</h4>
+                    <ol className={styles.milestones}>
                       {chapter.milestones.map((milestone) => (
                         <li key={`${milestone.date}-${milestone.sourceUrl}`}>
                           <time dateTime={milestone.date}>
@@ -305,12 +204,39 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                         </li>
                       ))}
                     </ol>
-                  </article>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
+                  </div>
+
+                  <div className={styles.panelActions}>
+                    <button
+                      type="button"
+                      disabled={!previousChapter}
+                      onClick={() => goToChapter(activeIndex - 1)}
+                      aria-label={
+                        previousChapter
+                          ? `上一阶段：${previousChapter.titleZh}`
+                          : '已是第一个阶段'
+                      }
+                    >
+                      上一阶段
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!nextChapter}
+                      onClick={() => goToChapter(activeIndex + 1)}
+                      aria-label={
+                        nextChapter
+                          ? `下一阶段：${nextChapter.titleZh}`
+                          : '已是最后一个阶段'
+                      }
+                    >
+                      下一阶段
+                    </button>
+                  </div>
+                </div>
+              </motion.article>
+            </Tabs.Content>
+          ))}
+        </Tabs.Root>
       </div>
     </section>
   );

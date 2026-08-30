@@ -133,7 +133,7 @@
   display: grid;
   margin-top: clamp(3rem, 6vw, 5.5rem);
   gap: clamp(2rem, 3vw, 3.5rem);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .supportingWork {
@@ -148,8 +148,24 @@
 }
 
 .typeFallback {
+  position: relative;
   padding: 1rem;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgb(227 74 135 / 12%), transparent 58%),
+    var(--color-bg-deep);
   font-size: var(--type-card-title);
+}
+
+.typeFallback::after {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  height: 1px;
+  background: var(--color-kaf);
+  content: '';
+  opacity: 0.7;
 }
 
 .supportingCopy {
@@ -179,7 +195,7 @@
   }
 }
 
-@media (max-width: 64rem) {
+@media (max-width: 72rem) {
   .featuredWork {
     gap: 2.75rem;
     grid-template-columns: minmax(0, 1.12fr) minmax(17rem, 0.88fr);

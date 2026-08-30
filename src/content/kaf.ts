@@ -24,11 +24,14 @@ export interface KafWork {
   visual?: KafMedia;
 }
 
-export interface KafPrimerBeat {
-  readonly id: string;
-  readonly title: string;
-  readonly statement: string;
-  readonly summary: string;
+export interface KafProfileFact {
+  readonly label: string;
+  readonly value: string;
+}
+
+export interface KafProfile {
+  readonly paragraphs: readonly string[];
+  readonly facts: readonly KafProfileFact[];
   readonly visual: KafMedia;
 }
 
@@ -83,10 +86,7 @@ export interface KafJourneyChapter {
   readonly period: string;
   readonly yearLabel: string;
   readonly titleZh: string;
-  readonly originalTitle: string;
-  readonly changeFrom: string;
-  readonly changeTo: string;
-  readonly summary: string;
+  readonly summary: readonly string[];
   readonly theme: KafJourneyTheme;
   readonly milestones: readonly KafJourneyMilestone[];
   readonly primaryVisual: KafMedia;
@@ -291,40 +291,19 @@ export const galleryVisuals: readonly KafGalleryVisual[] = [
   toGalleryVisual(transcendentUfoMedia),
 ];
 
-export const primerBeats: readonly KafPrimerBeat[] = [
-  {
-    id: 'identity',
-    title: '她是谁',
-    statement: '一个从网络深处被发现的声音。',
-    summary:
-      '花谱（日文名：花譜，KAF）是神椿工作室最初推出的虚拟歌手。2018年，14岁的她以3D形象开始活动，不公开真实面容。',
-    visual: heroKaihouMedia,
-  },
-  {
-    id: 'voice',
-    title: '为什么特别',
-    statement: '虚拟形象是入口，真正留下人的是声音。',
-    summary:
-      '她的作品把歌声、角色设计、影像和舞台编织成同一套世界观。理解花谱，更接近于理解一位以虚拟形象活动的歌手，而不只是认识一个角色。',
-    visual: wasureteShimaeMedia,
-  },
-  {
-    id: 'stage',
-    title: '她走到了哪里',
-    statement: '从屏幕里的歌，走进现实的大型舞台。',
-    summary:
-      '从第一次个人演唱会，到2022年的日本武道馆，再到2024年的代代木第一体育馆，她不断扩大虚拟歌手与现实现场之间的边界。',
-    visual: fukakaiMedia,
-  },
-  {
-    id: 'start',
-    title: '从哪里开始',
-    statement: '先听起点，再看现场，最后进入第二章。',
-    summary:
-      '可以从《観測α》理解早期声音，从《不可解》感受现场，再通过《寓話》和《深愛》进入她现在仍在继续的创作阶段。',
-    visual: transcendentUfoMedia,
-  },
-];
+export const kafProfile: KafProfile = {
+  paragraphs: [
+    '花谱（日文名：花譜，KAF）是 KAMITSUBAKI STUDIO 旗下的日本虚拟歌手。2018 年，她在 14 岁时以 3D 形象开始活动，并始终不公开真实面容。',
+    '她以原创歌曲、翻唱、专辑和个人演唱会为主要活动形式。2022 年在日本武道馆举办《不可解参(狂)》，2024 年在代代木第一体育馆举办《怪歌》。',
+  ],
+  facts: [
+    { label: '开始活动', value: '2018 年' },
+    { label: '出道年龄', value: '14 岁' },
+    { label: '所属', value: 'KAMITSUBAKI STUDIO' },
+    { label: '主要活动', value: '原创音乐与个人演唱会' },
+  ],
+  visual: wasureteShimaeMedia,
+};
 
 export const referenceSources: readonly KafReferenceSource[] = [
   {
@@ -359,11 +338,10 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
     period: '2018',
     yearLabel: '2018',
     titleZh: '被发现的声音',
-    originalTitle: '起源 / 発見',
-    changeFrom: '网络中的投稿',
-    changeTo: '第一次被看见',
-    summary:
-      '十四岁时从虚拟世界向现实展开活动，翻唱与早期舞台让一个尚未被定义的声音开始被人“发现”。',
+    summary: [
+      '2018 年，14 岁的花谱以 3D 形象开始活动，早期主要通过翻唱与网络发布积累听众。',
+      '同年 12 月，她在虚拟艺人活动《Count-0》中担任压轴，开始进入更大规模的虚拟音乐活动。',
+    ],
     theme: 'origin',
     milestones: [
       {
@@ -385,11 +363,10 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
     period: '2019',
     yearLabel: '2019',
     titleZh: '从网络走向现场',
-    originalTitle: '観測',
-    changeFrom: '屏幕里的歌声',
-    changeTo: '个人现场与首张专辑',
-    summary:
-      '从网络中的“被观测者”走向第一次个人现场与首张专辑，声音、角色与观众之间形成了可持续的现场关系。',
+    summary: [
+      '2019 年 8 月，她在 LIQUIDROOM 举办首次个人演唱会《不可解》，演出门票售罄并同步直播。',
+      '9 月发行首张专辑《観測α / 観測β》，个人演唱会与原创专辑由此成为活动主轴。',
+    ],
     theme: 'observation',
     milestones: [
       {
@@ -411,11 +388,10 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
     period: '2020–2021',
     yearLabel: '2020–2021',
     titleZh: '在无法相聚时重构舞台',
-    originalTitle: '魔法 / 再構築',
-    changeFrom: '无法按计划相聚',
-    changeTo: '线上现场与重返会场',
-    summary:
-      '无法按原计划相聚的时期，把“魔法”扩展为线上现场、群像合作与重返真实会场的重构过程，舞台边界因此被重新定义。',
+    summary: [
+      '2020 年，受现场条件影响，《不可解(再)》改为无观众网络直播。同年发行第 2 张专辑《魔法α / 魔法β》。',
+      '2021 年，她与四位神椿歌手组成 V.W.P，并在豊洲 PIT 举办《不可解弐 REBUILDING》，重新回到实体会场。',
+    ],
     theme: 'rebuild',
     milestones: [
       {
@@ -447,11 +423,10 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
     period: '2022–2023',
     yearLabel: '2022–2023',
     titleZh: '把虚拟歌声带进武道馆',
-    originalTitle: '拡張',
-    changeFrom: '网络与小型会场',
-    changeTo: '武道馆与更大的表达',
-    summary:
-      '武道馆、第三张专辑与新的形态变化，把此前累积的世界观推向更大的会场和更宽的表达尺度，也为下一章留下转向空间。',
+    summary: [
+      '2022 年 8 月，《不可解参(狂)》在日本武道馆举行，现场规模与舞台制作进一步扩大。',
+      '2023 年 3 月发行第 3 张专辑《狂想α / 狂想β》，收录《海に化ける》《人を気取る》《邂逅》等作品。',
+    ],
     theme: 'expansion',
     milestones: [
       {
@@ -478,11 +453,10 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
     period: '2024',
     yearLabel: '2024',
     titleZh: '进入创作的第二章',
-    originalTitle: '寓話 / 第二章',
-    changeFrom: '第一章的制作关系',
-    changeTo: '新的创作体制与“廻花”',
-    summary:
-      '《怪歌》之后，创作体制和声音关系进入新的组合方式；第四张专辑《寓話》把这种变化沉淀成一段明确的第二章。',
+    summary: [
+      '2024 年 1 月，花谱在代代木第一体育馆举办《怪歌》，并公布虚拟创作歌手“廻花”项目。',
+      '同年 12 月发行第 4 张专辑《寓話》，新的制作阶段由此进入完整专辑形态。',
+    ],
     theme: 'fable',
     milestones: [
       {
@@ -509,11 +483,10 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
     period: '2025–2026',
     yearLabel: '2025–2026',
     titleZh: '走向更大的世界',
-    originalTitle: '深愛',
-    changeFrom: '日本国内的成长',
-    changeTo: '海外活动与新的当下',
-    summary:
-      '海外活动、跨厂牌合作与第五次个人现场把视野继续向外打开，而《深愛》把音乐、故事与当下的花谱重新汇聚到同一条进行中的叙事线上。',
+    summary: [
+      '2025 年起，她参与芝加哥、雅加达等海外活动，并启动 KAF81 海外计划。',
+      '2026 年在 PIA ARENA MM 举办第 5 场个人演唱会《宿声 / 深愛》，并发行第 5 张专辑《深愛》。',
+    ],
     theme: 'transcendent',
     milestones: [
       {
@@ -585,6 +558,16 @@ export const selectedWorks: KafWork[] = [
       '在创作体制变化后重新展开的第四张专辑，以“丧失与获得”连接新的叙事阶段。',
     sourceUrl: 'https://kaf.kamitsubaki.jp/discography/20241115/857/',
     visual: fableChewingDiscoMedia,
+  },
+  {
+    id: 'album-kyousou-beta-2023',
+    title: '狂想β',
+    releaseDate: '2023.03.08',
+    releaseDateTime: '2023-03-08',
+    kind: '第 3 张专辑',
+    description:
+      '收录《海に化ける》《人を気取る》《未観測》《狂感覚》《邂逅》等 15 首作品，全曲由カンザキイオリ负责词曲与编曲。',
+    sourceUrl: 'https://kaf.kamitsubaki.jp/discography/20230308/199/',
   },
   {
     id: 'album-mahou-alpha-2020',

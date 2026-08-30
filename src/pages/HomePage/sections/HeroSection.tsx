@@ -10,9 +10,8 @@ export interface HeroVisual extends ResponsiveArtworkSource {}
 
 export interface HeroSectionProps {
   visual: HeroVisual;
-  statement: string;
-  description: string;
   title?: string;
+  role?: string;
   primaryHref?: `#${string}`;
   primaryLabel?: string;
   secondaryHref?: `#${string}`;
@@ -26,13 +25,12 @@ const revealTransition = {
 
 export function HeroSection({
   visual,
-  statement,
-  description,
   title = '花谱',
+  role = '日本虚拟歌手，KAMITSUBAKI STUDIO 旗下艺人。',
   primaryHref = '#about',
-  primaryLabel = '开始认识花谱',
-  secondaryHref = '#journey',
-  secondaryLabel = '查看成长轨迹',
+  primaryLabel = '人物介绍',
+  secondaryHref = '#works',
+  secondaryLabel = '代表作品',
 }: HeroSectionProps) {
   const shouldReduceMotion = useReducedMotion();
   const shouldAnimate = shouldReduceMotion === false;
@@ -66,10 +64,9 @@ export function HeroSection({
         >
           <h1 id="hero-title">{title}</h1>
           <p className={styles.identityLine}>
-            日文名：<span lang="ja">花譜</span> / KAF
+            <span lang="ja">花譜</span> / KAF
           </p>
-          <p className={styles.statement}>{statement}</p>
-          <p className={styles.description}>{description}</p>
+          <p className={styles.role}>{role}</p>
 
           <div className={styles.actions}>
             <a className={styles.primaryLink} href={primaryHref}>

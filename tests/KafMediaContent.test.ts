@@ -5,7 +5,7 @@ import {
   galleryVisuals,
   journeyChapters,
   kafMedia,
-  primerBeats,
+  kafProfile,
   referenceSources,
   selectedWorks,
 } from '../src/content/kaf';
@@ -73,10 +73,10 @@ describe('KAF journey content', () => {
   it('provides verified official milestone sources for every chapter', () => {
     for (const chapter of journeyChapters) {
       expect(chapter.titleZh.trim()).not.toBe('');
-      expect(chapter.originalTitle.trim()).not.toBe('');
-      expect(chapter.changeFrom.trim()).not.toBe('');
-      expect(chapter.changeTo.trim()).not.toBe('');
-      expect(chapter.summary.trim()).not.toBe('');
+      expect(chapter.summary).toHaveLength(2);
+      for (const paragraph of chapter.summary) {
+        expect(paragraph.trim()).not.toBe('');
+      }
       expect(chapter.milestones.length).toBeGreaterThanOrEqual(2);
 
       for (const milestone of chapter.milestones) {
@@ -116,21 +116,30 @@ describe('KAF journey content', () => {
   });
 });
 
-describe('KAF Chinese onboarding content', () => {
-  it('provides four sourced newcomer beats with verified local visuals', () => {
-    expect(primerBeats.map((beat) => beat.id)).toEqual([
-      'identity',
-      'voice',
-      'stage',
-      'start',
+describe('KAF Chinese profile content', () => {
+  it('provides one factual profile with a verified local visual', () => {
+    expect(kafProfile.paragraphs).toHaveLength(2);
+    expect(kafProfile.facts.map((fact) => fact.label)).toEqual([
+      '开始活动',
+      '出道年龄',
+      '所属',
+      '主要活动',
     ]);
+    expect(kafProfile.paragraphs.join(' ')).toContain('2018 年');
+    expect(kafProfile.paragraphs.join(' ')).toContain('14 岁');
+    expect(kafProfile.paragraphs.join(' ')).toContain('日本武道馆');
+    expect(kafProfile.paragraphs.join(' ')).toContain('代代木第一体育馆');
 
-    for (const beat of primerBeats) {
-      expect(beat.title.trim()).not.toBe('');
-      expect(beat.statement.trim()).not.toBe('');
-      expect(beat.summary.trim()).not.toBe('');
-      expect(kafMedia.some((media) => media.id === beat.visual.id)).toBe(true);
+    for (const paragraph of kafProfile.paragraphs) {
+      expect(paragraph.trim()).not.toBe('');
     }
+    for (const fact of kafProfile.facts) {
+      expect(fact.label.trim()).not.toBe('');
+      expect(fact.value.trim()).not.toBe('');
+    }
+    expect(kafMedia.some((media) => media.id === kafProfile.visual.id)).toBe(
+      true,
+    );
   });
 
   it('keeps official biography and Chinese-account references explicit', () => {
@@ -148,19 +157,37 @@ describe('KAF Chinese onboarding content', () => {
 });
 
 describe('KAF production editorial data', () => {
-  it('provides stable unique work IDs and rights-cleared visuals', () => {
+  it('provides the complete five-album sequence without inventing a third-album cover', () => {
     const workIds = selectedWorks.map((work) => work.id);
 
     expect(new Set(workIds).size).toBe(selectedWorks.length);
     expect(selectedWorks.filter((work) => work.featured)).toHaveLength(1);
+    expect(selectedWorks.map((work) => work.title)).toEqual([
+      '深愛',
+      '寓話',
+      '狂想β',
+      '魔法α',
+      '観測α',
+    ]);
+
+    const thirdAlbum = selectedWorks.find(
+      (work) => work.id === 'album-kyousou-beta-2023',
+    );
+    expect(thirdAlbum).toMatchObject({
+      title: '狂想β',
+      releaseDate: '2023.03.08',
+      kind: '第 3 张专辑',
+      sourceUrl: 'https://kaf.kamitsubaki.jp/discography/20230308/199/',
+    });
+    expect(thirdAlbum?.visual).toBeUndefined();
 
     for (const work of selectedWorks) {
       expect(work.id.trim()).not.toBe('');
       expect(work.releaseDateTime).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-      expect(work.visual).toBeDefined();
 
       if (!work.visual) {
-        throw new Error(`Missing production visual for work: ${work.id}`);
+        expect(work.id).toBe('album-kyousou-beta-2023');
+        continue;
       }
 
       expect(work.visual.alt.trim()).not.toBe('');

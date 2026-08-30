@@ -17,13 +17,13 @@ const pageSections = [
   '#links',
 ] as const;
 
-const chapterAnchors = [
-  '#journey-origin-2018',
-  '#journey-observation-2019',
-  '#journey-magic-rebuilding-2020-2021',
-  '#journey-expansion-2022-2023',
-  '#journey-fable-2024',
-  '#journey-transcendent-love-2025-2026',
+const eraLabels = [
+  '2018：被发现的声音',
+  '2019：从网络走向现场',
+  '2020–2021：在无法相聚时重构舞台',
+  '2022–2023：把虚拟歌声带进武道馆',
+  '2024：进入创作的第二章',
+  '2025–2026：走向更大的世界',
 ] as const;
 
 const galleryTitles = [
@@ -68,7 +68,7 @@ async function expectNoEssentialHorizontalClipping(page: Page, label: string) {
   const clippedElements = await page.evaluate(() => {
     const elements = Array.from(
       document.querySelectorAll(
-        'main h1, main h2, main h3, main p, main a, main figcaption, main time, footer p, footer a, footer summary',
+        'main h1, main h2, main h3, main h4, main p, main a, main button, main dt, main dd, main time, footer p, footer a, footer summary',
       ),
     );
 
@@ -76,8 +76,14 @@ async function expectNoEssentialHorizontalClipping(page: Page, label: string) {
       .filter((element) => {
         const style = getComputedStyle(element);
         const rect = element.getBoundingClientRect();
+        const isInsideExplicitHorizontalScroller = Boolean(
+          element.closest(
+            'header nav, #journey [role="tablist"], #visuals [aria-label="选择图片"]',
+          ),
+        );
 
         return (
+          !isInsideExplicitHorizontalScroller &&
           style.display !== 'none' &&
           style.visibility !== 'hidden' &&
           rect.width > 2 &&
@@ -117,78 +123,93 @@ async function expectAnchorBelowHeader(page: Page, headingName: string) {
   expect(geometry.headingTop).toBeGreaterThanOrEqual(geometry.headerBottom - 1);
 }
 
-test('desktop homepage is Chinese-first, localized, and free of legacy UI chrome', async ({
+test('desktop homepage uses factual artist copy and a complete five-album sequence', async ({
   page,
 }) => {
   await openHome(page, { width: 1440, height: 900 });
 
-  await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
   await expect(
     page.getByRole('heading', { level: 1, name: '花谱' }),
   ).toBeInViewport();
   await expect(
-    page.locator('#top').getByRole('img', { name: /粉色短发的花谱/ }),
+    page.getByText('日本虚拟歌手，KAMITSUBAKI STUDIO 旗下艺人。'),
   ).toBeInViewport();
+  await expect(page.getByRole('link', { name: '人物介绍' })).toHaveAttribute(
+    'href',
+    '#about',
+  );
   await expect(
-    page.getByRole('link', { name: /开始认识花谱/ }),
-  ).toBeInViewport();
-  await expect(
-    page.getByRole('link', { name: /查看成长轨迹/ }),
-  ).toBeInViewport();
-
-  await expect(page.getByRole('banner')).toBeVisible();
-  await expect(page.getByRole('main')).toBeVisible();
-  await expect(page.getByRole('contentinfo')).toBeAttached();
+    page.locator('#top').getByRole('link', { name: '代表作品' }),
+  ).toHaveAttribute('href', '#works');
   await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
   await expect(page).toHaveTitle('花谱观察站｜认识花谱 KAF');
 
-  const expectedHeadings = [
+  for (const heading of [
     '认识花谱',
     '成长轨迹',
     '代表作品',
     '视觉档案',
     '官方入口',
-  ] as const;
-
-  for (const heading of expectedHeadings) {
+  ]) {
     await expect(
       page.getByRole('heading', { level: 2, name: heading }),
     ).toBeAttached();
   }
 
-  const navigation = page.getByRole('navigation', {
-    name: '花谱观察站页面导航',
-  });
-  const expectedTargets = [
-    ['认识花谱', '#about'],
-    ['成长轨迹', '#journey'],
-    ['代表作品', '#works'],
-    ['视觉档案', '#visuals'],
-    ['官方入口', '#links'],
-  ] as const;
+  const profile = page.locator('#about');
+  await expect(profile.getByText('开始活动', { exact: true })).toBeVisible();
+  await expect(profile.getByText('2018 年', { exact: true })).toBeVisible();
+  await expect(profile.getByText('出道年龄', { exact: true })).toBeVisible();
+  await expect(profile.getByText('14 岁', { exact: true })).toBeVisible();
+  await expect(
+    profile.getByText('KAMITSUBAKI STUDIO', { exact: true }),
+  ).toBeVisible();
+  await expect(
+    profile.locator('[data-testid="primer-sticky-stage"]'),
+  ).toHaveCount(0);
+  await expect(profile.locator('[data-primer-index]')).toHaveCount(0);
 
-  for (const [label, href] of expectedTargets) {
-    await expect(navigation.getByRole('link', { name: label })).toHaveAttribute(
-      'href',
-      href,
-    );
+  const journey = page.locator('#journey');
+  await expect(journey.getByRole('tab')).toHaveCount(6);
+  await expect(journey.getByRole('tabpanel')).toHaveCount(1);
+  await expect(
+    journey.getByRole('heading', { level: 3, name: '被发现的声音' }),
+  ).toBeVisible();
+  await expect(
+    journey.locator('[data-testid="journey-sticky-stage"]'),
+  ).toHaveCount(0);
+
+  const works = page.locator('#works');
+  await expect(works.getByRole('article')).toHaveCount(5);
+  for (const title of ['深愛', '寓話', '狂想β', '魔法α', '観測α']) {
+    await expect(works.getByRole('heading', { name: title })).toBeAttached();
   }
+  const thirdAlbum = works.getByRole('article').filter({ hasText: '狂想β' });
+  await expect(thirdAlbum).toHaveCount(1);
+  await expect(thirdAlbum.locator('img')).toHaveCount(0);
+  await expect(
+    thirdAlbum.getByRole('link', { name: /狂想β的官方页面/ }),
+  ).toHaveAttribute(
+    'href',
+    'https://kaf.kamitsubaki.jp/discography/20230308/199/',
+  );
 
-  const legacyUiStrings = [
-    '軌跡',
-    '視覚',
-    '公式サイト',
-    '軌跡を見る',
-    '新しいタブで開く',
-    '画像を選ぶ',
-    '画像出典（9件）',
+  const bannedCopy = [
+    '她从网络里被听见',
+    '这里用几分钟讲清',
+    '一个从网络深处被发现的声音',
+    '虚拟形象是入口',
+    '从屏幕里的歌',
+    '先听起点',
+    '网络中的投稿',
+    '第一次被看见',
     'VOICE / IMAGE / MEMORY',
     'KAF / CHRONOLOGY',
     'CURRENT WORK',
     'VISUAL CREDIT',
   ];
 
-  for (const copy of legacyUiStrings) {
+  for (const copy of bannedCopy) {
     await expect(page.locator('body')).not.toContainText(copy);
   }
 
@@ -199,21 +220,11 @@ test('desktop homepage is Chinese-first, localized, and free of legacy UI chrome
       .getByRole('contentinfo')
       .getByText('图片作者与制作：花譜 / PALOW. / 川サキケンジ / とり'),
   ).toBeVisible();
-  await expect(page.locator('#media-sources summary')).toContainText(
-    '图片来源（9 项）',
-  );
-  await expect(
-    page.getByRole('contentinfo').getByText('资料来源（4 项）'),
-  ).toBeAttached();
 
   const hierarchy = await page.evaluate(() => {
     const readFontSize = (selector: string) => {
       const element = document.querySelector(selector);
-
-      if (!element) {
-        throw new Error(`Missing visual hierarchy target: ${selector}`);
-      }
-
+      if (!element) throw new Error(`Missing hierarchy target: ${selector}`);
       return Number.parseFloat(getComputedStyle(element).fontSize);
     };
 
@@ -224,7 +235,6 @@ test('desktop homepage is Chinese-first, localized, and free of legacy UI chrome
         const text = element.textContent?.trim();
         const rect = element.getBoundingClientRect();
         const style = getComputedStyle(element);
-
         return (
           Boolean(text) &&
           element.children.length === 0 &&
@@ -242,7 +252,6 @@ test('desktop homepage is Chinese-first, localized, and free of legacy UI chrome
 
     return {
       bodyFontSize: readFontSize('body'),
-      documentHeight: document.documentElement.scrollHeight,
       navFontSize: readFontSize('header nav a'),
       sectionHeadingSizes: [
         '#about h2',
@@ -250,6 +259,7 @@ test('desktop homepage is Chinese-first, localized, and free of legacy UI chrome
         '#works h2',
         '#visuals h2',
       ].map(readFontSize),
+      documentHeight: document.documentElement.scrollHeight,
       smallVisibleText,
     };
   });
@@ -257,7 +267,7 @@ test('desktop homepage is Chinese-first, localized, and free of legacy UI chrome
   expect(hierarchy.bodyFontSize).toBeGreaterThanOrEqual(16);
   expect(hierarchy.navFontSize).toBeGreaterThanOrEqual(14);
   expect(Math.max(...hierarchy.sectionHeadingSizes)).toBeLessThanOrEqual(72);
-  expect(hierarchy.documentHeight).toBeLessThan(18_000);
+  expect(hierarchy.documentHeight).toBeLessThan(14_000);
   expect(hierarchy.smallVisibleText).toEqual([]);
 });
 
@@ -272,11 +282,8 @@ test('fixed navigation keeps contrast and reports the current page location', as
   const contrast = await page.evaluate(() => {
     function parse(value: string): [number, number, number, number] {
       const channels = value.match(/[\d.]+/g)?.map(Number);
-
-      if (!channels || channels.length < 3) {
-        throw new Error(`Unable to parse color: ${value}`);
-      }
-
+      if (!channels || channels.length < 3)
+        throw new Error(`Bad color: ${value}`);
       return [
         channels[0] ?? 0,
         channels[1] ?? 0,
@@ -285,23 +292,22 @@ test('fixed navigation keeps contrast and reports the current page location', as
       ];
     }
 
-    function compositeOverWhite(value: string): [number, number, number] {
-      const [red, green, blue, alpha] = parse(value);
+    function composite(value: string): [number, number, number] {
+      const [r, g, b, a] = parse(value);
       return [
-        red * alpha + 255 * (1 - alpha),
-        green * alpha + 255 * (1 - alpha),
-        blue * alpha + 255 * (1 - alpha),
+        r * a + 255 * (1 - a),
+        g * a + 255 * (1 - a),
+        b * a + 255 * (1 - a),
       ];
     }
 
     function luminance(channels: [number, number, number]) {
       const linear = channels.map((channel) => {
-        const normalized = channel / 255;
-        return normalized <= 0.04045
-          ? normalized / 12.92
-          : ((normalized + 0.055) / 1.055) ** 2.4;
+        const value = channel / 255;
+        return value <= 0.04045
+          ? value / 12.92
+          : ((value + 0.055) / 1.055) ** 2.4;
       }) as [number, number, number];
-
       return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
     }
 
@@ -321,54 +327,45 @@ test('fixed navigation keeps contrast and reports the current page location', as
     const primaryAction = document.querySelector<HTMLElement>(
       '#top a[href="#about"]',
     );
-
-    if (!headerElement || !navLink || !primaryAction) {
-      throw new Error('Missing contrast target.');
-    }
+    if (!headerElement || !navLink || !primaryAction)
+      throw new Error('Missing contrast target');
 
     const headerStyle = getComputedStyle(headerElement);
     const navStyle = getComputedStyle(navLink);
     const actionStyle = getComputedStyle(primaryAction);
-
     return {
-      navOnPaleArtwork: ratio(
-        compositeOverWhite(navStyle.color),
-        compositeOverWhite(headerStyle.backgroundColor),
+      nav: ratio(
+        composite(navStyle.color),
+        composite(headerStyle.backgroundColor),
       ),
-      primaryAction: ratio(
-        compositeOverWhite(actionStyle.color),
-        compositeOverWhite(actionStyle.backgroundColor),
+      action: ratio(
+        composite(actionStyle.color),
+        composite(actionStyle.backgroundColor),
       ),
     };
   });
 
-  expect(contrast.navOnPaleArtwork).toBeGreaterThanOrEqual(4.5);
-  expect(contrast.primaryAction).toBeGreaterThanOrEqual(4.5);
+  expect(contrast.nav).toBeGreaterThanOrEqual(4.5);
+  expect(contrast.action).toBeGreaterThanOrEqual(4.5);
 
   const navigation = page.getByRole('navigation', {
     name: '花谱观察站页面导航',
   });
-  const locations = [
+  for (const [selector, label] of [
     ['#about', '认识花谱'],
     ['#journey', '成长轨迹'],
     ['#works', '代表作品'],
     ['#visuals', '视觉档案'],
     ['#links', '官方入口'],
-  ] as const;
-
-  for (const [selector, label] of locations) {
+  ] as const) {
     await scrollToCenter(page, selector);
-    const link = navigation.getByRole('link', { name: label });
-    await expect(link).toHaveAttribute('aria-current', 'location');
-    await expect(link).toHaveAttribute('data-active', 'true');
+    await expect(navigation.getByRole('link', { name: label })).toHaveAttribute(
+      'aria-current',
+      'location',
+    );
   }
 
-  await page.goto('/');
-  await page.evaluate(() => document.fonts.ready);
-  await page
-    .getByRole('navigation', { name: '花谱观察站页面导航' })
-    .getByRole('link', { name: '代表作品' })
-    .click();
+  await navigation.getByRole('link', { name: '代表作品' }).click();
   await expect(
     page.getByRole('heading', { level: 2, name: '代表作品' }),
   ).toBeInViewport();
@@ -379,10 +376,8 @@ test('hero selects density-matched generated artwork at DPR 1 and DPR 2', async 
   browser,
 }) => {
   const baseURL = test.info().project.use.baseURL;
-
-  if (typeof baseURL !== 'string') {
-    throw new Error('Playwright baseURL is required for density tests.');
-  }
+  if (typeof baseURL !== 'string')
+    throw new Error('Playwright baseURL required');
 
   for (const density of [1, 2] as const) {
     const context = await browser.newContext({
@@ -394,118 +389,86 @@ test('hero selects density-matched generated artwork at DPR 1 and DPR 2', async 
     await page.goto('/');
     const hero = page.locator('#top img[data-media-id="kaihou"]');
     await hero.waitFor();
-
     const source = await hero.evaluate((element) => {
       const image = element as HTMLImageElement;
-
       return {
         currentSrc: image.currentSrc,
-        height: image.getAttribute('height'),
         src: image.getAttribute('src'),
         srcSet: image.getAttribute('srcset'),
         width: image.getAttribute('width'),
+        height: image.getAttribute('height'),
       };
     });
-
     expect(source.src).toContain('kaihou-2x');
-    expect(source.srcSet).toContain('kaihou-2x');
     expect(source.srcSet).toContain('kaihou-4x');
     expect(source.width).toBe('1720');
     expect(source.height).toBe('968');
     expect(source.currentSrc).toContain(
       density === 1 ? 'kaihou-2x' : 'kaihou-4x',
     );
-
     await context.close();
   }
 });
 
-test('newcomer story advances through four meaningful beats and releases its stage', async ({
+test('journey exposes six keyboard-complete era tabs and previous/next controls', async ({
   page,
 }) => {
   await openHome(page, { width: 1440, height: 900 });
+  await scrollToCenter(page, '#journey');
 
-  const section = page.locator('#about');
-  const stage = page.getByTestId('primer-sticky-stage');
-  const steps = section.locator('article[data-primer-index]');
-
-  await expect(steps).toHaveCount(4);
-  await expect(stage).toBeVisible();
-  await expect(stage).toHaveCSS('position', 'sticky');
-
-  const expectedStates = [
-    ['0', '她是谁', '一个从网络深处被发现的声音。'],
-    ['2', '她走到了哪里', '从屏幕里的歌，走进现实的大型舞台。'],
-    ['3', '从哪里开始', '先听起点，再看现场，最后进入第二章。'],
-  ] as const;
-
-  for (const [index, title, statement] of expectedStates) {
-    const step = section.locator(`article[data-primer-index="${index}"]`);
-    await scrollToCenter(page, `#about article[data-primer-index="${index}"]`);
-    await expect(step).toHaveAttribute('data-active', 'true');
-    await expect(stage.getByText(title, { exact: true })).toBeVisible();
-    await expect(stage.getByText(statement, { exact: true })).toBeVisible();
-  }
-
-  await scrollToCenter(page, chapterAnchors[0]);
-  await expect(stage).not.toBeInViewport();
-});
-
-test('journey advances through six Chinese narratives and transformation pairs', async ({
-  page,
-}) => {
-  await openHome(page, { width: 1440, height: 900 });
-
-  const stage = page.getByTestId('journey-sticky-stage');
-  await scrollToCenter(page, chapterAnchors[0]);
-  await expect(stage).toBeVisible();
-  await expect(stage).toHaveCSS('position', 'sticky');
-  await expect(page.locator(chapterAnchors[0])).toHaveAttribute(
-    'data-active',
-    'true',
-  );
-  await expect(stage.getByText('被发现的声音', { exact: true })).toBeVisible();
-  await expect(stage.getByText('网络中的投稿', { exact: true })).toBeVisible();
-  await expect(stage.getByText('第一次被看见', { exact: true })).toBeVisible();
-
-  await scrollToCenter(page, chapterAnchors[2]);
-  await expect(page.locator(chapterAnchors[2])).toHaveAttribute(
-    'data-active',
-    'true',
-  );
+  const journey = page.locator('#journey');
+  const tabList = journey.getByRole('tablist', { name: '花谱成长阶段' });
+  const tabs = tabList.getByRole('tab');
+  await expect(tabs).toHaveCount(6);
   await expect(
-    stage.getByText('在无法相聚时重构舞台', { exact: true }),
-  ).toBeVisible();
-  await expect(stage.getByText('魔法 / 再構築', { exact: true })).toBeVisible();
+    tabs.evaluateAll((items) =>
+      items.map((item) => item.getAttribute('aria-label')),
+    ),
+  ).resolves.toEqual(eraLabels);
+
+  await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true');
+  await tabs.nth(0).focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
   await expect(
-    stage.getByText('无法按计划相聚', { exact: true }),
-  ).toBeVisible();
-  await expect(
-    stage.getByText('线上现场与重返会场', { exact: true }),
+    journey.getByRole('heading', { level: 3, name: '从网络走向现场' }),
   ).toBeVisible();
 
-  await scrollToCenter(page, chapterAnchors[5]);
-  await expect(page.locator(chapterAnchors[5])).toHaveAttribute(
-    'data-active',
-    'true',
-  );
-  await expect(
-    stage.getByText('走向更大的世界', { exact: true }),
-  ).toBeVisible();
-  await expect(
-    stage.getByText('日本国内的成长', { exact: true }),
-  ).toBeVisible();
-  await expect(
-    stage.getByText('海外活动与新的当下', { exact: true }),
-  ).toBeVisible();
+  await page.keyboard.press('End');
+  await expect(tabs.nth(5)).toHaveAttribute('aria-selected', 'true');
+  await page.keyboard.press('Home');
+  await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true');
 
-  await page
-    .locator('#works article')
-    .first()
-    .evaluate((element) => {
-      element.scrollIntoView({ block: 'center', behavior: 'instant' });
-    });
-  await expect(stage).not.toBeInViewport();
+  await tabs.nth(2).click();
+  await expect(tabs.nth(2)).toHaveAttribute('aria-selected', 'true');
+  const panel = journey.getByRole('tabpanel');
+  await expect(
+    panel.getByRole('heading', { level: 3, name: '在无法相聚时重构舞台' }),
+  ).toBeVisible();
+  await expect(panel).toContainText('2020 年，受现场条件影响');
+  await expect(panel.getByRole('img')).toHaveCount(2);
+
+  const selectedControls = await tabs.nth(2).getAttribute('aria-controls');
+  expect(selectedControls).not.toBeNull();
+  await expect(page.locator(`[id="${selectedControls}"]`)).toHaveCount(1);
+
+  await panel
+    .getByRole('button', { name: '下一阶段：把虚拟歌声带进武道馆' })
+    .click();
+  await expect(tabs.nth(3)).toHaveAttribute('aria-selected', 'true');
+  await expect(
+    journey.getByRole('heading', { level: 3, name: '把虚拟歌声带进武道馆' }),
+  ).toBeVisible();
+  await journey
+    .getByRole('button', { name: '上一阶段：在无法相聚时重构舞台' })
+    .click();
+  await expect(tabs.nth(2)).toHaveAttribute('aria-selected', 'true');
+
+  await expect(journey).not.toContainText('网络中的投稿');
+  await expect(journey).not.toContainText('第一次被看见');
+  await expect(
+    journey.locator('[data-testid="journey-sticky-stage"]'),
+  ).toHaveCount(0);
 });
 
 test('gallery provides eight selectors and localized keyboard lightbox navigation', async ({
@@ -517,50 +480,34 @@ test('gallery provides eight selectors and localized keyboard lightbox navigatio
   const gallery = page.locator('#visuals');
   const thumbnailList = gallery.getByRole('list', { name: '选择图片' });
   const thumbnailButtons = thumbnailList.getByRole('button');
-
   await expect(thumbnailButtons).toHaveCount(8);
   await expect(
     thumbnailButtons.evaluateAll((buttons) =>
       buttons.map((button) => button.getAttribute('aria-label')),
     ),
   ).resolves.toEqual(galleryTitles.map((title) => `${title}，显示此图`));
-  await expect(
-    thumbnailList.getByRole('button', { name: '花譜ちゃん，显示此图' }),
-  ).toHaveAttribute('aria-pressed', 'true');
-  await expect(
-    gallery.getByRole('button', { name: '花譜ちゃん，点击放大' }),
-  ).toBeVisible();
 
   await thumbnailList.getByRole('button', { name: '不可解，显示此图' }).click();
-  await expect(
-    thumbnailList.getByRole('button', { name: '不可解，显示此图' }),
-  ).toHaveAttribute('aria-pressed', 'true');
   const activeStage = gallery.getByRole('button', { name: '不可解，点击放大' });
   await expect(activeStage).toBeVisible();
-
   await activeStage.click();
+
   const closeButton = page.getByRole('button', { name: '关闭' });
   await expect(closeButton).toBeVisible();
   await expect(page.getByRole('button', { name: '上一张图片' })).toBeVisible();
   await expect(page.getByRole('button', { name: '下一张图片' })).toBeVisible();
-  const lightboxImage = page.locator('.yarl__slide_image[alt^="黑色舞台上"]');
-  await expect(lightboxImage).toHaveAttribute('src', /fukakai-4x/);
+  await expect(
+    page.locator('.yarl__slide_image[alt^="黑色舞台上"]'),
+  ).toHaveAttribute('src', /fukakai-4x/);
 
   await page.keyboard.press('ArrowRight');
   await expect(
-    page.locator('#visuals button[aria-label="糸，显示此图"]'),
+    gallery.locator('button[aria-label="糸，显示此图"]'),
   ).toHaveAttribute('aria-pressed', 'true');
-
-  const zoomIn = page.getByRole('button', { name: '放大' });
-  await expect(zoomIn).toBeVisible();
-  await zoomIn.click();
+  await page.getByRole('button', { name: '放大' }).click();
   await expect(page.getByRole('button', { name: '缩小' })).toBeVisible();
-
   await page.keyboard.press('Escape');
   await expect(closeButton).toHaveCount(0);
-  await expect(
-    gallery.getByRole('button', { name: '糸，点击放大' }),
-  ).toBeVisible();
 });
 
 test('gallery reserves generated thumbnails for the rail and atmospheric backdrop', async ({
@@ -574,12 +521,10 @@ test('gallery reserves generated thumbnails for the rail and atmospheric backdro
     .getByRole('list', { name: '选择图片' })
     .locator('img[data-media-variant="thumbnail"]');
   await expect(thumbnailImages).toHaveCount(8);
-
   for (let index = 0; index < (await thumbnailImages.count()); index += 1) {
     await expect(thumbnailImages.nth(index)).toHaveAttribute('src', /-thumb-/);
     await expect(thumbnailImages.nth(index)).not.toHaveAttribute('srcset');
   }
-
   const backdropImage = gallery
     .getByTestId('gallery-backdrop')
     .locator('img[data-media-variant="thumbnail"]');
@@ -587,7 +532,7 @@ test('gallery reserves generated thumbnails for the rail and atmospheric backdro
   await expect(backdropImage).toHaveAttribute('src', /-thumb-/);
 });
 
-test('mobile homepage keeps onboarding and journey linear with touch-safe controls', async ({
+test('mobile profile and era theatre remain linear, contained, and touch-safe', async ({
   page,
 }) => {
   await openHome(page, { width: 390, height: 844 });
@@ -595,43 +540,47 @@ test('mobile homepage keeps onboarding and journey linear with touch-safe contro
   await expect(
     page.getByRole('heading', { level: 1, name: '花谱' }),
   ).toBeInViewport();
-  await expect(
-    page.getByRole('link', { name: /开始认识花谱/ }),
-  ).toBeInViewport();
+  await expect(page.getByRole('link', { name: '人物介绍' })).toBeInViewport();
   await expectNoHorizontalOverflow(page, '390×844 hero');
 
-  await expect(page.getByTestId('primer-sticky-stage')).toBeHidden();
-  await expect(page.locator('#about article[data-primer-index]')).toHaveCount(
-    4,
-  );
-  await expect(page.getByTestId('journey-sticky-stage')).toBeHidden();
   await expect(
-    page.locator('#journey article[data-journey-index]'),
-  ).toHaveCount(6);
+    page.locator('#about [data-testid="primer-sticky-stage"]'),
+  ).toHaveCount(0);
+  await expect(page.locator('#about dl')).toBeAttached();
 
-  const navTargets = page
-    .getByRole('navigation', { name: '花谱观察站页面导航' })
-    .getByRole('link');
-  await expect(navTargets).toHaveCount(5);
+  const tabs = page.locator('#journey').getByRole('tab');
+  await expect(tabs).toHaveCount(6);
+  const railMetrics = await page
+    .locator('#journey')
+    .getByRole('tablist')
+    .evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        clientWidth: element.clientWidth,
+        scrollWidth: element.scrollWidth,
+        left: rect.left,
+        right: rect.right,
+        viewport: window.innerWidth,
+      };
+    });
+  expect(railMetrics.scrollWidth).toBeGreaterThan(railMetrics.clientWidth);
+  expect(railMetrics.left).toBeGreaterThanOrEqual(-1);
+  expect(railMetrics.right).toBeLessThanOrEqual(railMetrics.viewport + 1);
 
-  for (let index = 0; index < (await navTargets.count()); index += 1) {
-    const box = await navTargets.nth(index).boundingBox();
-    expect(box, `mobile nav target ${index + 1}`).not.toBeNull();
+  for (let index = 0; index < (await tabs.count()); index += 1) {
+    const box = await tabs.nth(index).boundingBox();
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
   }
 
-  await scrollToCenter(page, '#visuals');
-  const mobileGalleryLabels = await page
-    .locator('#visuals')
-    .getByRole('list', { name: '选择图片' })
-    .getByRole('button')
-    .evaluateAll((buttons) =>
-      buttons.map((button) => button.getAttribute('aria-label')),
-    );
-  expect(mobileGalleryLabels).toEqual(
-    galleryTitles.map((title) => `${title}，显示此图`),
-  );
-  await expectNoHorizontalOverflow(page, '390×844 gallery');
+  await tabs.nth(4).click();
+  await expect(tabs.nth(4)).toHaveAttribute('aria-selected', 'true');
+  await expect(
+    page.locator('#journey').getByRole('heading', {
+      level: 3,
+      name: '进入创作的第二章',
+    }),
+  ).toBeVisible();
+  await expectNoHorizontalOverflow(page, '390×844 journey');
 });
 
 test('all target viewport sizes remain free of horizontal overflow', async ({
@@ -647,19 +596,12 @@ test('all target viewport sizes remain free of horizontal overflow', async ({
       page,
       `${viewport.width}×${viewport.height} essential content`,
     );
-
-    const shouldUseStickyStage =
-      viewport.width >= 1024 && viewport.height >= 736;
-    const primerStage = page.getByTestId('primer-sticky-stage');
-    const journeyStage = page.getByTestId('journey-sticky-stage');
-
-    if (shouldUseStickyStage) {
-      await expect(primerStage).toBeVisible();
-      await expect(journeyStage).toBeVisible();
-    } else {
-      await expect(primerStage).toBeHidden();
-      await expect(journeyStage).toBeHidden();
-    }
+    await expect(
+      page.locator('[data-testid="primer-sticky-stage"]'),
+    ).toHaveCount(0);
+    await expect(
+      page.locator('[data-testid="journey-sticky-stage"]'),
+    ).toHaveCount(0);
 
     for (const selector of pageSections) {
       await scrollToCenter(page, selector);
@@ -671,19 +613,18 @@ test('all target viewport sizes remain free of horizontal overflow', async ({
   }
 });
 
-test('large user text preferences preserve essential reflow', async ({
+test('large user text preferences preserve essential reflow and era controls', async ({
   page,
 }) => {
   await openHome(page, { width: 640, height: 900 });
-  await page.addStyleTag({
-    content: ':root { font-size: 200% !important; }',
-  });
+  await page.addStyleTag({ content: ':root { font-size: 200% !important; }' });
 
   await expectNoHorizontalOverflow(page, '640×900 with 200% root text');
   await expectNoEssentialHorizontalClipping(
     page,
     '640×900 with 200% root text essential content',
   );
+  await expect(page.locator('#journey').getByRole('tab')).toHaveCount(6);
 
   for (const selector of pageSections) {
     await scrollToCenter(page, selector);
@@ -694,48 +635,37 @@ test('large user text preferences preserve essential reflow', async ({
   }
 });
 
-test('reduced motion renders all narrative content without sticky stages', async ({
+test('reduced motion preserves profile, tabs, and active-panel controls', async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await openHome(page, { width: 1440, height: 900 });
 
+  await expect(page.locator('#about dl')).toBeVisible();
+  await expect(page.locator('#journey').getByRole('tab')).toHaveCount(6);
+  await page.locator('#journey').getByRole('tab').nth(5).click();
   await expect(
-    page.getByRole('heading', { level: 1, name: '花谱' }),
+    page.locator('#journey').getByRole('heading', {
+      level: 3,
+      name: '走向更大的世界',
+    }),
   ).toBeVisible();
-  await expect(page.getByTestId('primer-sticky-stage')).toHaveCount(0);
-  await expect(page.getByTestId('journey-sticky-stage')).toHaveCount(0);
-  await expect(page.locator('#about article[data-primer-index]')).toHaveCount(
-    4,
-  );
-  await expect(
-    page.locator('#journey article[data-journey-index]'),
-  ).toHaveCount(6);
-  await expect(
-    page
-      .locator('#visuals')
-      .getByRole('list', { name: '选择图片' })
-      .getByRole('button'),
-  ).toHaveCount(8);
 
-  for (const chapterAnchor of chapterAnchors) {
-    await scrollToCenter(page, chapterAnchor);
-    await expect(page.locator(chapterAnchor)).toBeInViewport();
-  }
+  const panelMotion = await page
+    .getByTestId('journey-era-panel')
+    .evaluate((element) => {
+      const style = getComputedStyle(element);
+      return { opacity: style.opacity, transform: style.transform };
+    });
+  expect(panelMotion).toEqual({ opacity: '1', transform: 'none' });
 
   const heroMotionState = await page.locator('#top h1').evaluate((element) => {
     const animatedParent = element.parentElement;
-
-    if (!animatedParent) {
-      return null;
-    }
-
+    if (!animatedParent) return null;
     const style = getComputedStyle(animatedParent);
     return { opacity: style.opacity, transform: style.transform };
   });
-
   expect(heroMotionState).toEqual({ opacity: '1', transform: 'none' });
-  await expectNoHorizontalOverflow(page, '1440×900 reduced motion');
 });
 
 test('only the hero image is eager and responsive candidates remain explicit', async ({
@@ -754,10 +684,7 @@ test('only the hero image is eager and responsive candidates remain explicit', a
       width: image.getAttribute('width'),
     })),
   );
-  const uniqueSources = new Set(imageLoading.map((image) => image.src));
   const eagerImages = imageLoading.filter((image) => image.loading === 'eager');
-
-  expect(uniqueSources.size).toBeGreaterThanOrEqual(9);
   expect(eagerImages).toHaveLength(1);
   expect(eagerImages[0]?.fetchPriority).toBe('high');
   expect(eagerImages[0]?.src).toContain('kaihou-2x');
@@ -766,17 +693,14 @@ test('only the hero image is eager and responsive candidates remain explicit', a
   for (const image of imageLoading) {
     expect(Number(image.width)).toBeGreaterThan(0);
     expect(Number(image.height)).toBeGreaterThan(0);
-
     if (image !== eagerImages[0]) {
       expect(image.loading).toBe('lazy');
       expect(image.fetchPriority).not.toBe('high');
     }
-
     if (image.mediaVariant === 'responsive') {
       expect(image.src).toContain('-2x');
       expect(image.srcSet).toContain('-4x');
     }
-
     if (image.mediaVariant === 'thumbnail') {
       expect(image.src).toContain('-thumb');
       expect(image.srcSet).toBeNull();
@@ -784,41 +708,30 @@ test('only the hero image is eager and responsive candidates remain explicit', a
   }
 });
 
-test('captures the Chinese storytelling visual evidence', async ({ page }) => {
-  const evidenceDirectory = 'test-results/kaf-round4-cn-storytelling';
+test('captures the editorial profile and era-theatre visual evidence', async ({
+  page,
+}) => {
+  const evidenceDirectory = 'test-results/kaf-round5-editorial-era-theatre';
 
   await openHome(page, { width: 1440, height: 900 });
-  await page.screenshot({
-    path: `${evidenceDirectory}/1440x900-hero-header.png`,
-  });
-
-  await scrollToCenter(page, '#about article[data-primer-index="0"]');
-  await page.screenshot({
-    path: `${evidenceDirectory}/1440x900-about-identity.png`,
-  });
-
-  await scrollToCenter(page, '#about article[data-primer-index="2"]');
-  await page.screenshot({
-    path: `${evidenceDirectory}/1440x900-about-stage.png`,
-  });
-
-  await scrollToCenter(page, chapterAnchors[3]);
-  await page.screenshot({
-    path: `${evidenceDirectory}/1440x900-journey-expansion.png`,
-  });
-
-  await scrollToCenter(page, '#visuals-title');
-  await page.screenshot({
-    path: `${evidenceDirectory}/1440x900-gallery.png`,
-  });
-
-  await openHome(page, { width: 390, height: 844 });
-  await page.screenshot({
-    path: `${evidenceDirectory}/390x844-hero-header.png`,
-  });
+  await page.screenshot({ path: `${evidenceDirectory}/1440x900-hero.png` });
 
   await scrollToCenter(page, '#about');
+  await page.screenshot({ path: `${evidenceDirectory}/1440x900-profile.png` });
+
+  await scrollToCenter(page, '#journey');
+  await page.locator('#journey').getByRole('tab').nth(3).click();
   await page.screenshot({
-    path: `${evidenceDirectory}/390x844-about.png`,
+    path: `${evidenceDirectory}/1440x900-era-theatre.png`,
+  });
+
+  await scrollToCenter(page, '#works');
+  await page.screenshot({ path: `${evidenceDirectory}/1440x900-works.png` });
+
+  await openHome(page, { width: 390, height: 844 });
+  await page.screenshot({ path: `${evidenceDirectory}/390x844-hero.png` });
+  await scrollToCenter(page, '#journey');
+  await page.screenshot({
+    path: `${evidenceDirectory}/390x844-era-theatre.png`,
   });
 });

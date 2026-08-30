@@ -5,15 +5,15 @@ import {
   heroMedia,
   journeyChapters,
   kafMedia,
+  kafProfile,
   officialLinks,
-  primerBeats,
   referenceSources,
   selectedWorks,
 } from '../../content/kaf';
 import { GallerySection } from './sections/GallerySection';
 import { HeroSection } from './sections/HeroSection';
 import { JourneySection } from './sections/JourneySection';
-import { KafPrimerSection } from './sections/KafPrimerSection';
+import { KafProfileSection } from './sections/KafProfileSection';
 import { OfficialLinksSection } from './sections/OfficialLinksSection';
 import { SiteFooter } from './sections/SiteFooter';
 import { SiteHeader, type SiteHeaderNavItem } from './sections/SiteHeader';
@@ -34,12 +34,8 @@ export function HomePage() {
         <SiteHeader navLabel="花谱观察站页面导航" navItems={homeNavItems} />
 
         <main>
-          <HeroSection
-            visual={heroMedia}
-            statement="她从网络里被听见，也把虚拟歌声带进了现实舞台。"
-            description="这里用几分钟讲清花谱是谁、她经历了什么，以及第一次认识她可以从哪里开始。"
-          />
-          <KafPrimerSection beats={primerBeats} />
+          <HeroSection visual={heroMedia} />
+          <KafProfileSection profile={kafProfile} />
           <JourneySection chapters={journeyChapters} />
           <WorksSection works={selectedWorks} />
           <GallerySection visuals={galleryVisuals} />

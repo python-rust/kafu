@@ -1,85 +1,36 @@
 .journey {
   --chapter-accent: var(--color-blue-light);
-  --chapter-surface: var(--color-bg-soft);
-  position: relative;
-  isolation: isolate;
   min-width: 0;
   scroll-margin-top: var(--header-offset);
   padding: var(--section-space) var(--page-gutter);
   border-top: 1px solid var(--color-line);
-  background: var(--chapter-surface);
+  background: var(--color-bg-soft);
   color: var(--color-text);
   transition: background-color var(--duration-slow) ease;
 }
 
-.journey[data-theme='origin'],
-.chapterArticle[data-theme='origin'] {
+.journey[data-theme='origin'] {
   --chapter-accent: var(--color-blue-light);
 }
 
-.journey[data-theme='origin'] {
-  --chapter-surface: color-mix(
-    in srgb,
-    var(--color-bg-soft) 94%,
-    var(--color-blue) 6%
-  );
-}
-
-.journey[data-theme='observation'],
-.chapterArticle[data-theme='observation'] {
+.journey[data-theme='observation'] {
   --chapter-accent: var(--color-lilac);
 }
 
-.journey[data-theme='observation'] {
-  --chapter-surface: color-mix(
-    in srgb,
-    var(--color-bg-soft) 93%,
-    var(--color-lilac) 7%
-  );
-}
-
-.journey[data-theme='rebuild'],
-.chapterArticle[data-theme='rebuild'] {
-  --chapter-accent: var(--color-kaf-light);
-}
-
 .journey[data-theme='rebuild'] {
-  --chapter-surface: color-mix(
-    in srgb,
-    var(--color-bg-soft) 93%,
-    var(--color-kaf) 7%
-  );
-}
-
-.journey[data-theme='expansion'],
-.chapterArticle[data-theme='expansion'] {
-  --chapter-accent: #dfa28d;
+  --chapter-accent: var(--color-kaf-light);
 }
 
 .journey[data-theme='expansion'] {
-  --chapter-surface: color-mix(in srgb, var(--color-bg-soft) 93%, #dfa28d 7%);
-}
-
-.journey[data-theme='fable'],
-.chapterArticle[data-theme='fable'] {
-  --chapter-accent: #c8aee0;
+  --chapter-accent: #dfa28d;
 }
 
 .journey[data-theme='fable'] {
-  --chapter-surface: color-mix(in srgb, var(--color-bg-soft) 93%, #c8aee0 7%);
-}
-
-.journey[data-theme='transcendent'],
-.chapterArticle[data-theme='transcendent'] {
-  --chapter-accent: var(--color-kaf-light);
+  --chapter-accent: #c8aee0;
 }
 
 .journey[data-theme='transcendent'] {
-  --chapter-surface: color-mix(
-    in srgb,
-    var(--color-bg-soft) 92%,
-    var(--color-kaf-light) 8%
-  );
+  --chapter-accent: var(--color-kaf-light);
 }
 
 .inner {
@@ -88,293 +39,205 @@
   margin-inline: auto;
 }
 
-.chapterNav {
-  margin-top: clamp(2rem, 4vw, 3.5rem);
-}
-
-.chapterNav ol,
-.chapterList,
-.milestones {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.chapterNav ol {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  border-top: 1px solid var(--color-line);
-}
-
-.chapterNav li {
+.theatre {
   min-width: 0;
-  border-bottom: 1px solid var(--color-line);
+  margin-top: clamp(2.75rem, 5vw, 4.75rem);
 }
 
-.chapterNav a {
+.eraRail {
+  display: grid;
+  min-width: 0;
+  border-block: 1px solid var(--color-line);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.eraTrigger {
   position: relative;
   display: flex;
   min-width: 0;
-  min-height: 2.75rem;
-  padding: 0.8rem 0.5rem;
+  min-height: 3.5rem;
+  padding: 0.8rem 0.65rem;
+  border-right: 1px solid var(--color-line);
   align-items: center;
+  justify-content: center;
+  background: transparent;
   color: var(--color-text-faint);
+  cursor: pointer;
   font-size: var(--type-label);
   font-variant-numeric: tabular-nums;
-  font-weight: 600;
-  text-decoration: none;
+  font-weight: 650;
+  white-space: nowrap;
   transition:
-    color var(--duration-fast) ease,
-    border-color var(--duration-fast) ease;
+    background-color var(--duration-fast) ease,
+    color var(--duration-fast) ease;
 }
 
-.chapterNav a::after {
+.eraTrigger:last-child {
+  border-right: 0;
+}
+
+.eraTrigger::after {
   position: absolute;
-  right: 0;
+  right: 0.75rem;
   bottom: -1px;
-  left: 0;
+  left: 0.75rem;
   height: 2px;
   background: var(--chapter-accent);
   content: '';
   transform: scaleX(0);
-  transform-origin: right;
+  transform-origin: center;
   transition: transform var(--duration-normal) var(--ease-out);
 }
 
-.chapterNav a[aria-current='step'] {
+.eraTrigger:hover,
+.eraTrigger:focus-visible {
   color: var(--color-text);
 }
 
-.chapterNav a[aria-current='step']::after {
+.eraTrigger[data-state='active'] {
+  background: rgb(248 242 245 / 5%);
+  color: var(--color-text);
+}
+
+.eraTrigger[data-state='active']::after {
   transform: scaleX(1);
-  transform-origin: left;
 }
 
-.chapterNav a:focus-visible,
-.milestones a:focus-visible {
-  outline-color: var(--chapter-accent);
-}
-
-.track {
-  position: relative;
+.panel {
   min-width: 0;
-  margin-top: clamp(3rem, 6vw, 5.5rem);
+  margin-top: clamp(2rem, 4vw, 3.5rem);
+  outline: none;
 }
 
-.stage {
+.panel[data-state='inactive'] {
   display: none;
 }
 
-.stageFrame {
-  position: relative;
-  height: 100%;
+.panelInner {
+  display: grid;
   min-width: 0;
+  gap: clamp(2rem, 5vw, 5rem);
+  grid-template-columns: minmax(22rem, 1.15fr) minmax(20rem, 0.85fr);
+  align-items: start;
+}
+
+.visualCollage {
+  position: relative;
+  min-width: 0;
+  min-height: clamp(30rem, 58vw, 43rem);
+}
+
+.primaryVisual,
+.secondaryVisual {
+  margin: 0;
   overflow: hidden;
-  border: 1px solid var(--color-line);
+  border: 1px solid var(--color-line-strong);
   background: var(--color-bg-deep);
   box-shadow: var(--shadow-stage);
 }
 
-.stageFrame::after {
+.primaryVisual {
   position: absolute;
-  z-index: 2;
-  inset: 0;
-  background: linear-gradient(0deg, rgb(7 5 8 / 84%) 0%, transparent 52%);
-  content: '';
-  pointer-events: none;
+  inset: 0 12% 8% 0;
 }
 
-.visualStack,
-.visualLayer {
+.secondaryVisual {
   position: absolute;
-  inset: 0;
+  right: 0;
+  bottom: 0;
+  width: min(38%, 18rem);
+  aspect-ratio: 4 / 5;
 }
 
-.visualLayer {
-  margin: 0;
-}
-
-.visualLayer img {
+.primaryVisual img,
+.secondaryVisual img {
   display: block;
   width: 100%;
   height: 100%;
-  padding: clamp(1.5rem, 4vw, 3rem);
   object-fit: contain;
 }
 
-.stageMeta {
-  position: absolute;
-  z-index: 4;
-  right: clamp(1.25rem, 3vw, 2.5rem);
-  bottom: clamp(1.25rem, 3vw, 2.5rem);
-  left: clamp(1.25rem, 3vw, 2.5rem);
-  display: grid;
-  color: var(--color-text);
-}
-
-.stageYear {
-  color: var(--chapter-accent);
-  font-size: var(--type-body-small);
-  font-variant-numeric: tabular-nums;
-  font-weight: 650;
-}
-
-.stageTitleZh {
-  margin-top: 0.45rem;
-  font-family: var(--font-display-zh);
-  font-size: clamp(1.75rem, 1.35rem + 1.3vw, 2.8rem);
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.stageOriginalTitle {
-  margin-top: 0.38rem;
-  color: var(--color-text-muted);
-  font-family: var(--font-display-ja);
-  font-size: var(--type-body-small);
-  line-height: 1.6;
-}
-
-.stageChange {
-  display: grid;
-  margin-top: 1.15rem;
-  gap: 0.7rem;
-  grid-template-columns: minmax(0, auto) minmax(2rem, 1fr) minmax(0, auto);
-  align-items: center;
-  color: var(--color-text-muted);
-  font-size: var(--type-body-small);
-  line-height: 1.45;
-}
-
-.stageChangeLine {
-  display: block;
-  height: 1px;
-  background: var(--chapter-accent);
-  transform-origin: left;
-}
-
-.chapterList,
-.chapterItem,
-.chapterArticle,
-.chapterHeading,
-.chapterMedia,
-.chapterFigure {
+.story {
   min-width: 0;
+  padding-top: clamp(0.5rem, 2vw, 2rem);
 }
 
-.chapterItem + .chapterItem {
-  margin-top: clamp(4rem, 8vw, 6.5rem);
+.storyHeader {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-line-strong);
 }
 
-.chapterArticle {
-  position: relative;
-  scroll-margin-top: 6rem;
-  padding: 1.4rem 0 0 clamp(1rem, 3vw, 1.75rem);
-  border-top: 1px solid var(--color-line);
-  border-left: 1px solid var(--color-line-strong);
-  opacity: 0.78;
-  transition:
-    border-color var(--duration-normal) ease,
-    opacity var(--duration-normal) ease;
-}
-
-.chapterArticle[data-active='true'] {
-  border-left-color: var(--chapter-accent);
-  opacity: 1;
-}
-
-.chapterYear {
+.year {
   margin: 0;
   color: var(--chapter-accent);
   font-size: var(--type-body-small);
   font-variant-numeric: tabular-nums;
-  font-weight: 650;
+  font-weight: 700;
 }
 
-.chapterHeading h3 {
+.storyHeader h3 {
   max-width: 13ch;
-  margin: 0.65rem 0 0;
+  margin: 0.75rem 0 0;
   font-family: var(--font-display-zh);
-  font-size: var(--type-card-title);
-  font-weight: 600;
-  line-height: 1.16;
-  letter-spacing: -0.035em;
-}
-
-.originalTitle {
-  margin: 0.55rem 0 0;
-  color: var(--color-text-muted);
-  font-family: var(--font-display-ja);
-  font-size: var(--type-body-small);
-  line-height: 1.6;
-}
-
-.changePair {
-  display: flex;
-  margin: 1.15rem 0 0;
-  gap: 0.6rem;
-  align-items: center;
-  flex-wrap: wrap;
-  color: var(--chapter-accent);
-  font-size: var(--type-body-small);
+  font-size: var(--type-section);
   font-weight: 650;
-  line-height: 1.55;
-}
-
-.changePair span:nth-child(2) {
-  color: var(--color-text-faint);
-}
-
-.chapterMedia {
-  display: grid;
-  gap: 1.25rem;
-  margin-top: 1.75rem;
-}
-
-.chapterFigure {
-  margin: 0;
-  overflow: hidden;
-  border: 1px solid var(--color-line);
-  background: var(--color-bg-deep);
-}
-
-.chapterFigure img {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-height: 68svh;
-  object-fit: contain;
+  letter-spacing: -0.045em;
+  line-height: 1.12;
 }
 
 .summary {
-  max-width: 42rem;
-  margin: 1.65rem 0 0;
+  max-width: 43rem;
+  margin-top: 1.75rem;
+}
+
+.summary p {
+  margin: 0;
   color: var(--color-text);
   font-size: var(--type-body);
-  line-height: 1.85;
+  line-height: 1.9;
+}
+
+.summary p + p {
+  margin-top: 1rem;
+  color: var(--color-text-muted);
+}
+
+.milestoneBlock {
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+
+.milestoneBlock h4 {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-display-zh);
+  font-size: 1.2rem;
+  font-weight: 650;
 }
 
 .milestones {
-  margin-top: 1.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
   border-top: 1px solid var(--color-line);
+  list-style: none;
 }
 
 .milestones li {
   display: grid;
-  padding: 0.9rem 0;
+  min-width: 0;
+  padding: 0.95rem 0;
   border-bottom: 1px solid var(--color-line);
-  gap: 0.65rem 0.8rem;
-  grid-template-columns: minmax(6.75rem, auto) 1fr auto;
+  gap: 0.55rem 0.8rem;
+  grid-template-columns: minmax(6.8rem, auto) minmax(0, 1fr) auto;
   align-items: baseline;
   color: var(--color-text-muted);
   font-size: var(--type-body-small);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .milestones time {
   color: var(--chapter-accent);
   font-variant-numeric: tabular-nums;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .milestones span {
@@ -388,97 +251,125 @@
   text-underline-offset: 0.22em;
 }
 
-.srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+.panelActions {
+  display: flex;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  gap: 0.75rem;
+  justify-content: space-between;
 }
 
-@media (min-width: 48em) {
-  .chapterNav ol {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+.panelActions button {
+  display: inline-flex;
+  min-height: 2.75rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--color-line-strong);
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: var(--type-label);
+  font-weight: 700;
+  transition:
+    border-color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease,
+    color var(--duration-fast) ease;
+}
+
+.panelActions button:hover:not(:disabled),
+.panelActions button:focus-visible:not(:disabled) {
+  border-color: var(--chapter-accent);
+  background: rgb(248 242 245 / 6%);
+}
+
+.panelActions button:disabled {
+  cursor: default;
+  opacity: 0.36;
+}
+
+@media (max-width: 68rem) {
+  .panelInner {
+    grid-template-columns: minmax(18rem, 1fr) minmax(18rem, 1fr);
   }
 
-  .chapterMedia {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .chapterMedia > :only-child {
-    grid-column: 1 / -1;
+  .visualCollage {
+    min-height: clamp(27rem, 52vw, 36rem);
   }
 }
 
-@media (min-width: 64em) and (min-height: 46em) and (prefers-reduced-motion: no-preference) {
-  .chapterNav ol {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+@media (max-width: 54rem) {
+  .eraRail {
+    grid-auto-columns: minmax(7.25rem, 10rem);
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline proximity;
+    scrollbar-color: var(--color-line-strong) transparent;
   }
 
-  .track {
+  .eraTrigger {
+    scroll-snap-align: start;
+  }
+
+  .panelInner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .visualCollage {
+    min-height: clamp(24rem, 76vw, 38rem);
+  }
+
+  .story {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 38rem) {
+  .visualCollage {
     display: grid;
-    gap: clamp(2.5rem, 5vw, 5.5rem);
-    grid-template-columns: minmax(22rem, 0.94fr) minmax(0, 1.06fr);
-    align-items: start;
+    min-height: 0;
+    gap: 1rem;
   }
 
-  .stage {
-    position: sticky;
-    top: calc(var(--header-offset) + 1.5rem);
-    display: block;
-    height: clamp(26rem, 62svh, 36rem);
-    min-width: 0;
-    align-self: start;
-  }
-
-  .chapterItem {
-    display: flex;
-    min-height: clamp(30rem, 62svh, 40rem);
-    align-items: center;
-  }
-
-  .chapterItem + .chapterItem {
-    margin-top: 0;
-  }
-
-  .chapterArticle {
+  .primaryVisual,
+  .secondaryVisual {
+    position: static;
     width: 100%;
+    box-shadow: none;
   }
 
-  .chapterMedia {
-    display: none;
+  .primaryVisual {
+    aspect-ratio: 16 / 10;
   }
-}
 
-@media (max-width: 34em) {
+  .secondaryVisual {
+    aspect-ratio: 16 / 10;
+  }
+
   .milestones li {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .milestones time {
     grid-column: 1 / -1;
   }
+
+  .panelActions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .panelActions button {
+    width: 100%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .chapterNav a,
-  .chapterNav a::after,
-  .chapterArticle {
+  .journey,
+  .eraTrigger,
+  .eraTrigger::after,
+  .panelActions button {
     transition: none;
-  }
-
-  .journey {
-    transition: none;
-  }
-
-  .stage {
-    display: none;
-  }
-
-  .chapterItem {
-    min-height: 0;
   }
 }
