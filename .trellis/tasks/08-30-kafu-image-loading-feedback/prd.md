@@ -111,6 +111,6 @@ order and avoid unnecessarily large DPR downloads.
       context validation pass.
 - [x] Frontend media/quality SPEC documents weak-network placeholders,
       width-based candidates, role priority, and honest loading feedback.
-- [ ] The task is committed, manually deployed, publicly verified, and
+- [x] The task is committed, manually deployed, publicly verified, and
       archived.
 
