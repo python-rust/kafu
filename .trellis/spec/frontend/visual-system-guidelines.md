@@ -96,6 +96,10 @@ They are not allowed as a replacement for composition.
 
 ## Typography Contract
 
+Font-family selection, package versions, self-hosting, licensing, and transfer
+budgets are owned by [Typography Guidelines](./typography-guidelines.md). This
+section owns scale, hierarchy, spacing, and reflow.
+
 Use the shared roles:
 
 ```css
@@ -108,10 +112,10 @@ Use the shared roles:
 --type-display;
 ```
 
-Use `--font-display-zh` for Chinese interface/display text and
-`--font-display-ja` for separately rendered authoritative Japanese names. The
-body/sans stack is Simplified-Chinese-first (`PingFang SC`, `Microsoft YaHei`,
-or an equivalent CJK SC font) before generic Latin/system fallbacks.
+Use `--font-display-zh` for Chinese editorial/display text,
+`--font-display-ja` for separately rendered authoritative Japanese names, and
+`--font-sans` for Chinese reading/UI text. Do not bypass these semantic roles
+with section-local family names.
 
 ### Floors and ceilings
 

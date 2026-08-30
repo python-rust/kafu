@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/index.md","reason":"Frontend spec entry points and required typography reading."}
+{"file":".trellis/spec/frontend/visual-system-guidelines.md","reason":"Current type scale, hierarchy, responsive, and layout contracts."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Formatting, build, browser, and regression gates."}
+{"file":".trellis/tasks/08-30-kaf-open-font-typography-system/research/open-font-selection.md","reason":"Official font, delivery, license, and alternative-family research."}

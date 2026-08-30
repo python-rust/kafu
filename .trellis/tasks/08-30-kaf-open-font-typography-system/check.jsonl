@@ -1,0 +1,5 @@
+{"file":".trellis/spec/frontend/typography-guidelines.md","reason":"Final font roles, self-hosting, performance, and license contract."}
+{"file":".trellis/spec/frontend/visual-system-guidelines.md","reason":"Verify type scale and layout contracts stayed aligned."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Verify complete unit/build/browser requirements."}
+{"file":".trellis/tasks/08-30-kaf-open-font-typography-system/prd.md","reason":"Acceptance criteria for final review."}
+{"file":".trellis/tasks/08-30-kaf-open-font-typography-system/research/open-font-selection.md","reason":"Evidence for selected and rejected typography dependencies."}

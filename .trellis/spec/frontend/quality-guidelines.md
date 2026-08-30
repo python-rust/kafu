@@ -72,7 +72,11 @@ Do not document `pnpm run ...` as the normal project workflow. The package manag
 - Follow [Chinese Localization & Storytelling](./localization-and-storytelling-guidelines.md) when changing Chinese/Japanese naming, primary navigation, onboarding, chronology, factual references, or narrative motion.
 - Follow [Media Guidelines](./media-guidelines.md) and run the media manifest
   check when changing KAF images or generated variants.
-- Follow [Visual System Guidelines](./visual-system-guidelines.md) when changing color roles, typography, responsive density, sticky content, or motion.
+- Follow [Typography Guidelines](./typography-guidelines.md) when changing font
+  families, font packages, loading/subsetting, Japanese fallbacks, or font
+  licensing.
+- Follow [Visual System Guidelines](./visual-system-guidelines.md) when changing
+  color roles, type scale, responsive density, sticky content, or motion.
 
 The current aggregate local gate in `mise.toml` is:
 
@@ -120,7 +124,9 @@ Gallery assets, consolidated bottom attribution, lazy lightbox
 Zoom/keyboard/Escape behavior, essential-content clipping, touch targets, image
 loading, 320×568 / 360×640 / 360×800 / 390×844 / 430×932 portrait,
 768×1024 tablet, 844×390 landscape, `200%` text preferences, and
-horizontal-overflow safety.
+horizontal-overflow safety. It also verifies self-hosted sans/display font
+roles, loaded FontFaceSet entries, same-origin WOFF2 resources, transfer/request
+budgets, and deployed OFL text.
 
 > **Responsive clipping gotcha**: `document.documentElement.scrollWidth` is not sufficient by itself. A section using `overflow: clip` or `overflow: hidden` can conceal an oversized child while the document still reports no horizontal overflow. For critical responsive layouts, also assert the horizontal bounding boxes of user-visible headings, copy, links, credits, and other essential content. This catches over-constrained CSS Grid gaps/tracks and similar clipped-content defects.
 
@@ -188,6 +194,9 @@ The provenance document is evidence for this project context, not a blanket lice
 - If presentation repeats across sections, is it using the page-local shared component rather than drifting copies?
 - If an open-source package owns difficult interaction mechanics, is it isolated and lazy-loaded behind the owning section boundary?
 - Does the change follow the visual-system palette, typography, layout, and motion contracts?
+- Do font changes use the approved role tokens, remain same-origin, preserve
+  Japanese-first proper-name fallbacks, meet the font budget, and ship required
+  license notices?
 - Do KAF media changes preserve preview hashes, derivative dimensions,
   responsive loading roles, and the bottom source index?
 - Does every added third-party media file have a verified provenance entry and compatible usage basis?
