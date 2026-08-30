@@ -55,6 +55,8 @@ Do not document `pnpm run ...` as the normal project workflow. The package manag
 - Do not rely solely on visual/manual verification for user-visible behavior changes when an automated test can cover the behavior.
 - Do not make interactive UI with non-semantic click targets when native HTML provides the behavior/accessibility.
 - Do not commit third-party images merely because they are publicly reachable; a shipping asset needs a verified reuse basis and provenance record.
+- Do not commit `dist`, create a generated `gh-pages` branch, or add an
+  automatic production trigger for the current manual GitHub Pages release.
 
 ---
 
@@ -77,6 +79,9 @@ Do not document `pnpm run ...` as the normal project workflow. The package manag
   licensing.
 - Follow [Visual System Guidelines](./visual-system-guidelines.md) when changing
   color roles, type scale, responsive density, sticky content, or motion.
+- Follow [Static Deployment Guidelines](./deployment-guidelines.md) when
+  changing GitHub Actions, Pages configuration, Vite base paths, BrowserRouter
+  basename, or production asset hosting.
 
 The current aggregate local gate in `mise.toml` is:
 
@@ -200,6 +205,9 @@ The provenance document is evidence for this project context, not a blanket lice
 - Do KAF media changes preserve preview hashes, derivative dimensions,
   responsive loading roles, and the bottom source index?
 - Does every added third-party media file have a verified provenance entry and compatible usage basis?
+- If deployment changed, is the workflow manual-only, are Actions pinned to
+  immutable SHAs, does the `/kafu/` artifact verifier pass, and does a real
+  browser render the repository-subpath build without external runtime assets?
 - Are props/types narrow and explicit?
 - Are user interactions semantic and keyboard accessible?
 - Were affected tests added or updated?

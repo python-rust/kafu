@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/index.md","reason":"Frontend entry points, quality workflow, and spec update requirements."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Pinned toolchain and mandatory validation gates."}
+{"file":".trellis/spec/frontend/deployment-guidelines.md","reason":"Manual Pages release, base-path, router, Action pinning, and asset-origin contracts."}
+{"file":".trellis/tasks/08-30-kafu-github-pages-manual-deploy/research/github-pages-official.md","reason":"Official Pages requirements, action versions, and repository audit."}

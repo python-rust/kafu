@@ -18,6 +18,7 @@ These files document the codebase as it exists now. Do not treat future possibil
 |-------|-------------|--------|
 | [Directory Structure](./directory-structure.md) | `app` / `pages` / styles and test ownership | Active |
 | [Component Guidelines](./component-guidelines.md) | Function components, props, CSS Modules, accessibility | Active |
+| [Static Deployment](./deployment-guidelines.md) | GitHub Pages, manual releases, base paths, and asset-origin contracts | Active |
 | [Interface Content Guidelines](./content-guidelines.md) | Visible-string jobs and anti-template copy constraints | Active |
 | [Hook Guidelines](./hook-guidelines.md) | Built-in hooks, cleanup, extraction threshold | Active |
 | [Chinese Localization & Storytelling](./localization-and-storytelling-guidelines.md) | Chinese audience, factual artist copy, profile, guided Journey, and discography | Active |
@@ -38,13 +39,14 @@ Before changing frontend code:
 2. Identify the current owner of the behavior: application shell, route page, typed static content, local media, or global style.
 3. Check whether a real existing pattern already solves the problem before creating a new abstraction/dependency.
 4. Keep implementation details in the narrowest owner instead of leaking them into unrelated route/page state.
-5. For any visible copy, section label, button/link label, caption, or copy-bearing prop, read [Interface Content Guidelines](./content-guidelines.md).
-6. For Chinese/Japanese naming, Hero/profile copy, guided chronology, or album coverage, read [Chinese Localization & Storytelling](./localization-and-storytelling-guidelines.md).
-7. For KAF image imports, variants, source links, derivatives, or lightbox image behavior, read [Media Guidelines](./media-guidelines.md).
-8. For font families, webfont dependencies, Japanese fallbacks, loading, or font licensing, read [Typography Guidelines](./typography-guidelines.md).
-9. For page visuals, type scale, responsive layout, gallery behavior, or motion, read [Visual System Guidelines](./visual-system-guidelines.md) before editing section CSS/animation behavior.
-10. Use `mise run ...` tasks for project commands so the pinned Node/pnpm toolchain is used.
-11. Before adding third-party media, verify its usage terms and add durable provenance metadata alongside the asset set.
+5. For GitHub Pages, workflows, public base paths, router basename, or production asset origins, read [Static Deployment](./deployment-guidelines.md).
+6. For any visible copy, section label, button/link label, caption, or copy-bearing prop, read [Interface Content Guidelines](./content-guidelines.md).
+7. For Chinese/Japanese naming, Hero/profile copy, guided chronology, or album coverage, read [Chinese Localization & Storytelling](./localization-and-storytelling-guidelines.md).
+8. For KAF image imports, variants, source links, derivatives, or lightbox image behavior, read [Media Guidelines](./media-guidelines.md).
+9. For font families, webfont dependencies, Japanese fallbacks, loading, or font licensing, read [Typography Guidelines](./typography-guidelines.md).
+10. For page visuals, type scale, responsive layout, gallery behavior, or motion, read [Visual System Guidelines](./visual-system-guidelines.md) before editing section CSS/animation behavior.
+11. Use `mise run ...` tasks for project commands so the pinned Node/pnpm toolchain is used.
+12. Before adding third-party media, verify its usage terms and add durable provenance metadata alongside the asset set.
 
 ---
 

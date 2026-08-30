@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Check required local quality gates and browser coverage."}
+{"file":".trellis/spec/frontend/deployment-guidelines.md","reason":"Verify manual-only workflow, immutable pins, Pages base path, and live release procedure."}
+{"file":".trellis/tasks/08-30-kafu-github-pages-manual-deploy/prd.md","reason":"Verify manual trigger, subpath routing, deployment, and live-site acceptance criteria."}
+{"file":".trellis/tasks/08-30-kafu-github-pages-manual-deploy/research/github-pages-official.md","reason":"Verify implementation against official GitHub Pages requirements."}
