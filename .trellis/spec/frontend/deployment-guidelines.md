@@ -92,6 +92,11 @@ origins:
 - images are Vite-managed local assets;
 - tiny weak-network placeholders are inline WebP data URLs generated from those
   local assets and require no additional origin or request;
+- the Hero uses one network-backed responsive image; portrait ambience reuses
+  that image shell's inline placeholder rather than requesting a thumbnail;
+- page-session loaded-state records are memory-only and keyed by build-hashed
+  asset URLs plus responsive selection context, so no stale state persists across
+  a deployment or browser session;
 - Noto fonts are self-hosted WOFF2 build assets;
 - application JavaScript and CSS are hashed Vite assets;
 - Piapro, KAMITSUBAKI, Bilibili, YouTube, and social URLs are user-initiated

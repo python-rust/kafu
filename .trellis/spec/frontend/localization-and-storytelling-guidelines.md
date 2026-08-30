@@ -83,11 +83,10 @@ Rules:
   portrait phones/tablets, `#about` must begin at or below the initial visual
   viewport edge; a fixed `rem` height is not a viewport contract.
 - Portrait layouts preserve the complete `邂逅` composition with a contained
-  responsive foreground. The existing generated thumbnail may provide a
-  decorative blurred ambience behind it. Do not force the landscape artwork
-  through a full-height `cover` crop.
-- Keep exactly one eager/high-priority Hero image. Any ambient derivative is
-  decorative, lazy, and absent from the accessibility tree.
+  responsive foreground. The same shell's inline placeholder provides the
+  decorative blurred ambience; do not issue a second image request or force the
+  landscape artwork through a full-height `cover` crop.
+- Keep exactly one network-backed eager/high-priority Hero image.
 - Use stable `svh` for the initial mobile scene. Do not use `dvh` as the primary
   Hero height because browser chrome would resize the composition while the
   reader scrolls.
@@ -198,6 +197,19 @@ copy where they identify real works/events.
   portrait layouts leave at least 180px below the media dock; short landscape
   leaves at least 120px.
 - The sticky stage must release before `代表作品`.
+- `activeIndex` represents the current narrative step while the stage may keep
+  the previous `displayedVisualIndex` until an uncached next image is ready.
+  During that interval, preserve the previous clear image and show a restrained
+  pending indicator; never replace it with the next chapter's LQIP.
+- Record successful responsive requests by exact source role, `srcset`, `sizes`,
+  viewport width, and DPR. Revisited eras in the same selection context must
+  switch clear-to-clear without loading or placeholder state.
+- After Scrollama confirms that the reader has entered Journey and the displayed
+  stage image is clear, preload only the adjacent era in the current scroll
+  direction at low priority. Do not start this speculative request merely
+  because browser lazy-loading fetched the offscreen first stage near the fold.
+  A bounded Motion crossfade may briefly overlap the outgoing and incoming clear
+  layers, but persistent previous/current/next image stacks are forbidden.
 
 ### Step content
 

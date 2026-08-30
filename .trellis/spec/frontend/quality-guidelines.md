@@ -115,8 +115,9 @@ slogan copy, the complete five-album sequence, and image-loading invariants
 through user-visible content and DOM attributes.
 
 `tests/ResponsiveArtwork.test.tsx` owns the shared progressive-image state
-machine: uncached loading feedback, cached decode completion, one semantic
-`<img>`, width candidates, and failure fallback.
+machine: uncached loading feedback, native-load reveal when `decode()` never
+settles, exact-request cached remounts, one semantic `<img>`, width candidates,
+selection-context changes, and failure fallback.
 
 Prefer role/name queries over class selectors or implementation details.
 
@@ -137,8 +138,10 @@ verified `狂想β` cover, the
 one-stage eight-selector Gallery, DPR-aware Hero sources, thumbnail-specific
 Gallery assets, consolidated bottom attribution, lazy lightbox
 Zoom/keyboard/Escape behavior, essential-content clipping, touch targets, image
-loading, deterministic delayed-image placeholder/reveal behavior, responsive
-Hero preload, 390px/DPR3 candidate selection, 320×568 / 360×640 / 360×800 /
+loading, deterministic delayed-image placeholder/reveal behavior, unresolved
+`decode()` Hero reveal, clear-stage pending Journey transitions, cached Journey
+revisits without LQIP/loading states, responsive Hero preload, 390px/DPR3
+candidate selection, 320×568 / 360×640 / 360×800 /
 390×844 / 430×932 portrait,
 768×1024 tablet, 844×390 landscape, `200%` text preferences, and
 horizontal-overflow safety. It also verifies self-hosted sans/display font
@@ -203,11 +206,20 @@ The provenance document is evidence for this project context, not a blanket lice
   artwork, and keep exactly one eager/high-priority image?
 - Do responsive images provide width candidates and truthful `sizes`, retain
   inline placeholder/loading/error feedback, and avoid fake byte progress?
+- Does `ResponsiveArtwork` reveal on native `load`, inspect complete cached
+  elements in a layout effect, and avoid making `decode()` a visibility gate?
+- Is loaded state keyed to the exact responsive request context rather than any
+  candidate URL for the same artwork?
 - Does the Hero preload match the rendered candidate set and remain valid under
   the `/kafu/` Pages base path?
 - Does Journey use Scrollama only for discrete step entry, destroy the instance
   on cleanup, update offsets on layout/orientation changes, and avoid scroll or
   visual-viewport listeners?
+- Does an uncached Journey transition retain the previous clear stage, while a
+  cached revisit avoids both stage-loading and artwork-placeholder states?
+- Is adjacent Journey preloading delayed until actual Scrollama entry and a
+  clear displayed stage, directional, low priority, and limited to one neighbor
+  rather than all six images?
 - Does compact Journey use a full-bleed stage flush with the occupied header,
   calculate its trigger from measured geometry, and preserve adequate reading
   space in portrait, landscape, and 200% text modes?

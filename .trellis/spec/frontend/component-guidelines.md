@@ -76,9 +76,12 @@ The homepage may place shared presentation under
 
 Current examples:
 
-- `ResponsiveArtwork` owns density candidates, intrinsic dimensions, loading,
-  fetch priority, alt text, and thumbnail/high-density role selection for Hero,
-  Journey, Works, and Gallery.
+- `ResponsiveArtwork` owns width candidates, intrinsic dimensions, native-load
+  reveal, placeholder/error feedback, fetch priority, alt text, and
+  thumbnail/high-density role selection for Hero, Journey, Works, and Gallery.
+- `artworkLoadCache.ts` owns the page-session exact-request cache and responsive
+  adjacent preloader used by remounts and the Journey stage. It is not a generic
+  application cache or an HTTP-cache replacement.
 - `SectionHeading` owns the semantic `h2` and shared rule/scale. It deliberately
   has no eyebrow, preheader, or generic description prop.
 - `MediaSources` owns the single page-bottom creator/source/license index.
@@ -108,9 +111,10 @@ sections or create a generic app-wide modal abstraction for one gallery.
 For the guided Journey:
 
 ```text
-JourneySection.tsx           -> KAF era state, Scrollama lifecycle, step markup
-scrollama                    -> IntersectionObserver step activation + resize
-Motion                       -> active-stage image/metadata transition only
+JourneySection.tsx           -> active/displayed era state, Scrollama lifecycle, step markup
+artworkLoadCache.ts           -> exact-request state + adjacent responsive preload
+scrollama                     -> IntersectionObserver step activation + resize
+Motion                        -> bounded clear-image/metadata transition only
 ```
 
 Keep direct Scrollama usage inside `JourneySection`. The section passes actual
@@ -160,4 +164,8 @@ the accessibility tree.
 - Do not hand-build Journey step observation, scroll-direction tracking, or
   resize observation when Scrollama owns those mechanics.
 - Do not attach `scroll`, `wheel`, or touchmove listeners to drive Journey state.
+- Do not gate a visible DOM image on `decode()` or replace the browser's native
+  responsive/lazy-loading pipeline with a fetch/blob wrapper for fake progress.
+- Do not add an image package merely for placeholder CSS when it cannot preserve
+  the project's exact `srcset`/`sizes` request and cached-remount contracts.
 - Do not move static styling into JSX just because inline styles are convenient.

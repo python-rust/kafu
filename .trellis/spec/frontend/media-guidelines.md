@@ -163,7 +163,6 @@ the largest file. At 390px/DPR 3, the 1720px Hero is sufficient; at
 | Role | Variant | Loading | Priority |
 | --- | --- | --- | --- |
 | Hero foreground | responsive display/high-density | eager | high |
-| Hero portrait ambience | thumbnail | lazy | low |
 | Profile | responsive width candidates | lazy | auto |
 | Active Journey stage | responsive width candidates | lazy | auto |
 | Linear/reduced-motion Journey media | responsive width candidates | lazy | low |
@@ -173,9 +172,9 @@ the largest file. At 390px/DPR 3, the 1720px Hero is sufficient; at
 | Gallery rail | thumbnail | lazy | low |
 | Gallery lightbox | high-density | interaction-only | lazy chunk |
 
-Only the Hero foreground may set `fetchPriority="high"`. The portrait ambience
-is decorative (`alt=""`, `aria-hidden`) and never receives a `srcset`. Every
-rendered image keeps explicit intrinsic width and height.
+Only the Hero foreground may set `fetchPriority="high"`. Portrait ambience is
+the foreground shell's existing inline placeholder; it is not a second network
+image. Every rendered image keeps explicit intrinsic width and height.
 
 The Hero foreground additionally has one responsive `<link rel="preload"
 as="image">` in `index.html`. The preload `href`, `imagesrcset`, `imagesizes`,
@@ -219,8 +218,12 @@ shell. The shell must:
 - show an honest indeterminate line and delayed `图片加载中` text for normal
   artwork surfaces;
 - keep compact thumbnail feedback visual-only to avoid repeated labels;
-- reveal the final image after `load` and `decode()` without a layout shift;
-- recognize `complete && naturalWidth > 0` cached images immediately;
+- reveal the final image immediately on the native `load` event;
+- never gate visibility on `HTMLImageElement.decode()` settling;
+- recognize `complete && naturalWidth > 0` images in a layout effect before
+  paint;
+- retain a page-session record keyed by the exact source role, `srcset`,
+  `sizes`, viewport width, and DPR so an equivalent keyed remount starts loaded;
 - retain the placeholder and show `图片加载失败` on error;
 - suppress indeterminate animation under `prefers-reduced-motion`.
 
@@ -235,13 +238,13 @@ second network-backed `<img>` as the placeholder.
 - Desktop and landscape retain the full-bleed composition and intentional
   `cover` crop.
 - Portrait mobile preserves the complete landscape artwork as a contained
-  responsive foreground. Reuse the generated 480px thumbnail as a subordinate
-  blurred ambience so unused space feels intentional without acquiring or
-  inventing another asset.
+  responsive foreground. Reuse the generated inline placeholder behind that
+  same image shell as subordinate ambience; do not issue a second thumbnail
+  request.
 - Do not add a portrait `<picture>` source until a reviewed alternate crop with
   verified provenance exists. Resolution switching is not art direction.
-- Keep exactly one eager/high-priority image. The ambience is lazy and
-  decorative.
+- Keep exactly one network-backed Hero image. It is eager/high priority; the
+  preserved ambience is inline and request-free.
 - Preload the responsive foreground from HTML so discovery does not wait for
   React execution on a slow route.
 - Do not add a fractional image scale to hide seams; it unnecessarily resamples
@@ -304,13 +307,19 @@ Automated checks must assert:
 - Hero current source at desktop DPR 1/DPR 2 and 390px mobile DPR 3;
 - one same-origin responsive Hero preload whose candidates all exist in the
   Pages artifact;
-- one eager/high-priority Hero foreground, one lazy thumbnail ambience on
-  portrait mobile, and lazy offscreen images;
+- one eager/high-priority Hero foreground, no second Hero image request, and
+  lazy offscreen images;
 - mobile Hero equals or exceeds the stable initial viewport, does not expose
   `#about`, and uses `contain` for the portrait foreground;
 - width-descriptor `srcset` plus realistic `sizes` on responsive images;
-- delayed-response loading/loaded states, inline placeholder visibility, and
-  stable element geometry;
+- delayed-response loading/loaded states, an unresolved-`decode()` regression,
+  inline placeholder visibility, and stable element geometry;
+- exact-request cached remounts start loaded while a changed viewport/DPR
+  selection context does not reuse an incompatible state record;
+- an uncached Journey transition keeps the previous clear image while loading,
+  and already-seen forward/backward transitions record no loading/LQIP state;
+- an offscreen browser-lazy load of the initial Journey image does not trigger
+  adjacent speculative downloads before Scrollama entry;
 - thumbnail-only sources for Gallery rail/backdrop;
 - no Piapro work-page credit links inside `<main>`;
 - ten bottom source/license records and visible required creator names;

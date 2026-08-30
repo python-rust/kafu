@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/media-guidelines.md","reason":"Current responsive media, placeholder, loading priority, and provenance contracts."}
+{"file":".trellis/spec/frontend/localization-and-storytelling-guidelines.md","reason":"Journey scroll/state and one-image stage contracts."}
+{"file":".trellis/spec/frontend/deployment-guidelines.md","reason":"Manual GitHub Pages, /kafu/ base path, and same-origin resource contracts."}
+{"file":".trellis/tasks/08-30-kafu-cached-artwork-reveal/research/image-library-review.md","reason":"Browser API and open-source package decision evidence."}

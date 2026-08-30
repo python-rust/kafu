@@ -234,8 +234,10 @@ It must not regress to eight equally weighted irregular cards.
 - Journey follows six semantic document-flow steps. Downward/upward native
   scrolling activates the corresponding sticky-stage image without intercepting
   browser scroll.
-- Journey renders one active image only. Do not restore an overlapping
-  secondary image or keep previous/current/next image layers alive.
+- Journey owns one logical displayed image and no persistent adjacent-image
+  stack. For an uncached transition, keep the previous clear image until the
+  requested image is loaded; then allow only a bounded clear-to-clear Motion
+  crossfade. Never flash the requested image's LQIP during a chapter change.
 - Wide layouts use a side-by-side sticky stage. Compact layouts use a top sticky
   full-bleed media dock flush with the fixed header and opaque story surfaces
   below it.
@@ -279,11 +281,12 @@ The browser suite must cover:
 - section-heading ceiling;
 - dark-system contrast roles and primary-action contrast;
 - fixed-header worst-case contrast and five `aria-current` locations;
-- stable mobile Hero viewport coverage, no next-section exposure, contained
-  foreground/ambient-thumbnail roles, and short-screen content fit;
+- stable mobile Hero viewport coverage, no next-section exposure, one contained
+  foreground with request-free inline ambience, and short-screen content fit;
 - factual profile layout with no sticky/observer state;
 - six Journey steps, downward/upward activation, sticky release before Works,
-  one active image, full-bleed compact media dock, <=1px header seam, measured
+  stale-while-loading clear stage behavior, cached revisit transitions without
+  LQIP/loading states, full-bleed compact media dock, <=1px header seam, measured
   pixel-offset geometry, portrait/short-landscape reading space, and six-image
   reduced-motion flow;
 - eight source-ordered gallery selectors;

@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/media-guidelines.md","reason":"Verify cache/reveal/loading feedback and responsive candidate invariants."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Full local and browser validation requirements."}
+{"file":".trellis/spec/frontend/deployment-guidelines.md","reason":"Verify Pages artifact and public deployment behavior."}
+{"file":".trellis/tasks/08-30-kafu-cached-artwork-reveal/research/image-library-review.md","reason":"Check final implementation against reviewed alternatives and evidence."}

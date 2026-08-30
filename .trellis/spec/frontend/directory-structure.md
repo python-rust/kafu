@@ -62,6 +62,8 @@ src/pages/HomePage/
 │   ├── MediaSources.tsx
 │   ├── MediaSources.module.css
 │   ├── ResponsiveArtwork.tsx
+│   ├── ResponsiveArtwork.module.css
+│   ├── artworkLoadCache.ts
 │   ├── SectionHeading.tsx
 │   └── SectionHeading.module.css
 ├── HomePage.tsx
@@ -89,8 +91,11 @@ src/pages/HomePage/
 
 `components/` is page-local shared presentation, not a generic component
 bucket. Add a component there only when multiple homepage owners consume one
-stable semantic contract. Current examples are responsive artwork, the bottom
-source index, and section headings. One-section integrations stay with their section:
+stable semantic contract. Current examples are responsive artwork, its narrow
+page-session exact-request cache/preloader, the bottom source index, and section
+headings. `artworkLoadCache.ts` must remain coupled to `ResponsiveArtwork`; it
+does not own editorial content or general application caching. One-section
+integrations stay with their section:
 `GalleryLightbox.tsx` is the lazy package/style adapter owned by
 `GallerySection.tsx`.
 
