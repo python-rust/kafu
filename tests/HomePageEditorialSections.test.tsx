@@ -177,7 +177,11 @@ describe('homepage editorial sections', () => {
     expect(featuredImage).toHaveAttribute('height', '1000');
     expect(featuredImage).toHaveAttribute(
       'srcset',
-      `${works[0].visual.display.src} 1x, ${works[0].visual.highDensity.src} 2x`,
+      `${works[0].visual.thumbnail.src} ${works[0].visual.thumbnail.width}w, ${works[0].visual.display.src} ${works[0].visual.display.width}w, ${works[0].visual.highDensity.src} ${works[0].visual.highDensity.width}w`,
+    );
+    expect(featuredImage).toHaveAttribute(
+      'sizes',
+      '(max-width: 48rem) calc(100vw - 2.5rem), (max-width: 88rem) 62vw, 52rem',
     );
 
     expect(

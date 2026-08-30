@@ -14,6 +14,7 @@ class ResourceParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self.resources: list[str] = []
+        self.image_preloads: list[dict[str, str]] = []
 
     def handle_starttag(
         self, tag: str, attrs: list[tuple[str, str | None]]
@@ -32,6 +33,16 @@ class ResourceParser(HTMLParser):
             {"stylesheet", "icon", "preload", "modulepreload"}
         ):
             self.resources.append(values["href"] or "")
+
+        if "preload" in relations and values.get("as") == "image":
+            self.image_preloads.append(
+                {
+                    "href": values.get("href") or "",
+                    "imagesrcset": values.get("imagesrcset") or "",
+                    "imagesizes": values.get("imagesizes") or "",
+                    "fetchpriority": values.get("fetchpriority") or "",
+                }
+            )
 
 
 def normalize_base_path(value: str) -> str:
@@ -56,6 +67,34 @@ def resolve_resource(
         return artifact_dir / relative_path
 
     return source_file.parent / decoded_path
+
+
+def parse_width_srcset(value: str) -> list[tuple[str, int]]:
+    candidates: list[tuple[str, int]] = []
+    for raw_candidate in value.split(","):
+        parts = raw_candidate.strip().split()
+        if len(parts) != 2 or not parts[1].endswith("w"):
+            raise ValueError(
+                f"Image preload must use width descriptors: {raw_candidate}"
+            )
+        try:
+            width = int(parts[1][:-1])
+        except ValueError as error:
+            raise ValueError(
+                f"Invalid image preload width descriptor: {raw_candidate}"
+            ) from error
+        if width <= 0:
+            raise ValueError(
+                f"Image preload width must be positive: {raw_candidate}"
+            )
+        candidates.append((parts[0], width))
+
+    if len(candidates) < 2:
+        raise ValueError("Responsive image preload requires multiple candidates")
+    widths = [width for _, width in candidates]
+    if widths != sorted(set(widths)):
+        raise ValueError("Image preload widths must be unique and ascending")
+    return candidates
 
 
 def main() -> int:
@@ -90,6 +129,37 @@ def main() -> int:
             raise SystemExit(f"Missing referenced resource: {resource} -> {resolved}")
         checked_resources.append(resource)
 
+    if len(parser.image_preloads) != 1:
+        raise SystemExit(
+            "Pages entry must contain exactly one responsive Hero image preload"
+        )
+    image_preload = parser.image_preloads[0]
+    if image_preload["fetchpriority"] != "high":
+        raise SystemExit("Hero image preload must set fetchpriority=high")
+    if not image_preload["imagesizes"]:
+        raise SystemExit("Hero image preload must declare imagesizes")
+
+    try:
+        preload_candidates = parse_width_srcset(image_preload["imagesrcset"])
+    except ValueError as error:
+        raise SystemExit(str(error)) from error
+
+    candidate_urls = {resource for resource, _ in preload_candidates}
+    if image_preload["href"] not in candidate_urls:
+        raise SystemExit("Hero preload href must be present in imagesrcset")
+
+    for resource, _ in preload_candidates:
+        resolved = resolve_resource(
+            resource,
+            artifact_dir=artifact_dir,
+            base_path=base_path,
+            source_file=index_file,
+        )
+        if not resolved.is_file():
+            raise SystemExit(
+                f"Missing responsive preload candidate: {resource} -> {resolved}"
+            )
+
     css_url_pattern = re.compile(r"url\((?P<quote>['\"]?)(?P<url>.+?)(?P=quote)\)")
     checked_css_resources = 0
     for css_file in artifact_dir.rglob("*.css"):
@@ -120,7 +190,8 @@ def main() -> int:
     print(
         "Verified GitHub Pages artifact: "
         f"base={base_path}, html_resources={len(checked_resources)}, "
-        f"css_resources={checked_css_resources}"
+        f"css_resources={checked_css_resources}, "
+        f"image_preload_candidates={len(preload_candidates)}"
     )
     return 0
 

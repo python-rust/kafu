@@ -1,6 +1,6 @@
 # KAF visual asset provenance
 
-This repository is an **unofficial, non-commercial fan project**. Every local image in this directory is tied to an individual piapro work page whose current license conditions were checked again on **2026-08-25**. Public availability, an official-site image URL, or KAMITSUBAKI's general secondary-creation guidance is not treated as permission to copy an unrelated asset.
+This repository is an **unofficial, non-commercial fan project**. Nine local images in this directory are tied to individual piapro work pages whose current license conditions were checked again on **2026-08-25**. The separately documented `狂想β` album cover is sourced from the official KAF discography page and is included only for non-commercial fan-site identification under the KAMITSUBAKI secondary-creation guidelines. Public availability alone is not treated as permission to copy unrelated assets.
 
 License references:
 
@@ -8,13 +8,13 @@ License references:
 - piapro FAQ on license conditions and modification: https://piapro.jp/faq/
 - KAMITSUBAKI secondary-creation guidelines: https://kamitsubaki.jp/guidelines/
 
-Piapro states that its work-specific icons control use: the non-commercial icon limits use to non-commercial purposes, the creator-name icon requires attribution, and the no-modification icon prohibits modification. The FAQ states that a work without the no-modification condition may be modified, subject to the platform's restrictions. None of the nine image work pages below displayed an original-license condition at the 2026-08-25 check.
+Piapro states that its work-specific icons control use: the non-commercial icon limits use to non-commercial purposes, the creator-name icon requires attribution, and the no-modification icon prohibits modification. The FAQ states that a work without the no-modification condition may be modified, subject to the platform's restrictions. None of the nine piapro image work pages below displayed an original-license condition at the 2026-08-25 check.
 
 The original local files use piapro's published display thumbnails and remain unchanged as provenance inputs. The public work pages report larger source dimensions, but original downloads require a piapro account; this repository does not bypass that access boundary or substitute unverified reposts.
 
 ## Responsive display derivatives
 
-On **2026-08-30**, the nine verified preview inputs were converted into responsive display derivatives under `src/assets/kaf/generated/`:
+On **2026-08-30**, the nine verified piapro preview inputs were converted into responsive display derivatives under `src/assets/kaf/generated/`:
 
 - tool: official `waifu2x-ncnn-vulkan` portable macOS release `20250915`;
 - model: `models-cunet`;
@@ -23,6 +23,8 @@ On **2026-08-30**, the nine verified preview inputs were converted into responsi
 - WebP quality: 90;
 - reproducibility: `scripts/generate_kaf_media_variants.py` verifies every source SHA-256 before generation;
 - derivative dimensions, byte sizes, and SHA-256 values: `src/assets/kaf/generated/manifest.json`.
+
+The official 1600×1600 `狂想β` cover is not AI-upscaled. Its responsive files are source-native technical derivatives only: an 800px display WebP, a 1600px high-density WebP, a 480px thumbnail, and a 32px inline placeholder. No creative alteration is applied.
 
 These derivatives improve display density and reduce browser enlargement. They do **not** restore the inaccessible original pixels and must not be represented as source originals. The source preview files listed below remain the authoritative local provenance inputs.
 
@@ -175,10 +177,25 @@ These derivatives improve display density and reduce browser enlargement. They d
 - Retrieval date: 2026-08-25
 - SHA-256: `0638aa003a71475dde64a6cbc7c724343aeb3eff17c2272fdea41302c549d116`
 
+## `works/2023-kyousou-beta.png`
+
+- Work: third album `狂想β`
+- Official discography page: https://kaf.kamitsubaki.jp/discography/20230308/199/
+- Direct official image URL: https://kaf.kamitsubaki.jp/wp/wp-content/uploads/2024/03/kaf-Crazy_for_you_beta.png
+- Publisher: 花譜 / KAMITSUBAKI STUDIO
+- Jacket illustration credit stated by the official page: PALOW.
+- Usage basis: individual, unofficial, non-commercial fan project under the KAMITSUBAKI secondary-creation guidelines
+- Distribution boundary: no advertising, monetization, merchandise, download feature, or claim of official affiliation
+- Modification boundary: technical format conversion and responsive resizing only; no creative alteration
+- Local dimensions: 1600×1600
+- Responsive derivatives: `generated/kyousou-beta-{display,high,thumb}.webp`; see generated manifest for dimensions and hashes
+- Retrieval and guideline review date: 2026-08-30
+- SHA-256: `161fe38755a496e70a703a60848b385184bcca293685a781ee63d2372fd094f1`
+
 ## Usage boundary
 
 - Keep the site explicitly unofficial and non-commercial while these images ship.
 - Keep required creator names visible in the page-bottom source line and retain the per-work source/license entries in the adjacent `图片来源` disclosure.
 - Re-check the exact work page before materially changing distribution context or creating a new derivative.
 - Remove the corresponding local file and content reference if its source terms become incompatible.
-- Do not treat this provenance record as blanket permission for unrelated KAF/KAMITSUBAKI official images, campaign materials, album covers, social-media reposts, logos, screenshots, or wallpapers.
+- The `狂想β` entry is a narrow reviewed exception requested for this non-commercial album listing. Do not treat it as blanket permission for other KAF/KAMITSUBAKI official images, campaign materials, album covers, social-media reposts, logos, screenshots, or wallpapers.

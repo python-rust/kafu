@@ -1,0 +1,149 @@
+.root {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+  aspect-ratio: var(--artwork-aspect-ratio);
+  background-color: var(--color-bg-deep);
+  line-height: 0;
+}
+
+.root::before {
+  position: absolute;
+  z-index: 0;
+  inset: -8%;
+  background-image: var(--artwork-placeholder);
+  background-position: var(--artwork-position);
+  background-size: cover;
+  content: '';
+  filter: blur(18px) saturate(0.92);
+  opacity: 0.9;
+  transform: scale(1.08);
+  transition: opacity var(--duration-normal) ease;
+}
+
+.root > .image {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transition:
+    opacity var(--duration-normal) ease,
+    transform var(--duration-slow) var(--ease-out);
+}
+
+.root[data-artwork-status='loaded'] > .image {
+  opacity: 1;
+}
+
+.root[data-artwork-status='loaded']::before {
+  opacity: 0;
+}
+
+.feedback {
+  position: absolute;
+  z-index: 2;
+  right: clamp(0.75rem, 2vw, 1.25rem);
+  bottom: clamp(0.75rem, 2vw, 1.25rem);
+  left: clamp(0.75rem, 2vw, 1.25rem);
+  display: grid;
+  gap: 0.55rem;
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity var(--duration-fast) ease;
+}
+
+.root[data-artwork-status='loaded'] .feedback {
+  opacity: 0;
+}
+
+.progress {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 2px;
+  overflow: hidden;
+  background: rgb(248 242 245 / 24%);
+}
+
+.progress::after {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 42%;
+  background: var(--color-kaf-light);
+  content: '';
+  transform: translateX(-120%);
+  animation: artwork-loading 1.35s var(--ease-out) infinite;
+}
+
+.statusText {
+  width: fit-content;
+  padding: 0.25rem 0.45rem;
+  background: rgb(7 5 8 / 72%);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--type-label);
+  font-weight: 650;
+  line-height: 1.45;
+  opacity: 0;
+  animation: artwork-status-appear 1ms linear 420ms forwards;
+}
+
+.root[data-artwork-status='error'] .progress::after {
+  width: 100%;
+  background: var(--color-kaf);
+  animation: none;
+  transform: none;
+}
+
+.root[data-artwork-status='error'] .statusText {
+  opacity: 1;
+  animation: none;
+}
+
+.root[data-artwork-variant='thumbnail'] .feedback {
+  right: 0.35rem;
+  bottom: 0.35rem;
+  left: 0.35rem;
+  gap: 0;
+}
+
+.root[data-artwork-variant='thumbnail'] .statusText {
+  display: none;
+}
+
+@keyframes artwork-loading {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  55%,
+  100% {
+    transform: translateX(340%);
+  }
+}
+
+@keyframes artwork-status-appear {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root::before,
+  .root > .image,
+  .feedback {
+    transition: none;
+  }
+
+  .progress::after,
+  .statusText {
+    animation: none;
+  }
+
+  .statusText {
+    opacity: 1;
+  }
+}

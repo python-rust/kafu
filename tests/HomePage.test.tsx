@@ -100,6 +100,11 @@ describe('home page', () => {
       'href',
       'https://kaf.kamitsubaki.jp/discography/20230308/199/',
     );
+    expect(
+      within(worksSection).getByRole('img', {
+        name: /花谱第三张专辑《狂想β》封面/,
+      }),
+    ).toBeInTheDocument();
 
     expect(
       screen.getByRole('link', {
@@ -146,9 +151,9 @@ describe('home page', () => {
         '图片作者与制作：花譜 / PALOW. / 川サキケンジ / とり',
       ),
     ).toBeVisible();
-    expect(within(footer).getByText('图片来源（9 项）')).toBeInTheDocument();
+    expect(within(footer).getByText('图片来源（10 项）')).toBeInTheDocument();
     expect(within(footer).getByText('资料来源（4 项）')).toBeInTheDocument();
-    expect(footer.querySelectorAll('#media-sources a')).toHaveLength(18);
+    expect(footer.querySelectorAll('#media-sources a')).toHaveLength(20);
     expect(
       main.querySelectorAll('a[href^="https://piapro.jp/t/"]'),
     ).toHaveLength(0);
@@ -207,7 +212,7 @@ describe('home page', () => {
       (image) => image.getAttribute('loading') === 'eager',
     );
 
-    expect(uniqueSources.size).toBeGreaterThanOrEqual(9);
+    expect(uniqueSources.size).toBeGreaterThanOrEqual(10);
     expect(eagerImages).toHaveLength(1);
     expect(eagerImages[0]).toHaveAttribute('fetchpriority', 'high');
     expect(eagerImages[0]?.getAttribute('src')).toContain('kaihou-2x');

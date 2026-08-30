@@ -3,6 +3,7 @@ node_modules
 playwright-report
 test-results
 pnpm-lock.yaml
+src/assets/kaf/generated/mediaVariants.ts
 .agents
 .trellis
 AGENTS.md

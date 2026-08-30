@@ -41,7 +41,9 @@ export function KafProfileSection({
             <ResponsiveArtwork
               source={profile.visual}
               loading="lazy"
+              fetchPriority="auto"
               decoding="async"
+              sizes="(max-width: 44rem) calc(100vw - 2.5rem), (max-width: 88rem) 38vw, 32rem"
             />
           </figure>
 

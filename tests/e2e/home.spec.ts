@@ -294,7 +294,18 @@ test('desktop homepage uses factual artist copy and a complete five-album sequen
   }
   const thirdAlbum = works.getByRole('article').filter({ hasText: '狂想β' });
   await expect(thirdAlbum).toHaveCount(1);
-  await expect(thirdAlbum.locator('img')).toHaveCount(0);
+  const thirdAlbumCover = thirdAlbum.getByRole('img', {
+    name: /花谱第三张专辑《狂想β》封面/,
+  });
+  await expect(thirdAlbumCover).toHaveCount(1);
+  await expect(thirdAlbumCover).toHaveAttribute(
+    'data-media-id',
+    'kyousou-beta',
+  );
+  await expect(thirdAlbumCover).toHaveAttribute(
+    'srcset',
+    /kyousou-beta-(?:thumb|display|high)/,
+  );
   await expect(
     thirdAlbum.getByRole('link', { name: /狂想β的官方页面/ }),
   ).toHaveAttribute(
@@ -550,18 +561,34 @@ test('fixed navigation keeps contrast and reports the current page location', as
   await expectAnchorBelowHeader(page, '代表作品');
 });
 
-test('hero selects density-matched generated artwork at DPR 1 and DPR 2', async ({
+test('hero selects a right-sized responsive candidate across desktop and mobile DPR', async ({
   browser,
 }) => {
   const baseURL = test.info().project.use.baseURL;
   if (typeof baseURL !== 'string')
     throw new Error('Playwright baseURL required');
 
-  for (const density of [1, 2] as const) {
+  for (const scenario of [
+    {
+      density: 1,
+      viewport: { width: 1440, height: 900 },
+      expectedCandidate: 'kaihou-2x',
+    },
+    {
+      density: 2,
+      viewport: { width: 1440, height: 900 },
+      expectedCandidate: 'kaihou-4x',
+    },
+    {
+      density: 3,
+      viewport: { width: 390, height: 844 },
+      expectedCandidate: 'kaihou-2x',
+    },
+  ] as const) {
     const context = await browser.newContext({
       baseURL,
-      deviceScaleFactor: density,
-      viewport: { width: 1440, height: 900 },
+      deviceScaleFactor: scenario.density,
+      viewport: scenario.viewport,
     });
     const page = await context.newPage();
     await page.goto('/');
@@ -580,14 +607,101 @@ test('hero selects density-matched generated artwork at DPR 1 and DPR 2', async 
       };
     });
     expect(source.src).toContain('kaihou-2x');
+    expect(source.srcSet).toContain('kaihou-thumb');
+    expect(source.srcSet).toContain('480w');
+    expect(source.srcSet).toContain('1720w');
     expect(source.srcSet).toContain('kaihou-4x');
+    expect(source.srcSet).toContain('3440w');
     expect(source.width).toBe('1720');
     expect(source.height).toBe('968');
-    expect(source.currentSrc).toContain(
-      density === 1 ? 'kaihou-2x' : 'kaihou-4x',
-    );
+    expect(source.currentSrc).toContain(scenario.expectedCandidate);
     await context.close();
   }
+});
+
+test('slow image responses keep visible feedback and stable layout before reveal', async ({
+  page,
+}) => {
+  let releaseHero: () => void = () => {};
+  let releaseThirdAlbum: () => void = () => {};
+  const heroGate = new Promise<void>((resolve) => {
+    releaseHero = resolve;
+  });
+  const thirdAlbumGate = new Promise<void>((resolve) => {
+    releaseThirdAlbum = resolve;
+  });
+  let heroRequestIntercepted = false;
+  let thirdAlbumRequestIntercepted = false;
+
+  await page.route(/\/assets\/kaihou-(?:2x|4x)-[^/]+\.webp$/, async (route) => {
+    heroRequestIntercepted = true;
+    const response = await route.fetch();
+    await heroGate;
+    await route.fulfill({ response });
+  });
+  await page.route(
+    /\/assets\/kyousou-beta-(?:thumb|display|high)-[^/]+\.webp$/,
+    async (route) => {
+      thirdAlbumRequestIntercepted = true;
+      const response = await route.fetch();
+      await thirdAlbumGate;
+      await route.fulfill({ response });
+    },
+  );
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.getByRole('main').waitFor();
+
+  const heroShell = page.locator(
+    '#top [data-artwork-id="kaihou"][data-artwork-variant="responsive"]',
+  );
+  await expect(heroShell).toHaveAttribute('data-artwork-status', 'loading');
+  await expect(heroShell).toHaveAttribute('aria-busy', 'true');
+  await expect(heroShell.getByText('图片加载中')).toBeVisible();
+  const placeholder = await heroShell.evaluate((element) =>
+    getComputedStyle(element).getPropertyValue('--artwork-placeholder').trim(),
+  );
+  expect(placeholder).toContain('data:image/webp;base64');
+  const heroBefore = await heroShell.boundingBox();
+  expect(heroRequestIntercepted).toBe(true);
+
+  releaseHero();
+  await expect(heroShell).toHaveAttribute('data-artwork-status', 'loaded');
+  await expect(heroShell).not.toHaveAttribute('aria-busy');
+  const heroAfter = await heroShell.boundingBox();
+  expect(heroBefore).not.toBeNull();
+  expect(heroAfter).not.toBeNull();
+  expect(
+    Math.abs((heroAfter?.width ?? 0) - (heroBefore?.width ?? 0)),
+  ).toBeLessThan(1);
+  expect(
+    Math.abs((heroAfter?.height ?? 0) - (heroBefore?.height ?? 0)),
+  ).toBeLessThan(1);
+
+  const thirdAlbum = page
+    .locator('#works article')
+    .filter({ hasText: '狂想β' });
+  await thirdAlbum.scrollIntoViewIfNeeded();
+  const thirdAlbumShell = thirdAlbum.locator(
+    '[data-artwork-id="kyousou-beta"][data-artwork-variant="responsive"]',
+  );
+  await expect(thirdAlbumShell).toHaveAttribute(
+    'data-artwork-status',
+    'loading',
+  );
+  await expect(thirdAlbumShell.getByText('图片加载中')).toBeVisible();
+  await expect(thirdAlbumShell.locator('img')).toHaveAttribute(
+    'srcset',
+    /kyousou-beta-thumb.*480w.*kyousou-beta-display.*800w.*kyousou-beta-high.*1600w/,
+  );
+  expect(thirdAlbumRequestIntercepted).toBe(true);
+
+  releaseThirdAlbum();
+  await expect(thirdAlbumShell).toHaveAttribute(
+    'data-artwork-status',
+    'loaded',
+  );
 });
 
 test('journey follows downward and upward native scrolling through all six eras', async ({
@@ -1135,10 +1249,22 @@ test('reduced motion renders every Journey era and image in normal flow', async 
   }
 });
 
-test('only the hero image is eager and responsive candidates remain explicit', async ({
+test('image discovery and priority follow the page reading order', async ({
   page,
 }) => {
   await openHome(page, { width: 1440, height: 900 });
+
+  const heroPreload = page.locator('link[rel="preload"][as="image"]');
+  await expect(heroPreload).toHaveCount(1);
+  await expect(heroPreload).toHaveAttribute('href', /kaihou-2x/);
+  await expect(heroPreload).toHaveAttribute(
+    'imagesrcset',
+    /kaihou-thumb.*480w/,
+  );
+  await expect(heroPreload).toHaveAttribute('imagesrcset', /kaihou-2x.*1720w/);
+  await expect(heroPreload).toHaveAttribute('imagesrcset', /kaihou-4x.*3440w/);
+  await expect(heroPreload).toHaveAttribute('imagesizes', '100vw');
+  await expect(heroPreload).toHaveAttribute('fetchpriority', 'high');
 
   const imageLoading = await page.locator('img').evaluateAll((images) =>
     images.map((image) => ({
@@ -1146,6 +1272,7 @@ test('only the hero image is eager and responsive candidates remain explicit', a
       height: image.getAttribute('height'),
       loading: image.getAttribute('loading'),
       mediaVariant: image.getAttribute('data-media-variant'),
+      sizes: image.getAttribute('sizes'),
       src: image.getAttribute('src'),
       srcSet: image.getAttribute('srcset'),
       width: image.getAttribute('width'),
@@ -1165,14 +1292,36 @@ test('only the hero image is eager and responsive candidates remain explicit', a
       expect(image.fetchPriority).not.toBe('high');
     }
     if (image.mediaVariant === 'responsive') {
-      expect(image.src).toContain('-2x');
-      expect(image.srcSet).toContain('-4x');
+      expect(image.srcSet).toContain('w');
+      expect(image.srcSet).not.toContain(' 1x');
+      expect(image.srcSet).not.toContain(' 2x');
+      expect(image.sizes).not.toBeNull();
     }
     if (image.mediaVariant === 'thumbnail') {
       expect(image.src).toContain('-thumb');
       expect(image.srcSet).toBeNull();
+      expect(image.sizes).toBeNull();
     }
   }
+
+  await expect(
+    page.locator('#about img[data-media-variant="responsive"]'),
+  ).toHaveAttribute('fetchpriority', 'auto');
+  await expect(
+    page
+      .getByTestId('journey-sticky-stage')
+      .locator('img[data-media-variant="responsive"]'),
+  ).toHaveAttribute('fetchpriority', 'auto');
+  const workPriorities = await page
+    .locator('#works img[data-media-variant="responsive"]')
+    .evaluateAll((images) =>
+      images.map((image) => image.getAttribute('fetchpriority')),
+    );
+  expect(workPriorities).toHaveLength(5);
+  expect(workPriorities.every((priority) => priority === 'low')).toBe(true);
+  await expect(
+    page.locator('#visuals img[data-media-variant="responsive"]'),
+  ).toHaveAttribute('fetchpriority', 'low');
 });
 
 test('captures the responsive guided-Journey visual evidence', async ({

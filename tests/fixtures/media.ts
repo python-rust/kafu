@@ -44,6 +44,8 @@ export function createMediaFixture({
       width: Math.max(1, Math.round(width * thumbnailScale)),
       height: Math.max(1, Math.round(height * thumbnailScale)),
     },
+    placeholderDataUrl:
+      'data:image/webp;base64,UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEAAUAmJaQAA3AA/vuUAAA=',
     credit,
     sourceUrl,
   };

@@ -228,7 +228,9 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                         source={activeChapter.primaryVisual}
                         alt=""
                         loading="lazy"
+                        fetchPriority="auto"
                         decoding="async"
+                        sizes="(max-width: 64rem) 100vw, (max-width: 88rem) 46vw, 40rem"
                       />
                     </motion.figure>
                   </AnimatePresence>
@@ -297,7 +299,9 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                         <ResponsiveArtwork
                           source={chapter.primaryVisual}
                           loading="lazy"
+                          fetchPriority="low"
                           decoding="async"
+                          sizes="(max-width: 88rem) calc(100vw - 2.5rem), 88rem"
                         />
                       </figure>
                     ) : null}

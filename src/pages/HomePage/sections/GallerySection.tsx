@@ -88,6 +88,7 @@ export function GallerySection({
               variant="thumbnail"
               alt=""
               loading="lazy"
+              fetchPriority="low"
               decoding="async"
             />
           </motion.div>
@@ -124,7 +125,9 @@ export function GallerySection({
                 <ResponsiveArtwork
                   source={activeVisual}
                   loading="lazy"
+                  fetchPriority="low"
                   decoding="async"
+                  sizes="(max-width: 56rem) calc(100vw - 2.5rem), (max-width: 88rem) 68vw, 58rem"
                 />
               </motion.span>
             </AnimatePresence>
@@ -158,6 +161,7 @@ export function GallerySection({
                       variant="thumbnail"
                       alt=""
                       loading="lazy"
+                      fetchPriority="low"
                       decoding="async"
                     />
                   </span>

@@ -6,7 +6,9 @@
     "noiseLevel": -1,
     "scale": 4,
     "webpQuality": 90,
-    "thumbnailLongEdge": 480
+    "thumbnailLongEdge": 480,
+    "placeholderLongEdge": 32,
+    "placeholderWebpQuality": 35
   },
   "items": [
     {
@@ -39,6 +41,13 @@
           "sha256": "a93bab1877b969ddccc1cdf3c0999859b839a43fea551350352accb2d89fd749",
           "bytes": 21102
         }
+      },
+      "placeholder": {
+        "dataUrl": "data:image/webp;base64,UklGRsQAAABXRUJQVlA4ILgAAAAQBQCdASogABIAPwFsrU8rJiQiMAgBYCAJbADCoNmwAALnOSET5v3C1BRcNWVAQBYQAP7nQI9LL7JiV0YGJnoq0g1WNFY1lxTcgb3V6uWA88RGzbXxTBqimI+DGODYZrS7B4kJmEmVfaVW8Bq1qnALf+v/WI08uFdwrOHxn5fEn4EN4N3ZFd6a+9a9leu7i68PssO9un86Afx3HBrvAbJlBXwa+SS9xBkXNk9JqoLVjveaNCVn6AAA",
+        "width": 32,
+        "height": 18,
+        "bytes": 204,
+        "sha256": "2777040849cad9604c5ca4e9b7ed2a98cd7b7e1a17f925ed6d266ad7acd25728"
       }
     },
     {
@@ -71,6 +80,13 @@
           "sha256": "e0a3bfe16c7b10de835946f5f8271a57aea44f0a69994b981ef78fc7a484cd11",
           "bytes": 13100
         }
+      },
+      "placeholder": {
+        "dataUrl": "data:image/webp;base64,UklGRpwAAABXRUJQVlA4IJAAAADwBACdASogABIAPwFsrE8rJiQiMAgBYCAJQBTihDwFUWrb4xRsKrZ+v6PN1bd2jtAA/q6r3FTBqJoc8QbxfW0fl4iZxe4K5bJuLPNNpguVaXx8HgjQsg7R69Eni0i3Ffp36EcaaYtliJ3/gdJ7bjPBXvSU1LApEmBGHwPJKh9YL1wShrl5rNcQMFP5xHeRIAA=",
+        "width": 32,
+        "height": 18,
+        "bytes": 164,
+        "sha256": "e3199a46f8f6bfd8c00b879af59ca5eab4ab7bd5b7723d7c74b0845d357befef"
       }
     },
     {
@@ -103,6 +119,13 @@
           "sha256": "e89988892bb24b711fa510415b91f8414b1ccf99206c33b2b32c3f60b265d6a6",
           "bytes": 14392
         }
+      },
+      "placeholder": {
+        "dataUrl": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAwBACdASogABIAPwFyrlCrJyQisBgIAWAgCWUAAI9CqCUsWJSyZbEbhoAA/vQk8dUFyNwmQuf8Ojgr8dC9n9CgVleFXFXOqMEwDhv6JhIsN8jHQNhB4BTtbY29Na2PM7MAAA==",
+        "width": 32,
+        "height": 18,
+        "bytes": 118,
+        "sha256": "c205d1d20eccafaf061f711c7887f32d9465d5bbe3765dcbab6f203710d3713a"
       }
     },
     {
@@ -135,6 +158,13 @@
           "sha256": "ef6dbcb21a7398908cea56e8f1950bf908312a23c9065bc375efda3a9574592d",
           "bytes": 18842
         }
+      },
+      "placeholder": {
+        "dataUrl": "data:image/webp;base64,UklGRsgAAABXRUJQVlA4ILwAAAAQBQCdASogABIAPwF0rlKrJqQiqAqpYCAJZAC1GxipACqvJYK0Vs3sQSrpoarMXVwAAP7yPRZPvM2VN9e79Zkmxz06nYH4kEUAXXYXwL7Bwzeo0ZOM1szODX2TiTTq/qsHFrC4bJo7xudFH3DEgE8teDwaJ8hv+U0S9WG/ikSHlN5NoLIz4kxrczhZA4YEFoyIbViSxC07cdlIBnQBvvw7FFt4iSH/n8QLBlh8aT2hZhiyQjwmzFyQdmAAAA==",
+        "width": 32,
+        "height": 18,
+        "bytes": 208,
+        "sha256": "9b634f3095b02af2e3e3899e88c1518f566d5621ced8570bccadca233974984f"
       }
     },
     {
@@ -167,6 +197,13 @@
           "sha256": "5589d9d8c543aeb4a49b610e9d4975cf6f5a4878848026ea16598b3cf304da40",
           "bytes": 20840
         }
+      },
+      "placeholder": {
+        "dataUrl": "data:image/webp;base64,UklGRtgAAABXRUJQVlA4IMwAAACwBACdASogABIAPwFuqU8rJqOiMBgMAWAgCWgABmgCUTmattqpe6p8Z2c/OBWAAP6l9qepgI6IoX7FKUj8y2uptoMqpaXuUx6Rc+TZNQqOei//9TKdUIgf/P76UPrYGSf9vAqJYRFhfg+Sgx61pX1mwumxJ5xXY9FYVYzepKi+CPMNHOphutEfrFVVmgj+L7s/OTKr6j+wVzFht4BY4g5UCSXu4OsULM0HGQhHlztB9t8xeTUUb+rl1Y77CVCC437SuRsYu7uxdyAAAAA=",
+        "width": 32,
+        "height": 18,
+        "bytes": 224,
+        "sha256": "2c2c18a660f9aa050aba84574698bd55095ab25d5b6ba3b72e07941517e6b353"
       }
     },
     {
@@ -199,6 +236,13 @@
           "sha256": "5d88517b90c34c1d25a4a20ff4f65fc46ad937fa377d2800b894bcb3dcd33291",
           "bytes": 15126
         }
+      },
+      "placeholder": {
+        "dataUrl": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAADQBACdASogABIAPwF0sVIrJqSiqAqpYCAJYwCdM0LBm63iteP5uBKJ2NM+r1MtYAD99FVo2g99/H09FkA/KB9ZRWuD3NL1+IfY6kyYMcLRch5vARRnTrl2CdhVZzmAhKgHlr59dgR0R/jmod6XKnoANa82RLCvIJGTsufoWAA=",
+        "width": 32,
+        "height": 18,
+        "bytes": 146,
+        "sha256": "904e7a14fc682583234246be38716f1f0f7914b64ce85e021eccdefdee74bb1f"
       }
     },
     {
@@ -231,6 +275,13 @@
           "sha256": "8836a07ed5e132e57760a799a27b9bcd3c501c055b3acd9b020ca0bbb66de89c",
           "bytes": 39018
         }
+      },
+      "placeholder": {
+        "dataUrl": "data:image/webp;base64,UklGRi4BAABXRUJQVlA4ICIBAADQBgCdASogABIAPwForE6rJaQiMAgBYCAJbACdM5NBY//0bA1puPQK82OsQi05LCIIBZag45MAhY21xt6osAAA/GdXriY6Jp1KEusWEl7BOuKXQNBGVGLVIlJJCrzs6/DbCPdcXL4i3cQVz5hTZvJMlryMd/D6WMdsoBwF45FAHc+xih1X7qxKnM+8iMyZU53lorzT2kWGye7dwqI069osbaZBtLT4/Nb4243yz0SPvK0i/Z17IV55QDvxXhXmtoVRRDXlMB9KbTAjrhSEPJsiAOxkocXwMUz3/3LYGpaC8/VnoUW+XWILlSTubj+zc8yfBv7yUF5tD4N/yTeIf9e/stzJ9QC54hHFf6y6kIQMwpaMy2515AhO9zyXb1KBpQAAAA==",
+        "width": 32,
+        "height": 18,
+        "bytes": 310,
+        "sha256": "ec93cea305d2e10b83529aff84d9b09f867488d60e426e013bd18a2edd670e12"
       }
     },
     {
@@ -263,6 +314,13 @@
           "sha256": "5fc91d8bc2b83f22a38080a113dba3fa3fed7007788c386590a2e0ed9c5bd0d6",
           "bytes": 53178
         }
+      },
+      "placeholder": {
+        "dataUrl": "data:image/webp;base64,UklGRl4BAABXRUJQVlA4IFIBAABQBwCdASogACAAPuFYo06opSMiN+gBEBwJbACdMoM6OSicVOxWWKDjs1K2IlJ35aJybZePIn6RsPvcU21pjEO7KVwgAP75yIr1vySUiLXRCWGuW+LdyGChn0d3i9TqXKwytp9lXdH8lIpawf/MioMZKr6zHHrc60Xixpg9oQbGsN4x87MrO0O0wDhYA5JdkvFswWqgP9Zh0sMLgfAQvFMo0+x0B554PT0dDGmKKtC6k8qej828dY1pivRvWkgxgUsKHI2M3uasT4O6vT37uikQn71fknoBo/upTWXzt9AUla+UL9eXOCWWX7vkzgSZbjyeP+x8KDeFglZ1hlzlIHeknKj5b+zt3+iW2Y8hzr8yKC4cO1vYAI1p0U04R8k3903v0mmUnLC+2y6k+IZH45ZLywzkv98MnAOoPbi8b+LCHtEUe2DtMP4+gskU9oQxQDGQAA==",
+        "width": 32,
+        "height": 32,
+        "bytes": 358,
+        "sha256": "5c9473d4a2a111296f3d65d7a851fd1b9b7a688da2131722166ff3d0a6462b7a"
       }
     },
     {
@@ -295,6 +353,53 @@
           "sha256": "dacb3aaecf007353eaad19715c5e58861fc3e6c7610e5550d2ccaa638cbb70d8",
           "bytes": 14424
         }
+      },
+      "placeholder": {
+        "dataUrl": "data:image/webp;base64,UklGRpoAAABXRUJQVlA4II4AAACQBQCdASoXACAAPwFyr1CrJyQisBgIAWAgCWIAzgN4BsriC7wq9xyxIZfUBKYKJntWIlV9AAD+8dAl+I9Q55k+VfP3+z68aWLgckMLizFsuBYGwnV72BpuZSs72keLFlqwURAOTmdghkTfjb4uF5dIhANZAfVpb8BVGfhHrr3OxHCoTxoY2CIXtzY5AAAA",
+        "width": 23,
+        "height": 32,
+        "bytes": 162,
+        "sha256": "1190d17d82a7f1b38fa7c033beab8f0ab858ef653e79a6d9df6697c5538cd7c5"
+      }
+    },
+    {
+      "id": "kyousou-beta",
+      "strategy": "native",
+      "source": {
+        "path": "src/assets/kaf/works/2023-kyousou-beta.png",
+        "width": 1600,
+        "height": 1600,
+        "sha256": "161fe38755a496e70a703a60848b385184bcca293685a781ee63d2372fd094f1"
+      },
+      "variants": {
+        "display": {
+          "path": "src/assets/kaf/generated/kyousou-beta-display.webp",
+          "width": 800,
+          "height": 800,
+          "sha256": "bab195f229a9403ba6f71e7b77d5f40b1d861b3878eaead939631f75869fb212",
+          "bytes": 105520
+        },
+        "high": {
+          "path": "src/assets/kaf/generated/kyousou-beta-high.webp",
+          "width": 1600,
+          "height": 1600,
+          "sha256": "dc8d8c1f24bb8368c88a10f013ee3889ce75885675c647f82f12034154178707",
+          "bytes": 233108
+        },
+        "thumb": {
+          "path": "src/assets/kaf/generated/kyousou-beta-thumb.webp",
+          "width": 480,
+          "height": 480,
+          "sha256": "223c9668a4a57892d9cd9468a27a21147a7d6c2bad30e677ae2bf47ee2af1be9",
+          "bytes": 54982
+        }
+      },
+      "placeholder": {
+        "dataUrl": "data:image/webp;base64,UklGRpQBAABXRUJQVlA4IIgBAACQBgCdASogACAAA8BgJbACdMzLjocntlOfJslH/XWgI0fYqe6tgjmHWFIeF30jNe5Q0gS6ia1F0nKCMgqQAP69iYZI1QGfmrciOTZDjw0TFnzpv1jbMp8fZFOL5JiTnWRzoCshNvVuZTDVQHWW79gBmt0iG7ZAob3zZULowC8W2D6Xh/4J7t+yrrT7R5NIZYqwYQCo6WutUlOznAp+j8T6PY9/0Cnmnnut5CtAJjaZsDv8vn+snu0W7fcgNwK874iEdEPVQPBx26DbGR7KRXXUA4K9+e0ztjWZZCMoeg3e0MQxMubeioqZkBSr4CiATvFBITDXNParvrAcsZgjZKEFRyHdTNmCbkmanIs2MJASYwDBCD36n0yj6Rn8us9szxR61Y03QK5lUoxYBelE4kwR0GxUobj3zglaMqnMQYGALYV1DYY5w5PERZkpCk6EVtuRUvWJmvsB8AvqNL4fjxNTH1REvHvU8hy9PYrtlXpr7F/zVV0Npp+3BdfgtAuCpTk+3BF8mzBAAA==",
+        "width": 32,
+        "height": 32,
+        "bytes": 412,
+        "sha256": "3c5ce014f27f093876388991129e6d06aad978fd3d1c84708aed2d668d25573a"
       }
     }
   ]

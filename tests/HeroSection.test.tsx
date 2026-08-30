@@ -53,7 +53,9 @@ describe('HeroSection', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: '花谱' }),
     ).toBeVisible();
-    expect(screen.getByRole('img', { name: visualFixture.alt })).toBeVisible();
+    const visual = screen.getByRole('img', { name: visualFixture.alt });
+    expect(visual).toBeInTheDocument();
+    expect(visual.closest('[data-artwork-id="hero-fixture"]')).toBeVisible();
     expect(screen.getByRole('link', { name: '人物介绍' })).toBeVisible();
     expect(screen.getByRole('link', { name: '代表作品' })).toBeVisible();
   });
@@ -73,8 +75,9 @@ describe('HeroSection', () => {
     expect(visual).toHaveAttribute('height', '2000');
     expect(visual).toHaveAttribute(
       'srcset',
-      `${visualFixture.display.src} 1x, ${visualFixture.highDensity.src} 2x`,
+      `${visualFixture.thumbnail.src} ${visualFixture.thumbnail.width}w, ${visualFixture.display.src} ${visualFixture.display.width}w, ${visualFixture.highDensity.src} ${visualFixture.highDensity.width}w`,
     );
+    expect(visual).toHaveAttribute('sizes', '100vw');
     expect(visual).toHaveAttribute('fetchpriority', 'high');
 
     const heroImages = container.querySelectorAll(

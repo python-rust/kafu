@@ -51,6 +51,7 @@ export function HeroSection({
           alt=""
           aria-hidden="true"
           loading="lazy"
+          fetchPriority="low"
           decoding="async"
         />
         <ResponsiveArtwork
@@ -59,6 +60,7 @@ export function HeroSection({
           loading="eager"
           fetchPriority="high"
           decoding="async"
+          sizes="100vw"
         />
       </motion.figure>
 

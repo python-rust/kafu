@@ -157,7 +157,7 @@ describe('KAF Chinese profile content', () => {
 });
 
 describe('KAF production editorial data', () => {
-  it('provides the complete five-album sequence without inventing a third-album cover', () => {
+  it('provides the complete five-album sequence with the verified official third-album cover', () => {
     const workIds = selectedWorks.map((work) => work.id);
 
     expect(new Set(workIds).size).toBe(selectedWorks.length);
@@ -178,17 +178,17 @@ describe('KAF production editorial data', () => {
       releaseDate: '2023.03.08',
       kind: '第 3 张专辑',
       sourceUrl: 'https://kaf.kamitsubaki.jp/discography/20230308/199/',
+      visual: {
+        id: 'kyousou-beta',
+      },
     });
-    expect(thirdAlbum?.visual).toBeUndefined();
 
     for (const work of selectedWorks) {
       expect(work.id.trim()).not.toBe('');
       expect(work.releaseDateTime).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 
-      if (!work.visual) {
-        expect(work.id).toBe('album-kyousou-beta-2023');
-        continue;
-      }
+      expect(work.visual).toBeDefined();
+      if (!work.visual) throw new Error(`Missing work visual: ${work.id}`);
 
       expect(work.visual.alt.trim()).not.toBe('');
       expectVariant(work.visual.preview);
@@ -222,15 +222,16 @@ describe('KAF production editorial data', () => {
 });
 
 describe('KAF media manifest', () => {
-  it('ships at least nine visuals including the six new acquisitions', () => {
+  it('ships ten visuals including the official third-album cover', () => {
     const mediaIds = new Set(kafMedia.map((media) => media.id));
 
-    expect(kafMedia.length).toBeGreaterThanOrEqual(9);
+    expect(kafMedia).toHaveLength(10);
     expect(expectedNewMediaIds).toHaveLength(6);
 
     for (const id of expectedNewMediaIds) {
       expect(mediaIds.has(id)).toBe(true);
     }
+    expect(mediaIds.has('kyousou-beta')).toBe(true);
   });
 
   it('keeps media metadata complete and IDs unique', () => {
@@ -246,14 +247,25 @@ describe('KAF media manifest', () => {
       expectVariant(media.display);
       expectVariant(media.highDensity);
       expectVariant(media.thumbnail);
-      expect(media.display.width).toBe(media.preview.width * 2);
-      expect(media.display.height).toBe(media.preview.height * 2);
-      expect(media.highDensity.width).toBe(media.preview.width * 4);
-      expect(media.highDensity.height).toBe(media.preview.height * 4);
+      expect(media.placeholderDataUrl).toMatch(/^data:image\/webp;base64,/);
       expect(Math.max(media.thumbnail.width, media.thumbnail.height)).toBe(480);
-      expect(media.display.src).toContain(`${media.id}-2x`);
-      expect(media.highDensity.src).toContain(`${media.id}-4x`);
       expect(media.thumbnail.src).toContain(`${media.id}-thumb`);
+
+      if (media.id === 'kyousou-beta') {
+        expect(media.preview).toMatchObject({ width: 1600, height: 1600 });
+        expect(media.display).toMatchObject({ width: 800, height: 800 });
+        expect(media.highDensity).toMatchObject({ width: 1600, height: 1600 });
+        expect(media.display.src).toContain('kyousou-beta-display');
+        expect(media.highDensity.src).toContain('kyousou-beta-high');
+      } else {
+        expect(media.display.width).toBe(media.preview.width * 2);
+        expect(media.display.height).toBe(media.preview.height * 2);
+        expect(media.highDensity.width).toBe(media.preview.width * 4);
+        expect(media.highDensity.height).toBe(media.preview.height * 4);
+        expect(media.display.src).toContain(`${media.id}-2x`);
+        expect(media.highDensity.src).toContain(`${media.id}-4x`);
+      }
+
       expect(media.retrievedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(new URL(media.sourceUrl).protocol).toBe('https:');
       expect(new URL(media.licenseUrl).protocol).toBe('https:');

@@ -44,7 +44,11 @@ describe('KafProfileSection', () => {
     expect(visual).toHaveAttribute('loading', 'lazy');
     expect(visual).toHaveAttribute(
       'srcset',
-      `${profile.visual.display.src} 1x, ${profile.visual.highDensity.src} 2x`,
+      `${profile.visual.thumbnail.src} ${profile.visual.thumbnail.width}w, ${profile.visual.display.src} ${profile.visual.display.width}w, ${profile.visual.highDensity.src} ${profile.visual.highDensity.width}w`,
+    );
+    expect(visual).toHaveAttribute(
+      'sizes',
+      '(max-width: 44rem) calc(100vw - 2.5rem), (max-width: 88rem) 38vw, 32rem',
     );
 
     expect(

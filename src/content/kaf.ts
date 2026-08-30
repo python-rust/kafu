@@ -8,9 +8,11 @@ import journeyFableChewingDisco from '../assets/kaf/journey/2024-fable-chewing-d
 import journeyTranscendentUfo from '../assets/kaf/journey/2025-transcendent-ufo.png';
 import visualFukakai from '../assets/kaf/visual-fukakai.jpg';
 import visualWasureteShimae from '../assets/kaf/visual-wasurete-shimae.jpg';
+import workKyousouBeta from '../assets/kaf/works/2023-kyousou-beta.png';
 
 const PIAPRO_LICENSE_URL = 'https://piapro.jp/license/pc/icon';
 const KAF_HISTORY_URL = 'https://kaf.kamitsubaki.jp/history/';
+const KAMITSUBAKI_GUIDELINES_URL = 'https://kamitsubaki.jp/guidelines/';
 
 export interface KafWork {
   id: string;
@@ -63,6 +65,7 @@ export interface KafMedia {
   readonly display: KafMediaVariant;
   readonly highDensity: KafMediaVariant;
   readonly thumbnail: KafMediaVariant;
+  readonly placeholderDataUrl: string;
   readonly alt: string;
   readonly credit: string;
   readonly sourceUrl: string;
@@ -98,6 +101,7 @@ export interface KafGalleryVisual {
   readonly display: KafMediaVariant;
   readonly highDensity: KafMediaVariant;
   readonly thumbnail: KafMediaVariant;
+  readonly placeholderDataUrl: string;
   readonly alt: string;
   readonly credit: string;
   readonly sourceUrl: string;
@@ -114,6 +118,8 @@ const nonCommercialModifiable =
   'Piapro: non-commercial use only; modification is permitted because the work does not display the no-modification condition.';
 const nonCommercialAttributedModifiable =
   'Piapro: non-commercial use only; creator-name credit required; modification is permitted because the work does not display the no-modification condition.';
+const officialNonCommercialFanUse =
+  'Official KAF album artwork used by an individual, unofficial, non-commercial fan project under the KAMITSUBAKI secondary-creation guidelines; no monetization or official affiliation is claimed.';
 
 const heroKaihouMedia: KafMedia = {
   id: 'kaihou',
@@ -243,6 +249,20 @@ const toriPortraitMedia: KafMedia = {
   retrievedAt: '2026-08-25',
 };
 
+const kyousouBetaMedia: KafMedia = {
+  id: 'kyousou-beta',
+  title: '狂想β',
+  preview: { src: workKyousouBeta, width: 1600, height: 1600 },
+  ...generatedMediaVariants['kyousou-beta'],
+  alt: '花谱第三张专辑《狂想β》封面，红蓝花朵环绕粉色短发的花谱与蓝色鱼形意象。',
+  credit: '花譜 / PALOW. / KAMITSUBAKI STUDIO',
+  sourceUrl: 'https://kaf.kamitsubaki.jp/discography/20230308/199/',
+  licenseSummary: officialNonCommercialFanUse,
+  licenseUrl: KAMITSUBAKI_GUIDELINES_URL,
+  canModify: false,
+  retrievedAt: '2026-08-30',
+};
+
 export const heroMedia: KafMedia = heroKaihouMedia;
 
 export const kafMedia: readonly KafMedia[] = [
@@ -255,6 +275,7 @@ export const kafMedia: readonly KafMedia[] = [
   fableChewingDiscoMedia,
   transcendentUfoMedia,
   toriPortraitMedia,
+  kyousouBetaMedia,
 ];
 
 export const galleryMedia: readonly KafMedia[] = [
@@ -274,6 +295,7 @@ const toGalleryVisual = (media: KafMedia): KafGalleryVisual => ({
   display: media.display,
   highDensity: media.highDensity,
   thumbnail: media.thumbnail,
+  placeholderDataUrl: media.placeholderDataUrl,
   alt: media.alt,
   credit: media.credit,
   sourceUrl: media.sourceUrl,
@@ -561,6 +583,7 @@ export const selectedWorks: KafWork[] = [
     description:
       '收录《海に化ける》《人を気取る》《未観測》《狂感覚》《邂逅》等 15 首作品，全曲由カンザキイオリ负责词曲与编曲。',
     sourceUrl: 'https://kaf.kamitsubaki.jp/discography/20230308/199/',
+    visual: kyousouBetaMedia,
   },
   {
     id: 'album-mahou-alpha-2020',
