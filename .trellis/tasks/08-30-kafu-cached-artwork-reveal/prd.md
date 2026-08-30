@@ -83,6 +83,6 @@ heavy image framework.
       green.
 - [x] `mise run check`, `mise run e2e`, media verification, Pages artifact
       verification, and `git diff --check` pass.
-- [ ] The task is committed, manually deployed, publicly verified, archived,
+- [x] The task is committed, manually deployed, publicly verified, archived,
       and journaled.
 
