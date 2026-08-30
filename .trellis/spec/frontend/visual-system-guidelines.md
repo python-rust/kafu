@@ -201,22 +201,35 @@ It must not regress to eight equally weighted irregular cards.
 
 - Keep native document scrolling and semantic anchors.
 - Reuse Motion for keyed, low-frequency state transitions.
-- Use native IntersectionObserver only for fixed-header page-location state.
+- Use native IntersectionObserver for fixed-header page-location state.
+- Use `scrollama` as the single Journey-specific step-observation boundary; it
+  owns IntersectionObserver/ResizeObserver setup and teardown for that section.
 - Never send per-frame scroll values through React state.
 - Animate transform and opacity by default.
 - `useScroll` / `useTransform` requires a genuine continuous-progress product
   requirement; it is not a general “premium” effect.
 - The factual profile remains normal document flow and does not activate from
   scroll position.
-- Journey changes only through its Radix year tabs or previous/next controls.
-- The active Journey panel may enter with restrained opacity/transform motion;
-  it must not auto-advance or depend on scrolling the page.
+- Journey follows six semantic document-flow steps. Downward/upward native
+  scrolling activates the corresponding sticky-stage image without intercepting
+  browser scroll.
+- Journey renders one active image only. Do not restore an overlapping
+  secondary image or keep previous/current/next image layers alive.
+- Wide layouts use a side-by-side sticky stage. Compact layouts use a top sticky
+  stage beneath the fixed header and opaque story surfaces below it.
+- Compact stage sizing uses stable `svh`; its Scrollama activation line uses a
+  pixel offset near 72% of the initial layout viewport. Do not use legacy `vh`,
+  continuously recalculate from `visualViewport`, or animate stage geometry.
+- Short landscape layouts reduce the stage height and must leave readable space
+  below it.
 - Respect `MotionConfig reducedMotion="user"`; all chapters, images, sources,
   gallery controls, and lightbox actions remain available without motion.
+- In reduced motion, omit the changing Journey stage and render one full image
+  inside every chapter article.
 
-Do not add Lenis, GSAP, or another smooth-scroll runtime until a measured defect
-cannot be solved by reducing content height, layout work, or existing Motion
-usage.
+Do not add Lenis, GSAP/ScrollTrigger, another Scrollama wrapper, or a second
+animation runtime while the current Scrollama + Motion split satisfies the
+requirement.
 
 ---
 
@@ -231,7 +244,8 @@ mise run e2e
 
 The browser suite must cover:
 
-- 320, 360, 390, 768, 1024, and 1440px viewport widths;
+- 320, 360, 390, 430, 768, 1024, and 1440px viewport widths plus a short
+  844×390 landscape viewport;
 - document overflow and essential-content bounding boxes;
 - 200% root text reflow;
 - 14px recurring-text and 16px body floors;
@@ -239,8 +253,9 @@ The browser suite must cover:
 - dark-system contrast roles and primary-action contrast;
 - fixed-header worst-case contrast and five `aria-current` locations;
 - factual profile layout with no sticky/observer state;
-- six Journey tabs, tab/tabpanel association, Arrow/Home/End navigation,
-  previous/next controls, narrow-screen rail containment, and reduced motion;
+- six Journey steps, downward/upward activation, sticky release before Works,
+  one active image, compact pixel-offset geometry, short-landscape reading
+  space, and six-image reduced-motion flow;
 - eight source-ordered gallery selectors;
 - active gallery selection, lightbox open, keyboard navigation, and Escape close;
 - intrinsic media sizing and one eager/high-priority Hero image.
@@ -263,13 +278,17 @@ Also inspect the diff for:
   the same eyebrows, filler prose, cards, and numbering.
 - Solving a long/heavy page by adding smooth scrolling instead of removing
   viewport-sized tracks and continuous animation work.
-- Reusing the same sticky-scroll treatment in adjacent biography and chronology
-  sections.
+- Reusing the Journey sticky-scroll treatment in the factual Profile or another
+  adjacent section.
 - Adding small original-title/change-label rows around an era title when the
   factual paragraph already provides the necessary context.
 - Treating eight images as eight independent cards when the product needs one
   focal visual path.
 - Hiding overflow and assuming responsive layout is safe; essential content can
   still be clipped while document scroll width reports no overflow.
+- Using dynamic viewport units for a sticky mobile stage so browser toolbar
+  changes move the trigger line while the reader scrolls.
+- Sending Scrollama progress callbacks through React state when only discrete
+  step-entry changes are needed.
 - Writing a custom modal/lightbox despite an installed, tested open-source
   dialog/gesture implementation.

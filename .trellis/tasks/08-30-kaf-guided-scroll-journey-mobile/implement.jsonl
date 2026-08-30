@@ -1,0 +1,7 @@
+{"file":".trellis/spec/frontend/index.md","reason":"Frontend spec entry points and required pre-development reading."}
+{"file":".trellis/spec/frontend/localization-and-storytelling-guidelines.md","reason":"Chinese Journey content hierarchy and interaction contracts."}
+{"file":".trellis/spec/frontend/visual-system-guidelines.md","reason":"Sticky composition, motion, responsive layout, and reduced-motion rules."}
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"Open-source integration and page-local ownership boundaries."}
+{"file":".trellis/spec/frontend/media-guidelines.md","reason":"Responsive artwork, intrinsic sizing, loading, and provenance contracts."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Viewport matrix, accessibility, and validation requirements."}
+{"file":".trellis/tasks/08-30-kaf-guided-scroll-journey-mobile/research/responsive-scrollytelling.md","reason":"Reviewed Scrollama, Motion, GSAP, mobile viewport, and reduced-motion evidence."}

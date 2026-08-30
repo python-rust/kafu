@@ -1,0 +1,29 @@
+{
+  "id": "kaf-guided-scroll-journey-mobile",
+  "name": "kaf-guided-scroll-journey-mobile",
+  "title": "Guide KAF journey through responsive scrollytelling",
+  "description": "Replace the click-required era theatre with a Scrollama-driven guided journey that responds to upward/downward native scrolling on desktop and mobile, removes the secondary Journey image, and strengthens whole-site mobile layout validation.",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": "frontend/responsive-scrollytelling-mobile",
+  "package": null,
+  "priority": "P1",
+  "creator": "pythonrust",
+  "assignee": "pythonrust",
+  "createdAt": "2026-08-30",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "research": "scrollama-responsive-scrollytelling",
+    "interaction": "scroll-driven-sticky-stage"
+  }
+}

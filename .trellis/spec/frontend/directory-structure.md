@@ -98,9 +98,10 @@ source index, and section headings. One-section integrations stay with their sec
 biography and profile attributes live in `src/content/kaf.ts`; the section has
 no observer or interaction state.
 
-`JourneySection.tsx` owns the domain-specific Radix Tabs integration and active
-era state. Do not move it into `components/` or create a generic Tabs wrapper
-until another real product surface shares the same contract.
+`JourneySection.tsx` owns the domain-specific Scrollama integration, active-era
+state, and Motion stage transition. Do not move it into `components/` or create
+a generic scrollytelling hook until another real product surface shares the same
+step/offset/cleanup contract.
 
 Extract a separate module only after a real capability has an independent
 ownership boundary; do not recreate a second page-wide monolith beside the

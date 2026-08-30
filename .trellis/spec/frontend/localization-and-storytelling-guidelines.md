@@ -43,7 +43,7 @@ generic slogans.
 ```text
 Hero
 认识花谱        factual profile
-成长轨迹        interactive era theatre
+成长轨迹        guided scroll chronology
 代表作品        five original albums
 视觉档案
 官方入口
@@ -54,7 +54,7 @@ Footer / sources
 | --- | --- |
 | Hero | Identify the artist and provide direct destinations. |
 | 认识花谱 | State verified biography and profile facts. |
-| 成长轨迹 | Let the user inspect six career eras. |
+| 成长轨迹 | Guide the reader through six career eras in order. |
 | 代表作品 | Present the original-album sequence. |
 | 视觉档案 | Inspect the existing verified visual archive. |
 | 官方入口 | Continue to official channels. |
@@ -122,9 +122,10 @@ motion.
 
 ---
 
-## Interactive Era Theatre Contract
+## Guided Scroll Journey Contract
 
-`JourneySection` owns `#journey` and uses one controlled Radix Tabs instance.
+`JourneySection` owns `#journey` and uses one Scrollama instance to connect
+normal document scrolling to six discrete chronology states.
 
 ### Data contract
 
@@ -138,7 +139,6 @@ titleZh: string;
 summary: readonly string[];
 milestones: readonly KafJourneyMilestone[];
 primaryVisual: KafMedia;
-secondaryVisual?: KafMedia;
 ```
 
 Do not add a separate Japanese subtitle or `changeFrom` / `changeTo` line by
@@ -147,28 +147,58 @@ copy where they identify real works/events.
 
 ### Interaction contract
 
-- Six chronological year triggers remain visible as the navigation model.
-- Radix owns `tablist`, `tab`, `tabpanel`, `aria-selected`, `aria-controls`,
-  roving focus, ArrowLeft/ArrowRight, Home, End, Enter, and Space behavior.
-- The section may control the active value to support previous/next buttons.
-- Do not override Radix trigger/panel IDs in a way that breaks `aria-controls`.
-- On narrow layouts the tab rail may scroll horizontally inside itself; it must
-  not widen the document.
-- No autoplay or timed advancement.
+- Six chronological `<article>` steps remain in source order and normal document
+  flow.
+- Scrollama owns discrete `onStepEnter` detection through IntersectionObserver.
+- Downward native scrolling advances the active year/image; upward native
+  scrolling restores the previous state.
+- Do not intercept `wheel`, touchmove, keyboard page navigation, or browser
+  scrolling. This is guided scrollytelling, not scroll-jacking.
+- The chronology requires no click, tap, autoplay, timer, horizontal swipe, or
+  hidden control to reveal all six eras.
+- Every step keeps a stable `#journey-<id>` anchor and contains its complete
+  factual text and source links.
+- Scrollama must be destroyed on unmount. Compact/wide breakpoint and orientation
+  changes update its offset and call `resize()`; do not attach continuous resize
+  or scroll handlers.
 
-### Panel content
+### Visual-stage contract
 
-One active panel contains:
+- Normal-motion layouts render exactly one active Journey image in one sticky
+  stage. `secondaryVisual` is not part of the chapter contract.
+- The stage is contextual/decorative (`aria-hidden`); the ordered articles are
+  the authoritative reading and accessibility content.
+- Desktop uses a side-by-side sticky stage and chronology steps.
+- Compact layouts use one sticky image beneath the fixed header and opaque story
+  surfaces in the remaining reading area.
+- Compact activation uses a pixel Scrollama offset derived from approximately
+  72% of the stable layout viewport. Do not use a percentage offset that shifts
+  when mobile browser chrome changes.
+- Use stable `svh` geometry for stage/step pacing. Short landscape viewports
+  require a reduced stage height that leaves readable space beneath it.
+- The sticky stage must release before `代表作品`.
+
+### Step content
+
+Each article contains:
 
 - year and one Chinese narrative title;
 - two concise factual paragraphs where necessary for useful density;
-- existing verified primary/secondary artwork in an editorial composition;
-- dated milestones with direct official source links;
-- previous/next stage controls.
+- dated milestones with direct official source links.
 
-The active panel is progressive disclosure, not hidden essential form content:
-all six labels remain visible and all panels are reachable by pointer, touch,
-keyboard, and previous/next controls.
+Do not add a second image, decorative subtitle, change-pair label, or instruction
+telling the reader to scroll.
+
+### Reduced motion
+
+- Do not initialize Scrollama when reduced motion is requested.
+- Do not render the changing sticky stage.
+- Render one full responsive image inside each of the six articles so all visual
+  content remains available in normal document flow.
+- Remove opacity/translation transitions without removing facts, milestones,
+  links, or anchors.
+- Use the same linear fallback when IntersectionObserver or ResizeObserver is
+  unavailable; progressive enhancement must not leave a permanently stale stage.
 
 ---
 
@@ -221,21 +251,23 @@ Primary navigation remains:
 
 Approved motion:
 
-- existing Motion opacity/transform entrance for the newly active era panel;
+- existing Motion opacity/transform transition for the newly active Journey
+  image and stage metadata;
 - Gallery state transitions already defined elsewhere;
-- persistent CSS transitions for navigation/tab active states.
+- persistent CSS transitions for navigation and active-step state.
 
 Forbidden motion:
 
 - biography activation based on scroll;
-- Journey activation based on page scroll;
 - per-frame React scroll values, parallax, autoplay, or smooth-scroll
   interception;
 - hiding/delaying factual content for cinematic pacing;
 - adding another animation runtime while Motion is installed.
 
-Reduced motion keeps the same profile, tabs, panels, controls, and content with
-zero-duration transitions.
+Journey scroll activation is the approved exception because chronology order is
+the product interaction. It must remain discrete and Scrollama-driven rather
+than progress-scrubbed. Reduced motion renders the complete linear chronology
+and all six images without the changing stage.
 
 ---
 
@@ -259,13 +291,16 @@ Tests must verify:
 - factual Hero identity and direct actions;
 - absence of banned explanatory/slogan copy;
 - static profile facts and absence of primer sticky/observer markup;
-- six Radix tabs, tab/tabpanel associations, Arrow/Home/End behavior, and
-  previous/next controls;
-- one visible active era panel and no Journey sticky stage;
+- six semantic Journey steps in source order;
+- downward and upward scroll activation for early, middle, and final eras;
+- one sticky Journey image, no secondary image, and release before Works;
+- compact sticky-stage geometry, pixel trigger behavior, short-landscape space,
+  and no document-level horizontal overflow;
+- reduced-motion linear chronology with six in-flow images;
 - the complete five-album sequence including `狂想β` and its official URL;
 - no image assigned to the third album without a verified asset;
 - fixed-header contrast/current section;
-- mobile tab-rail containment, 320px and 200% reflow;
+- 320/360/390/430 portrait, 844×390 landscape, tablet, desktop, and 200% reflow;
 - reduced-motion equivalence;
 - preserved media, Gallery, and source contracts.
 
@@ -286,7 +321,13 @@ tests/e2e/home.spec.ts
 - Replacing one deleted slogan with another rhetorical slogan.
 - Using several small subtitle lines where one title and substantive paragraph
   would be clearer.
-- Reusing the same sticky-scroll pattern in adjacent sections.
-- Building tabs/focus behavior manually despite the approved Radix primitive.
+- Reintroducing sticky scroll to the factual Profile; only Journey owns guided
+  chronology.
+- Reimplementing step observation instead of using the approved Scrollama
+  boundary.
+- Adding a horizontal timeline that again requires the user to discover a
+  separate gesture or control.
+- Letting mobile cards cover the sticky image at the trigger line or using `vh`
+  so browser chrome repeatedly changes the stage height.
 - Removing official Japanese proper nouns in the name of localization.
 - Omitting an album because no verified cover image exists.

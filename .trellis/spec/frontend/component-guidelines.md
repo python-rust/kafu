@@ -105,17 +105,21 @@ yet-another-react-lightbox   -> portal/focus/keyboard/swipe mechanics
 The adapter is lazy-loaded. Do not leak the package API through unrelated
 sections or create a generic app-wide modal abstraction for one gallery.
 
-For the era theatre:
+For the guided Journey:
 
 ```text
-JourneySection.tsx           -> KAF era data, controlled value, panel layout
-@radix-ui/react-tabs         -> tab roles, aria links, roving focus, keyboard
-Motion                       -> active-panel opacity/transform entrance only
+JourneySection.tsx           -> KAF era state, Scrollama lifecycle, step markup
+scrollama                    -> IntersectionObserver step activation + resize
+Motion                       -> active-stage image/metadata transition only
 ```
 
-Keep Radix usage inside `JourneySection`. Do not build a generic app-wide Tabs
-wrapper while there is only one domain-specific consumer, and do not override
-Radix-generated trigger/panel IDs in a way that breaks `aria-controls`.
+Keep direct Scrollama usage inside `JourneySection`. The section passes actual
+step elements, owns compact/wide offset selection, validates callback indices,
+updates low-frequency React state, and calls `destroy()` on cleanup. Do not wrap
+Scrollama in a generic app-wide hook while there is only one domain-specific
+consumer. Do not add a React wrapper merely to avoid one explicit lifecycle.
+If IntersectionObserver or ResizeObserver is unavailable, Journey uses its
+complete in-flow image/text fallback instead of initializing a partial runtime.
 
 ---
 
@@ -137,8 +141,9 @@ Current example:
 ```
 
 For primary page navigation, use `aria-current="location"` on the observed
-active section. Journey uses the standard Radix `tab` / `tabpanel` state rather
-than a second `aria-current` convention.
+active section. Journey articles use semantic source order and `aria-labelledby`;
+the changing sticky stage is decorative and must not duplicate the chronology in
+the accessibility tree.
 
 ---
 
@@ -152,6 +157,7 @@ than a second `aria-current` convention.
 - Do not write raw `<img>` markup in a homepage section; extend the shared
   responsive-artwork contract when a real media role is missing.
 - Do not hand-build dialog focus trapping, Escape handling, swipe navigation, or body-scroll locking when the approved lightbox dependency already owns them.
-- Do not hand-build roving tabindex, arrow-key tabs, or tab/panel ARIA links
-  when the approved Radix Tabs primitive owns them.
+- Do not hand-build Journey step observation, scroll-direction tracking, or
+  resize observation when Scrollama owns those mechanics.
+- Do not attach `scroll`, `wheel`, or touchmove listeners to drive Journey state.
 - Do not move static styling into JSX just because inline styles are convenient.
