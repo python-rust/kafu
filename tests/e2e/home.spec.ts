@@ -1,7 +1,8 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 const targetViewports = [
-  { width: 320, height: 800 },
+  { width: 320, height: 568 },
+  { width: 360, height: 640 },
   { width: 360, height: 800 },
   { width: 390, height: 844 },
   { width: 430, height: 932 },
@@ -86,18 +87,38 @@ async function activateJourneyStep(page: Page, index: number) {
     throw new Error('Journey scroll tests require an explicit viewport.');
   }
 
-  const offsetRatio = viewport.width >= 1024 ? 0.52 : 0.72;
+  const stage = page.getByTestId('journey-sticky-stage');
+  await stage.waitFor();
+  const triggerOffset = await page.evaluate(() => {
+    if (window.innerWidth >= 1024) {
+      return window.innerHeight * 0.52;
+    }
+
+    const header = document.querySelector<HTMLElement>('header');
+    const stage = document.querySelector<HTMLElement>(
+      '[data-testid="journey-sticky-stage"]',
+    );
+
+    if (!header || !stage) {
+      throw new Error('Missing compact Journey offset targets.');
+    }
+
+    const desired =
+      header.getBoundingClientRect().height +
+      stage.getBoundingClientRect().height;
+    const maximum = Math.max(180, window.innerHeight - 96);
+    return Math.min(maximum, Math.max(180, desired));
+  });
   const step = page.locator(`[data-journey-index="${index}"]`);
 
-  await step.evaluate((element, ratio) => {
+  await step.evaluate((element, offset) => {
     const absoluteTop = element.getBoundingClientRect().top + window.scrollY;
     window.scrollTo({
-      top: Math.max(0, absoluteTop - window.innerHeight * ratio + 2),
+      top: Math.max(0, absoluteTop - offset + 2),
       behavior: 'instant',
     });
-  }, offsetRatio);
+  }, triggerOffset);
 
-  const stage = page.getByTestId('journey-sticky-stage');
   await expect(stage).toHaveAttribute('data-active-index', String(index));
   await expect(step).toHaveAttribute('data-active', 'true');
 }
@@ -457,7 +478,9 @@ test('hero selects density-matched generated artwork at DPR 1 and DPR 2', async 
     });
     const page = await context.newPage();
     await page.goto('/');
-    const hero = page.locator('#top img[data-media-id="kaihou"]');
+    const hero = page.locator(
+      '#top img[data-media-id="kaihou"][data-media-variant="responsive"]',
+    );
     await hero.waitFor();
     const source = await hero.evaluate((element) => {
       const image = element as HTMLImageElement;
@@ -596,6 +619,39 @@ test('mobile profile and guided Journey remain contained, readable, and touch-sa
   await expect(page.getByRole('link', { name: '人物介绍' })).toBeInViewport();
   await expectNoHorizontalOverflow(page, '390×844 hero');
 
+  const heroGeometry = await page.evaluate(() => {
+    const hero = document.querySelector<HTMLElement>('#top');
+    const about = document.querySelector<HTMLElement>('#about');
+    const ambient = document.querySelector<HTMLImageElement>(
+      '#top img[data-media-variant="thumbnail"]',
+    );
+    const foreground = document.querySelector<HTMLImageElement>(
+      '#top img[data-media-variant="responsive"]',
+    );
+
+    if (!hero || !about || !ambient || !foreground) {
+      throw new Error('Missing mobile Hero art-direction targets.');
+    }
+
+    return {
+      aboutTop: about.getBoundingClientRect().top,
+      ambientDisplay: getComputedStyle(ambient).display,
+      ambientSource: ambient.getAttribute('src'),
+      foregroundFit: getComputedStyle(foreground).objectFit,
+      heroBottom: hero.getBoundingClientRect().bottom,
+      viewportHeight: window.visualViewport?.height ?? window.innerHeight,
+    };
+  });
+  expect(heroGeometry.heroBottom).toBeGreaterThanOrEqual(
+    heroGeometry.viewportHeight - 1,
+  );
+  expect(heroGeometry.aboutTop).toBeGreaterThanOrEqual(
+    heroGeometry.viewportHeight - 1,
+  );
+  expect(heroGeometry.foregroundFit).toBe('contain');
+  expect(heroGeometry.ambientDisplay).not.toBe('none');
+  expect(heroGeometry.ambientSource).toContain('-thumb');
+
   await expect(
     page.locator('#about [data-testid="primer-sticky-stage"]'),
   ).toHaveCount(0);
@@ -640,20 +696,32 @@ test('mobile profile and guided Journey remain contained, readable, and touch-sa
     const activeStepRect = activeStep.getBoundingClientRect();
     return {
       activeStepTop: activeStepRect.top,
+      boxShadow: getComputedStyle(stage).boxShadow,
       headerBottom: headerRect.bottom,
+      stageLeft: stageRect.left,
+      stageRight: stageRect.right,
       stageTop: stageRect.top,
       stageBottom: stageRect.bottom,
+      viewportWidth: window.innerWidth,
       viewportHeight: window.innerHeight,
     };
   });
-  expect(stageGeometry.stageTop).toBeGreaterThanOrEqual(
-    stageGeometry.headerBottom - 2,
+  expect(
+    Math.abs(stageGeometry.stageTop - stageGeometry.headerBottom),
+  ).toBeLessThanOrEqual(1.5);
+  expect(stageGeometry.stageLeft).toBeLessThanOrEqual(1);
+  expect(stageGeometry.stageRight).toBeGreaterThanOrEqual(
+    stageGeometry.viewportWidth - 1,
   );
+  expect(stageGeometry.boxShadow).toBe('none');
   expect(
     stageGeometry.viewportHeight - stageGeometry.stageBottom,
-  ).toBeGreaterThan(120);
-  expect(stageGeometry.activeStepTop).toBeGreaterThan(
-    stageGeometry.stageBottom + 40,
+  ).toBeGreaterThanOrEqual(180);
+  expect(stageGeometry.activeStepTop).toBeGreaterThanOrEqual(
+    stageGeometry.stageBottom - 3,
+  );
+  expect(stageGeometry.activeStepTop).toBeLessThan(
+    stageGeometry.stageBottom + 16,
   );
 
   await activateJourneyStep(page, 4);
@@ -678,11 +746,21 @@ test('Journey recalibrates its compact trigger after orientation changes', async
   await expect(stage).toContainText('进入创作的第二章');
 
   const landscapeGeometry = await stage.evaluate((element) => {
+    const header = document.querySelector<HTMLElement>('header');
     const rect = element.getBoundingClientRect();
+
+    if (!header) {
+      throw new Error('Missing landscape header geometry target.');
+    }
+
     return {
       bottom: rect.bottom,
+      gap: rect.top - header.getBoundingClientRect().bottom,
       height: rect.height,
+      left: rect.left,
+      right: rect.right,
       top: rect.top,
+      viewportWidth: window.innerWidth,
       viewportHeight: window.innerHeight,
     };
   });
@@ -691,7 +769,12 @@ test('Journey recalibrates its compact trigger after orientation changes', async
   );
   expect(
     landscapeGeometry.viewportHeight - landscapeGeometry.bottom,
-  ).toBeGreaterThan(80);
+  ).toBeGreaterThan(120);
+  expect(Math.abs(landscapeGeometry.gap)).toBeLessThanOrEqual(1.5);
+  expect(landscapeGeometry.left).toBeLessThanOrEqual(1);
+  expect(landscapeGeometry.right).toBeGreaterThanOrEqual(
+    landscapeGeometry.viewportWidth - 1,
+  );
 
   await page.setViewportSize({ width: 390, height: 844 });
   await activateJourneyStep(page, 1);
@@ -705,6 +788,46 @@ test('all target viewport sizes remain free of horizontal overflow', async ({
 }) => {
   for (const viewport of targetViewports) {
     await openHome(page, viewport);
+
+    const heroGeometry = await page.evaluate(() => {
+      const hero = document.querySelector<HTMLElement>('#top');
+      const about = document.querySelector<HTMLElement>('#about');
+      const ambient = document.querySelector<HTMLImageElement>(
+        '#top img[data-media-variant="thumbnail"]',
+      );
+      const foreground = document.querySelector<HTMLImageElement>(
+        '#top img[data-media-variant="responsive"]',
+      );
+
+      if (!hero || !about || !ambient || !foreground) {
+        throw new Error('Missing viewport Hero geometry targets.');
+      }
+
+      return {
+        aboutTop: about.getBoundingClientRect().top,
+        ambientDisplay: getComputedStyle(ambient).display,
+        foregroundFit: getComputedStyle(foreground).objectFit,
+        heroBottom: hero.getBoundingClientRect().bottom,
+        viewportHeight: window.visualViewport?.height ?? window.innerHeight,
+      };
+    });
+    expect(
+      heroGeometry.heroBottom,
+      `${viewport.width}×${viewport.height} Hero coverage`,
+    ).toBeGreaterThanOrEqual(heroGeometry.viewportHeight - 1);
+    expect(
+      heroGeometry.aboutTop,
+      `${viewport.width}×${viewport.height} next-section boundary`,
+    ).toBeGreaterThanOrEqual(heroGeometry.viewportHeight - 1);
+
+    const usesPortraitArtDirection =
+      viewport.width <= 896 && viewport.height > viewport.width;
+
+    if (usesPortraitArtDirection) {
+      expect(heroGeometry.foregroundFit).toBe('contain');
+      expect(heroGeometry.ambientDisplay).not.toBe('none');
+    }
+
     await expectNoHorizontalOverflow(
       page,
       `${viewport.width}×${viewport.height} top`,
@@ -726,22 +849,47 @@ test('all target viewport sizes remain free of horizontal overflow', async ({
     const stageGeometry = await page
       .getByTestId('journey-sticky-stage')
       .evaluate((stage) => {
+        const header = document.querySelector<HTMLElement>('header');
         const rect = stage.getBoundingClientRect();
+
+        if (!header) {
+          throw new Error('Missing viewport header geometry target.');
+        }
+
         return {
           bottom: rect.bottom,
+          gap: rect.top - header.getBoundingClientRect().bottom,
           height: rect.height,
+          left: rect.left,
           position: getComputedStyle(stage).position,
+          right: rect.right,
           top: rect.top,
+          viewportWidth: window.innerWidth,
           viewportHeight: window.innerHeight,
         };
       });
     expect(stageGeometry.position).toBe('sticky');
     expect(stageGeometry.height).toBeLessThan(stageGeometry.viewportHeight);
 
+    if (viewport.width < 1024) {
+      expect(
+        Math.abs(stageGeometry.gap),
+        `${viewport.width}×${viewport.height} header/stage seam`,
+      ).toBeLessThanOrEqual(1.5);
+      expect(stageGeometry.left).toBeLessThanOrEqual(1);
+      expect(stageGeometry.right).toBeGreaterThanOrEqual(
+        stageGeometry.viewportWidth - 1,
+      );
+    }
+
     if (viewport.height <= 430) {
       expect(
         stageGeometry.viewportHeight - stageGeometry.bottom,
-      ).toBeGreaterThan(80);
+      ).toBeGreaterThan(120);
+    } else if (viewport.width < 1024) {
+      expect(
+        stageGeometry.viewportHeight - stageGeometry.bottom,
+      ).toBeGreaterThanOrEqual(180);
     }
 
     if (viewport.width < 1024) {
@@ -784,6 +932,7 @@ test('large user text preferences preserve essential reflow and guided Journey',
 }) => {
   await openHome(page, { width: 640, height: 900 });
   await page.addStyleTag({ content: ':root { font-size: 200% !important; }' });
+  await page.waitForTimeout(120);
 
   await expectNoHorizontalOverflow(page, '640×900 with 200% root text');
   await expectNoEssentialHorizontalClipping(
@@ -818,7 +967,7 @@ test('large user text preferences preserve essential reflow and guided Journey',
     };
   });
   expect(largeTextJourneyGeometry.activeStepTop).toBeGreaterThanOrEqual(
-    largeTextJourneyGeometry.stageBottom - 1,
+    largeTextJourneyGeometry.stageBottom - 3,
   );
 
   for (const selector of pageSections) {

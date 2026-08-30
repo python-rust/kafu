@@ -1,5 +1,6 @@
 .journey {
   --chapter-accent: var(--color-blue-light);
+  --mobile-stage-height: clamp(14rem, 38svh, 20rem);
   min-width: 0;
   scroll-margin-top: var(--header-offset);
   padding: var(--section-space) var(--page-gutter);
@@ -342,13 +343,19 @@
 
   .stage {
     z-index: 3;
-    top: calc(var(--header-offset) + 0.5rem);
-    height: min(44svh, 24rem);
+    top: calc(var(--header-offset) + 1px);
+    width: calc(100% + var(--page-gutter) * 2);
+    height: var(--mobile-stage-height);
     min-height: 0;
+    margin-inline: calc(var(--page-gutter) * -1);
+    background: var(--color-bg-deep);
   }
 
   .stageFrame {
-    box-shadow: 0 1.25rem 4rem rgb(0 0 0 / 34%);
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    box-shadow: none;
   }
 
   .stageVisual img {
@@ -398,12 +405,12 @@
   .steps {
     position: relative;
     z-index: 2;
-    margin-top: clamp(1.5rem, 5svh, 3rem);
+    margin-top: 0;
   }
 
   .stepItem {
-    min-height: clamp(32rem, 72svh, 42rem);
-    align-items: flex-end;
+    min-height: clamp(28rem, 62svh, 36rem);
+    align-items: center;
   }
 
   .step {
@@ -411,7 +418,7 @@
     border: 1px solid var(--color-line-strong);
     border-left-width: 2px;
     background: rgb(13 9 16 / 96%);
-    box-shadow: 0 1.25rem 3.5rem rgb(0 0 0 / 28%);
+    box-shadow: none;
   }
 }
 
@@ -427,8 +434,8 @@
 
 @media (max-width: 63.999rem) and (max-height: 34rem) {
   .stage {
-    top: calc(var(--header-offset) + 0.35rem);
-    height: min(36svh, 13rem);
+    top: calc(var(--header-offset) + 1px);
+    height: min(34svh, 12rem);
   }
 
   .stageMeta {
@@ -444,7 +451,7 @@
   }
 
   .stepItem {
-    min-height: 30rem;
+    min-height: 26rem;
   }
 }
 

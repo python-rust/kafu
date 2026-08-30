@@ -63,8 +63,9 @@ const createScrollama = scrollama as unknown as () => ScrollamaRuntime;
 const WIDE_LAYOUT_QUERY = '(min-width: 64rem)';
 const PORTRAIT_QUERY = '(orientation: portrait)';
 const WIDE_TRIGGER_OFFSET = 0.52;
-const COMPACT_TRIGGER_RATIO = 0.72;
 const MIN_COMPACT_TRIGGER_OFFSET = 180;
+const COMPACT_TRIGGER_MARGIN = 0;
+const COMPACT_BOTTOM_GUARD = 96;
 
 const stageTransition = {
   duration: 0.42,
@@ -75,14 +76,27 @@ function getChapterAnchorId(id: string) {
   return `journey-${id}`;
 }
 
-function getTriggerOffset(isWideLayout: boolean): ScrollamaOffset {
+function getTriggerOffset(
+  isWideLayout: boolean,
+  stage: HTMLElement | null,
+): ScrollamaOffset {
   if (isWideLayout) {
     return WIDE_TRIGGER_OFFSET;
   }
 
-  const compactOffset = Math.max(
+  const header = document.querySelector<HTMLElement>('header');
+  const headerHeight = header?.getBoundingClientRect().height ?? 0;
+  const stageHeight = stage?.getBoundingClientRect().height ?? 0;
+  const desiredOffset = Math.round(
+    headerHeight + stageHeight + COMPACT_TRIGGER_MARGIN,
+  );
+  const maximumOffset = Math.max(
     MIN_COMPACT_TRIGGER_OFFSET,
-    Math.round(window.innerHeight * COMPACT_TRIGGER_RATIO),
+    window.innerHeight - COMPACT_BOTTOM_GUARD,
+  );
+  const compactOffset = Math.min(
+    maximumOffset,
+    Math.max(MIN_COMPACT_TRIGGER_OFFSET, desiredOffset),
   );
 
   return `${compactOffset}px`;
@@ -94,6 +108,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
     useState<ScrollDirection>('down');
   const shouldReduceMotion = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLElement>(null);
   const safeActiveIndex = Math.min(
     activeIndex,
     Math.max(chapters.length - 1, 0),
@@ -127,7 +142,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
     scroller
       .setup({
         step: steps,
-        offset: getTriggerOffset(wideLayout.matches),
+        offset: getTriggerOffset(wideLayout.matches, stageRef.current),
         progress: false,
       })
       .onStepEnter(({ index, direction }) => {
@@ -144,16 +159,28 @@ export function JourneySection({ chapters }: JourneySectionProps) {
     const refreshLayout = () => {
       window.cancelAnimationFrame(resizeFrame);
       resizeFrame = window.requestAnimationFrame(() => {
-        scroller.offset(getTriggerOffset(wideLayout.matches));
+        scroller.offset(getTriggerOffset(wideLayout.matches, stageRef.current));
         scroller.resize();
       });
     };
+
+    const geometryObserver = new ResizeObserver(refreshLayout);
+    const header = document.querySelector<HTMLElement>('header');
+
+    if (header) {
+      geometryObserver.observe(header);
+    }
+
+    if (stageRef.current) {
+      geometryObserver.observe(stageRef.current);
+    }
 
     wideLayout.addEventListener('change', refreshLayout);
     portraitLayout.addEventListener('change', refreshLayout);
 
     return () => {
       window.cancelAnimationFrame(resizeFrame);
+      geometryObserver.disconnect();
       wideLayout.removeEventListener('change', refreshLayout);
       portraitLayout.removeEventListener('change', refreshLayout);
       scroller.destroy();
@@ -180,6 +207,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
         <div className={styles.scrolly}>
           {linearJourney ? null : (
             <aside
+              ref={stageRef}
               className={styles.stage}
               data-testid="journey-sticky-stage"
               data-active-index={safeActiveIndex}

@@ -136,7 +136,13 @@ const chapters = [
 
 function stubBrowserLayout(wide = true) {
   vi.stubGlobal('IntersectionObserver', class IntersectionObserver {});
-  vi.stubGlobal('ResizeObserver', class ResizeObserver {});
+  vi.stubGlobal(
+    'ResizeObserver',
+    class ResizeObserver {
+      observe() {}
+      disconnect() {}
+    },
+  );
   vi.stubGlobal(
     'matchMedia',
     vi.fn().mockImplementation((query: string) => ({

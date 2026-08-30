@@ -59,7 +59,7 @@ describe('HeroSection', () => {
   });
 
   it('renders factual artist identity and direct destinations without page-explaining copy', () => {
-    renderHero();
+    const { container } = renderHero();
 
     expect(
       screen.getByRole('heading', { level: 1, name: '花谱' }),
@@ -76,6 +76,17 @@ describe('HeroSection', () => {
       `${visualFixture.display.src} 1x, ${visualFixture.highDensity.src} 2x`,
     );
     expect(visual).toHaveAttribute('fetchpriority', 'high');
+
+    const heroImages = container.querySelectorAll(
+      'img[data-media-id="hero-fixture"]',
+    );
+    expect(heroImages).toHaveLength(2);
+    expect(heroImages[0]).toHaveAttribute('data-media-variant', 'thumbnail');
+    expect(heroImages[0]).toHaveAttribute('alt', '');
+    expect(heroImages[0]).toHaveAttribute('aria-hidden', 'true');
+    expect(heroImages[0]).toHaveAttribute('loading', 'lazy');
+    expect(heroImages[0]).not.toHaveAttribute('srcset');
+    expect(heroImages[1]).toHaveAttribute('data-media-variant', 'responsive');
 
     expect(screen.getByRole('link', { name: '人物介绍' })).toHaveAttribute(
       'href',
