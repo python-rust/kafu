@@ -457,3 +457,41 @@ Added a manual-only, immutable-action GitHub Pages pipeline; made Vite and React
 ### Next Steps
 
 - Future releases remain manual: Actions -> Deploy GitHub Pages -> Run workflow, or gh workflow run deploy-pages.yml --ref main.
+
+
+## Session 17: Improve weak-network artwork loading
+
+**Date**: 2026-08-30
+**Task**: Improve weak-network artwork loading
+**Branch**: `main`
+
+### Summary
+
+Added progressive same-origin artwork placeholders and loading feedback, width-based responsive candidates and Hero preload priorities, the verified official 狂想β cover, deterministic weak-network browser coverage, and a successful manual GitHub Pages redeployment.
+
+### Main Changes
+
+- Added inline WebP placeholders with loading/loaded/error states to ResponsiveArtwork.
+- Changed responsive media to width descriptors and explicit sizes with reading-order fetch priorities.
+- Added the verified official 狂想β cover with source-native 480/800/1600 derivatives and provenance.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `377b0950d8b6fbeb99f13eb847aba350bf07ac72` | (see git log) |
+| `39d774df3e45b6d245b653a656a775b22817d092` | (see git log) |
+| `45b439f50355acf26367dfcfd2eddef4e1d7f0e8` | (see git log) |
+
+### Testing
+
+- [OK] Vitest: 9 files / 30 tests passed; Chromium Playwright: 15 tests passed.
+- [OK] GitHub Pages workflow run 33310483344 succeeded and live weak-network interception verified the placeholder/reveal flow.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- No immediate follow-up; future Pages releases remain manual through deploy-pages.yml.
