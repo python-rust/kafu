@@ -347,3 +347,37 @@ Redesigned the portrait mobile Hero as a stable full-viewport contained-artwork 
 ### Status
 
 [OK] **Completed**
+
+
+## Session 14: Refine KAF typography with open web fonts
+
+**Date**: 2026-08-30
+**Task**: Refine KAF typography with open web fonts
+**Branch**: `main`
+
+### Summary
+
+Adopted a self-hosted, OFL-licensed Noto Sans/Serif SC typography system with Chinese reading/display roles, Japanese-first proper-name fallbacks, measured font budgets, notices, and regression coverage.
+
+### Main Changes
+
+- Pinned Noto Sans SC Variable and Noto Serif SC Variable 5.3.0 and imported them once at the application root.
+- Applied semantic reading, Chinese display, Japanese proper-name, and editorial numeral roles without changing page content or layout.
+- Added third-party notices, deployable OFL text, typography SPEC, and documented rejection of high-cost novelty fonts.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5af6d338d46a1a5491bf2caff7119136b78d5c97` | (see git log) |
+| `efaffa7f7d4fec796fd33ce44d74e9e87e66e690` | (see git log) |
+
+### Testing
+
+- [OK] mise run check passed: 7 Vitest files and 26 tests.
+- [OK] mise run e2e passed: 14 Chromium tests, including 40 same-origin WOFF2 requests and 2,387,612 transferred font bytes.
+- [OK] Trellis context validation and git diff --check passed.
+
+### Status
+
+[OK] **Completed**
