@@ -201,18 +201,16 @@ It must not regress to eight equally weighted irregular cards.
 
 - Keep native document scrolling and semantic anchors.
 - Reuse Motion for keyed, low-frequency state transitions.
-- Use native IntersectionObserver for header location, onboarding-step, and
-  chapter activation.
+- Use native IntersectionObserver only for fixed-header page-location state.
 - Never send per-frame scroll values through React state.
 - Animate transform and opacity by default.
 - `useScroll` / `useTransform` requires a genuine continuous-progress product
   requirement; it is not a general “premium” effect.
-- A sticky Journey stage renders one active visual. Do not keep previous/current/
-  next layers alive unless a tested transition requires them.
-- The onboarding stage renders one active image/thesis; its four in-flow
-  articles remain authoritative content.
-- A Journey transformation line may animate with `scaleX` because it represents
-  a real `changeFrom -> changeTo` state.
+- The factual profile remains normal document flow and does not activate from
+  scroll position.
+- Journey changes only through its Radix year tabs or previous/next controls.
+- The active Journey panel may enter with restrained opacity/transform motion;
+  it must not auto-advance or depend on scrolling the page.
 - Respect `MotionConfig reducedMotion="user"`; all chapters, images, sources,
   gallery controls, and lightbox actions remain available without motion.
 
@@ -240,7 +238,9 @@ The browser suite must cover:
 - section-heading ceiling;
 - dark-system contrast roles and primary-action contrast;
 - fixed-header worst-case contrast and five `aria-current` locations;
-- onboarding and Journey sticky activation/release plus reduced-motion fallback;
+- factual profile layout with no sticky/observer state;
+- six Journey tabs, tab/tabpanel association, Arrow/Home/End navigation,
+  previous/next controls, narrow-screen rail containment, and reduced motion;
 - eight source-ordered gallery selectors;
 - active gallery selection, lightbox open, keyboard navigation, and Escape close;
 - intrinsic media sizing and one eager/high-priority Hero image.
@@ -263,6 +263,10 @@ Also inspect the diff for:
   the same eyebrows, filler prose, cards, and numbering.
 - Solving a long/heavy page by adding smooth scrolling instead of removing
   viewport-sized tracks and continuous animation work.
+- Reusing the same sticky-scroll treatment in adjacent biography and chronology
+  sections.
+- Adding small original-title/change-label rows around an era title when the
+  factual paragraph already provides the necessary context.
 - Treating eight images as eight independent cards when the product needs one
   focal visual path.
 - Hiding overflow and assuming responsive layout is safe; essential content can

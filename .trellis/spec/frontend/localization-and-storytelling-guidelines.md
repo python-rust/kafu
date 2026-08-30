@@ -1,7 +1,7 @@
-# Chinese Localization and Storytelling Guidelines
+# Chinese Localization and Editorial Storytelling Guidelines
 
-> Product, content, navigation, and narrative-motion contracts for the
-> Simplified Chinese KAF homepage.
+> Product, copy, navigation, biography, chronology, and interaction contracts
+> for the Simplified Chinese KAF homepage.
 
 ---
 
@@ -9,113 +9,193 @@
 
 Read this file before changing:
 
-- page navigation or section order;
+- page navigation, section order, or fixed-header orientation;
 - Chinese/Japanese naming;
-- biography, chronology, onboarding, or editorial summaries;
-- active-section state, sticky narrative stages, or scroll-triggered motion;
-- footer factual-reference disclosures;
+- Hero identity copy, biography, chronology, or editorial summaries;
+- era selection, transition motion, or official-reference disclosures;
 - page title, metadata, or accessible UI labels.
 
-The homepage is not only a visual archive. It is an introduction product for a
-mainland-Chinese reader who may know nothing about KAF. A successful version
-must explain the subject, establish why the career matters, reveal change over
-time, and provide a concrete next step.
+The homepage is an artist introduction for a mainland-Chinese reader. It must
+identify 花谱, provide verified biography, show the major eras, present the
+original-album sequence, and lead to official destinations. It is not a tutorial
+about how to read the page and it must not manufacture personality through
+generic slogans.
 
 ---
 
 ## Audience and Naming Contract
 
-### Primary audience
-
-- The primary product language is Simplified Chinese (`zh-CN`).
-- Interface copy assumes a first-time Chinese reader, not an existing Japanese
-  fandom participant.
-- Navigation, actions, accessibility labels, explanatory copy, dates, and
-  generic work types use natural Simplified Chinese.
-
-### Subject naming
-
-- Use `花谱` for Chinese interface identity and Chinese prose.
-- Explain once near the Hero identity that the official Japanese spelling is
-  `花譜` and the Latin name is `KAF`.
-- Use `lang="ja"` for separately rendered Japanese proper names.
-- Do not alternate `花谱` and `花譜` as decorative variants.
-
-### Proper nouns
-
-Keep authoritative Japanese names unchanged when they identify an official work,
-event, era label, or creator-facing source record. Examples:
-
-```text
-観測
-不可解
-魔法
-怪歌
-寓話
-深愛
-花譜ちゃん
-過去を喰らう
-```
-
-Do not silently invent an “official” Chinese title. A Chinese editorial title
-may accompany the original name, but the two roles must remain visibly distinct.
-
-### Wrong vs correct
-
-```tsx
-// Wrong: Japanese interface chrome for a Chinese product.
-<nav aria-label="花譜サイト内ナビゲーション">
-  <a href="#journey">軌跡</a>
-</nav>
-
-// Correct: Chinese navigation; Japanese remains content only.
-<nav aria-label="花谱观察站页面导航">
-  <a href="#journey">成长轨迹</a>
-</nav>
-```
-
-```tsx
-// Correct: Chinese orientation plus authoritative original label.
-<h3>进入创作的第二章</h3>
-<p lang="ja">寓話 / 第二章</p>
-```
+- Primary product language is Simplified Chinese (`zh-CN`).
+- Use `花谱` in Chinese interface copy and prose.
+- Introduce the authoritative Japanese spelling `花譜` and Latin name `KAF`
+  once in the Hero identity.
+- Use `lang="ja"` when an authoritative Japanese name is rendered separately.
+- Keep official work, event, and creator names unchanged, including `観測`,
+  `不可解`, `魔法`, `怪歌`, `狂想`, `寓話`, and `深愛`.
+- Never invent a Chinese title that could be mistaken for an official title.
+- Traditional/Japanese UI chrome is not permitted when a natural Simplified
+  Chinese equivalent exists.
 
 ---
 
-## Product Story Architecture
-
-The homepage order is a stable product contract:
+## Stable Product Structure
 
 ```text
 Hero
-认识花谱
-成长轨迹
-代表作品
+认识花谱        factual profile
+成长轨迹        interactive era theatre
+代表作品        five original albums
 视觉档案
 官方入口
-Footer
+Footer / sources
 ```
 
-Each layer answers a different user question:
-
-| Section | User question |
+| Section | Product job |
 | --- | --- |
-| Hero | What is this page promising me? |
-| 认识花谱 | Who is she and why should I care? |
-| 成长轨迹 | How did the artist change over time? |
-| 代表作品 | What should I listen to first? |
-| 视觉档案 | What does this evolving visual world look like? |
-| 官方入口 | Where can I verify and continue? |
+| Hero | Identify the artist and provide direct destinations. |
+| 认识花谱 | State verified biography and profile facts. |
+| 成长轨迹 | Let the user inspect six career eras. |
+| 代表作品 | Present the original-album sequence. |
+| 视觉档案 | Inspect the existing verified visual archive. |
+| 官方入口 | Continue to official channels. |
 
-Do not merge `认识花谱` and `成长轨迹`. The first is a short comprehension path;
-the second is a detailed chronology.
+Do not make Hero explain this structure. Do not split biography into artificial
+questions merely to create more scroll steps.
 
 ---
 
-## Fixed Navigation and Orientation Contract
+## Hero Contract
 
-Primary navigation has exactly these destinations unless the product structure
-changes deliberately:
+Hero contains only:
+
+```text
+花谱
+花譜 / KAF
+日本虚拟歌手，KAMITSUBAKI STUDIO 旗下艺人。
+[人物介绍] [代表作品]
+```
+
+Rules:
+
+- The role line is a factual identity statement, not a poetic campaign line.
+- Actions identify their destinations and use native anchors.
+- Do not state how many minutes the page takes, what it will “teach”, how to
+  scroll, or how the visitor should feel.
+- Do not add rhetorical constructions such as `X 是入口，Y 才会留下人`,
+  `从 A 走向 B`, or `先做 A，再做 B` unless they are literal instructions for
+  an actual task.
+- Current releases or official campaign lines may replace the role line only
+  when sourced and deliberately adopted as the product focus.
+
+---
+
+## Factual Profile Contract
+
+`KafProfileSection` owns `#about`.
+
+Required structure:
+
+- one `h2` (`认识花谱`);
+- one verified responsive artwork;
+- one or more factual biography paragraphs;
+- a semantic description list for concise profile attributes.
+
+Current facts include:
+
+- activity began in 2018;
+- age 14 at debut;
+- KAMITSUBAKI STUDIO affiliation;
+- 3D-avatar activity without publicly showing her face;
+- original music, albums, and solo live performances;
+- Nippon Budokan in 2022 and Yoyogi First Gymnasium in 2024.
+
+Forbidden profile structures:
+
+- four generic questions such as `她是谁`, `为什么特别`, or `从哪里开始`;
+- a title + slogan + explanatory paragraph repeated for every card;
+- a sticky stage, progress indicator, or IntersectionObserver whose only job is
+  to reveal biography;
+- editorial claims presented as official self-description.
+
+The profile must remain normal document flow at every viewport and with reduced
+motion.
+
+---
+
+## Interactive Era Theatre Contract
+
+`JourneySection` owns `#journey` and uses one controlled Radix Tabs instance.
+
+### Data contract
+
+Every chapter contains:
+
+```ts
+id: string;
+period: string;
+yearLabel: string;
+titleZh: string;
+summary: readonly string[];
+milestones: readonly KafJourneyMilestone[];
+primaryVisual: KafMedia;
+secondaryVisual?: KafMedia;
+```
+
+Do not add a separate Japanese subtitle or `changeFrom` / `changeTo` line by
+default. Official Japanese names belong inside factual narrative or milestone
+copy where they identify real works/events.
+
+### Interaction contract
+
+- Six chronological year triggers remain visible as the navigation model.
+- Radix owns `tablist`, `tab`, `tabpanel`, `aria-selected`, `aria-controls`,
+  roving focus, ArrowLeft/ArrowRight, Home, End, Enter, and Space behavior.
+- The section may control the active value to support previous/next buttons.
+- Do not override Radix trigger/panel IDs in a way that breaks `aria-controls`.
+- On narrow layouts the tab rail may scroll horizontally inside itself; it must
+  not widen the document.
+- No autoplay or timed advancement.
+
+### Panel content
+
+One active panel contains:
+
+- year and one Chinese narrative title;
+- two concise factual paragraphs where necessary for useful density;
+- existing verified primary/secondary artwork in an editorial composition;
+- dated milestones with direct official source links;
+- previous/next stage controls.
+
+The active panel is progressive disclosure, not hidden essential form content:
+all six labels remain visible and all panels are reachable by pointer, touch,
+keyboard, and previous/next controls.
+
+---
+
+## Original-Album Contract
+
+The representative original-album sequence currently includes:
+
+```text
+観測α   2019-09-11   first album
+魔法α   2020-11-25   second album
+狂想β   2023-03-08   third album
+寓話     2024-12-25   fourth album
+深愛     2026-05-27   fifth album
+```
+
+- `深愛` remains the single featured/current work while that is the intended
+  homepage emphasis.
+- A work without a verified local cover uses the deliberate typographic
+  fallback. Never present an unrelated visual as its official cover.
+- Album order, release date, ordinal, and source URL must be covered by content
+  tests.
+
+---
+
+## Navigation and Orientation Contract
+
+Primary navigation remains:
 
 ```text
 认识花谱   -> #about
@@ -125,183 +205,88 @@ changes deliberately:
 官方入口   -> #links
 ```
 
-Required behavior:
-
-- Header stays fixed and uses a stable warm-dark surface; it must not rely on
-  the underlying Hero image for contrast.
-- Navigation text/background contrast is at least 4.5:1 against the worst-case
-  pale artwork beneath the translucent surface.
-- The current section is exposed through `aria-current="location"`.
-- Active state remains visible without animation through color, background, and
-  a persistent indicator.
-- Anchor scroll offsets account for the fixed header.
-- Mobile navigation may scroll horizontally inside its own container but must
-  not widen the document.
-- Every navigation target remains at least 44px high.
-
-Use one native `IntersectionObserver` owned by `SiteHeader`. Do not add a routing,
-scrollspy, or smooth-scroll package for this static page.
+- Fixed header uses a stable warm-dark surface and >=4.5:1 text/background
+  contrast against pale artwork.
+- Current page section uses `aria-current="location"` plus a persistent visual
+  state.
+- Fixed-header scroll offsets keep destination headings visible.
+- Mobile navigation may scroll inside its own container; targets remain at
+  least 44px high.
+- `SiteHeader` may use one native `IntersectionObserver`; do not add a scrollspy
+  or smooth-scroll package.
 
 ---
 
-## Newcomer Story Contract
+## Motion Contract
 
-`KafPrimerSection` owns the `认识花谱` onboarding path. It contains four concise
-beats in this order:
+Approved motion:
 
-1. `她是谁` — identity, debut context, and virtual presentation;
-2. `为什么特别` — voice/world relationship rather than “character only” framing;
-3. `她走到了哪里` — movement from network activity to major physical venues;
-4. `从哪里开始` — a concrete listening/viewing route using works already on the
-   page.
+- existing Motion opacity/transform entrance for the newly active era panel;
+- Gallery state transitions already defined elsewhere;
+- persistent CSS transitions for navigation/tab active states.
 
-### Content rules
+Forbidden motion:
 
-- Every beat has one title, one thesis statement, one short explanatory
-  paragraph, and one verified local visual.
-- Facts must be supported by official KAF/KAMITSUBAKI references stored in the
-  bottom `资料来源` disclosure.
-- Editorial interpretation must be phrased as explanation, not as an invented
-  official quote or official self-description.
-- Keep the entire onboarding readable in roughly one minute; do not turn it into
-  a second exhaustive biography.
+- biography activation based on scroll;
+- Journey activation based on page scroll;
+- per-frame React scroll values, parallax, autoplay, or smooth-scroll
+  interception;
+- hiding/delaying factual content for cinematic pacing;
+- adding another animation runtime while Motion is installed.
 
-### Desktop presentation
-
-- One sticky visual stage and four in-flow semantic `<article>` steps.
-- A native observer updates only when the active step changes.
-- The stage updates image, title, thesis, and four-segment progress state.
-- The stage is decorative (`aria-hidden`); equivalent content remains in the
-  articles.
-
-### Mobile and reduced motion
-
-- No sticky dependency.
-- Every beat includes its own image in source order.
-- No content is hidden because the viewport is narrow or motion is reduced.
-
----
-
-## Journey Transformation Contract
-
-Each Journey chapter must expose four different concepts:
-
-```ts
-titleZh: string;       // Chinese narrative orientation
-originalTitle: string; // authoritative Japanese era/work label
-changeFrom: string;    // previous state or constraint
-changeTo: string;      // resulting state or expansion
-```
-
-Examples:
-
-```text
-屏幕里的歌声 -> 个人现场与首张专辑
-无法按计划相聚 -> 线上现场与重返会场
-网络与小型会场 -> 武道馆与更大的表达
-```
-
-Requirements:
-
-- The Chinese title explains the chapter to a newcomer; it does not merely
-  translate one Japanese noun.
-- The original Japanese label remains visible and uses `lang="ja"`.
-- The transformation pair appears in the sticky stage and in normal article
-  flow.
-- Year, Chinese title, original name, transformation, image, summary, and
-  verified milestone links describe one coherent stage.
-- A chapter without a meaningful transformation pair is not ready to ship.
-
----
-
-## Narrative Motion Contract
-
-Motion communicates content-state change. It must not be added merely to make a
-section feel expensive.
-
-Approved mechanisms:
-
-- native `IntersectionObserver` for low-frequency active step/chapter/location;
-- installed Motion `AnimatePresence` and keyed `motion.*` elements for state
-  transitions;
-- CSS transitions for persistent navigation and active-border states;
-- transform and opacity as the default animated properties.
-
-Approved effects:
-
-- active image crossfade/very small scale settlement;
-- title/thesis enter/exit on a real narrative change;
-- transformation line `scaleX` when a new chapter becomes active;
-- restrained section-surface transition tied to the active chapter theme.
-
-Forbidden effects:
-
-- per-frame React state driven by scroll position;
-- decorative parallax unrelated to meaning;
-- simultaneous previous/current/next visual layers without a tested need;
-- autoplaying motion that hides or delays content;
-- another scrollytelling, animation, or smooth-scroll runtime while the existing
-  primitives satisfy the requirement.
-
-`prefers-reduced-motion` / `MotionConfig reducedMotion="user"` must yield the
-complete content with zero-duration state changes and no required sticky stage.
+Reduced motion keeps the same profile, tabs, panels, controls, and content with
+zero-duration transitions.
 
 ---
 
 ## Factuality and Source Boundary
 
-Official facts and editorial guidance are different data roles:
-
-- milestones and biographical claims require an official reference URL;
-- Chinese narrative titles and transformation pairs are editorial orientation;
-- official Japanese names remain source-faithful;
-- no statistic, date, ranking, venue claim, or identity claim is added from
-  memory alone.
-
-The Footer owns a native collapsed `资料来源` disclosure for page-level profile
-and chronology references. Keep detailed milestone links beside the milestones
-because they support a specific historical claim.
-
-Do not repeat source links beside every onboarding sentence. Do not remove the
-bottom reference disclosure to make the footer shorter.
+- Identity, dates, venue claims, album order, and milestones require official
+  evidence; do not add them from memory.
+- Chinese narrative titles are editorial navigation, not official titles.
+- Footer keeps the collapsed `资料来源` disclosure for page-level biography and
+  chronology references.
+- Milestone source links remain beside the specific dated claim.
+- Source links must not be replaced by decorative citation labels throughout
+  the profile.
 
 ---
 
 ## Required Validation
 
-Browser coverage must verify:
+Tests must verify:
 
-- Simplified Chinese page title, headings, navigation, actions, and accessible
-  labels;
-- absence of legacy Japanese UI labels such as `軌跡`, `視覚`, `公式サイト`,
-  `新しいタブで開く`, and `画像を選ぶ`;
-- preservation of official Japanese content names;
-- fixed header position and >=4.5:1 worst-case contrast;
-- `aria-current="location"` for all five primary sections;
-- anchor headings are not obscured by the fixed header;
-- four onboarding articles and early/middle/final stage changes;
-- six Journey transformations and early/middle/final stage changes;
-- complete mobile and reduced-motion content;
-- 320px and 200% text reflow;
-- no added runtime dependency.
+- factual Hero identity and direct actions;
+- absence of banned explanatory/slogan copy;
+- static profile facts and absence of primer sticky/observer markup;
+- six Radix tabs, tab/tabpanel associations, Arrow/Home/End behavior, and
+  previous/next controls;
+- one visible active era panel and no Journey sticky stage;
+- the complete five-album sequence including `狂想β` and its official URL;
+- no image assigned to the third album without a verified asset;
+- fixed-header contrast/current section;
+- mobile tab-rail containment, 320px and 200% reflow;
+- reduced-motion equivalence;
+- preserved media, Gallery, and source contracts.
 
-Current browser reference:
+Current references:
 
 ```text
+tests/HeroSection.test.tsx
+tests/KafProfileSection.test.tsx
+tests/JourneySection.test.tsx
+tests/KafMediaContent.test.ts
 tests/e2e/home.spec.ts
 ```
 
 ## Common Mistakes
 
-- Translating only navigation while leaving Japanese accessible labels and
-  generic work types.
-- Replacing Japanese UI with literal or awkward Chinese rather than writing for
-  Chinese user intent.
-- Removing all Japanese text, including official proper names that should remain
-  authoritative.
-- Treating a chronology as sufficient onboarding for someone who does not know
-  the subject.
-- Adding animation without defining what new state or transformation it
-  communicates.
-- Making the active navigation state motion-only or color-only with weak
-  contrast.
+- Treating “understandable” as permission to annotate the interface with page
+  instructions.
+- Replacing one deleted slogan with another rhetorical slogan.
+- Using several small subtitle lines where one title and substantive paragraph
+  would be clearer.
+- Reusing the same sticky-scroll pattern in adjacent sections.
+- Building tabs/focus behavior manually despite the approved Radix primitive.
+- Removing official Japanese proper nouns in the name of localization.
+- Omitting an album because no verified cover image exists.

@@ -94,11 +94,11 @@ run = [
 
 Use for React behavior that can be verified in the DOM without needing a real browser.
 
-Current reference: `tests/HomePage.test.tsx` verifies section order,
-production onboarding/chapter/work content, the Chinese anchor contract,
-authoritative Japanese proper names, one-footer disclaimer, absence of banned
-template copy, hierarchy boundaries, and image-loading invariants through
-user-visible content and DOM attributes.
+Current reference: `tests/HomePage.test.tsx` verifies section order, factual
+profile/chapter/work content, the Chinese anchor contract, authoritative
+Japanese proper names, one-footer disclaimer, absence of banned template and
+slogan copy, the complete five-album sequence, and image-loading invariants
+through user-visible content and DOM attributes.
 
 Prefer role/name queries over class selectors or implementation details.
 
@@ -108,13 +108,13 @@ Use for browser-level smoke behavior and routing whose environment matters.
 
 Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies desktop/mobile
 Chinese identity, five fixed navigation locations, worst-case header contrast,
-anti-template/legacy-Japanese-UI absence, 14px/16px type floors, four-step
-onboarding progression, six Journey transformations, the one-stage
-eight-selector Gallery, DPR-aware Hero sources, thumbnail-specific Gallery
-assets, consolidated bottom attribution, lazy lightbox Zoom/keyboard/Escape
-behavior, linear/reduced-motion fallbacks, essential-content clipping, touch
-targets, image loading, `320px` reflow, `200%` text preferences, and
-horizontal-overflow safety across the supported viewport matrix.
+anti-template/slogan absence, 14px/16px type floors, static factual profile,
+six Radix era tabs with Arrow/Home/End and previous/next behavior, the complete
+five-album sequence, the one-stage eight-selector Gallery, DPR-aware Hero
+sources, thumbnail-specific Gallery assets, consolidated bottom attribution,
+lazy lightbox Zoom/keyboard/Escape behavior, reduced-motion equivalence,
+essential-content clipping, touch targets, image loading, `320px` reflow,
+`200%` text preferences, and horizontal-overflow safety.
 
 > **Responsive clipping gotcha**: `document.documentElement.scrollWidth` is not sufficient by itself. A section using `overflow: clip` or `overflow: hidden` can conceal an oversized child while the document still reports no horizontal overflow. For critical responsive layouts, also assert the horizontal bounding boxes of user-visible headings, copy, links, credits, and other essential content. This catches over-constrained CSS Grid gaps/tracks and similar clipped-content defects.
 

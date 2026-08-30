@@ -34,7 +34,7 @@ If removing a string does not damage one of those jobs, remove it.
 
 ### Good / base / bad cases
 
-- **Good:** `开始认识花谱`, `2024.12.25`, `花譜 / piapro`, `成长轨迹`.
+- **Good:** `人物介绍`, `2024.12.25`, `花譜 / piapro`, `成长轨迹`.
 - **Base:** a one-sentence factual summary that adds information not visible in
   the title, media, or adjacent metadata.
 - **Bad:** `KAF / VISUAL NOTES`, `CURRENT WORK`, `ARCHIVE / 01`, or “scroll down
@@ -53,6 +53,13 @@ Do not add any of these by default:
 - an English subtitle that merely repeats an existing Japanese title;
 - generic section prose that explains scrolling, layout, curation, cards,
   galleries, sticky behavior, or how credits are positioned;
+- Hero prose that explains what the page will teach, how many minutes it takes,
+  or how the visitor should read it;
+- rhetorical slogan templates such as `X 是入口，Y 才会留下人`,
+  `从 A 走向 B`, or `先 A，再 B，最后 C` when they are not literal task
+  instructions or sourced campaign language;
+- repeated title + subtitle + change-label hierarchies that restate the same
+  idea before the factual paragraph;
 - labels such as `SOURCE` or `VISUAL CREDIT` when the actual credit/link is
   already clear;
 - replacing removed English filler with equally decorative Japanese filler.
@@ -60,6 +67,26 @@ Do not add any of these by default:
 An eyebrow is permitted only when it adds information the heading cannot carry
 and that information passes the Visible-String Job Test. The shared
 `SectionHeading` API intentionally has no eyebrow or generic summary prop.
+
+### Artist-site Hero rule
+
+The Hero identifies the artist and presents direct destinations. It does not
+summarize the site's information architecture.
+
+```tsx
+// Wrong: page annotation presented as marketing copy.
+<p>这里用几分钟讲清花谱是谁、她经历了什么。</p>
+
+// Wrong: generic rhetorical slogan.
+<p>虚拟形象是入口，真正留下人的是声音。</p>
+
+// Correct: sourced identity and direct actions.
+<h1>花谱</h1>
+<p><span lang="ja">花譜</span> / KAF</p>
+<p>日本虚拟歌手，KAMITSUBAKI STUDIO 旗下艺人。</p>
+<a href="#about">人物介绍</a>
+<a href="#works">代表作品</a>
+```
 
 ### Wrong vs correct
 
@@ -132,6 +159,8 @@ When copy hierarchy changes, tests must assert:
 - direct section and navigation names;
 - Simplified Chinese UI plus preserved Japanese proper names;
 - the absence of removed template strings;
+- the absence of banned page-explaining and rhetorical slogan fragments;
+- one factual profile instead of repeated question/slogan cards;
 - the one-footer disclaimer contract;
 - no image-source work-page links inside `<main>`;
 - visible bottom creator names and the complete source/license disclosure;

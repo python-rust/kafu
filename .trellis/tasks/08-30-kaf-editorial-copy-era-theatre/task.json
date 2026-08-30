@@ -1,0 +1,29 @@
+{
+  "id": "kaf-editorial-copy-era-theatre",
+  "name": "kaf-editorial-copy-era-theatre",
+  "title": "Refine KAF copy and redesign the journey experience",
+  "description": "Replace GPT-like explanatory copy with factual artist-site content, convert the newcomer section to a concise profile, redesign Journey as an accessible interactive era theatre, and restore the missing third album.",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": "frontend/editorial-copy-era-theatre",
+  "package": null,
+  "priority": "P1",
+  "creator": "pythonrust",
+  "assignee": "pythonrust",
+  "createdAt": "2026-08-30",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "research": "official-artist-sites",
+    "interaction": "radix-tabs-motion"
+  }
+}

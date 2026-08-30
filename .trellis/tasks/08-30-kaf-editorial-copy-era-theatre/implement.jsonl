@@ -1,0 +1,7 @@
+{"file":".trellis/spec/frontend/index.md","reason":"Frontend spec entry points and required pre-development reading."}
+{"file":".trellis/spec/frontend/content-guidelines.md","reason":"Visible-copy jobs and anti-template rules that this iteration tightens."}
+{"file":".trellis/spec/frontend/localization-and-storytelling-guidelines.md","reason":"Chinese-first naming, factual-source, and narrative behavior contracts."}
+{"file":".trellis/spec/frontend/visual-system-guidelines.md","reason":"KAF layout, typography, responsive, and motion constraints."}
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"Page-local reuse and open-source integration boundaries."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Required test/build/browser gates."}
+{"file":".trellis/tasks/08-30-kaf-editorial-copy-era-theatre/research/editorial-copy-era-theatre.md","reason":"Official artist-site, third-album, copy, and interaction evidence."}

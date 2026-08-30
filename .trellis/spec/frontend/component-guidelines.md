@@ -83,9 +83,9 @@ Current examples:
   has no eyebrow, preheader, or generic description prop.
 - `MediaSources` owns the single page-bottom creator/source/license index.
 
-`KafPrimerSection` remains a section-owned product component rather than a
-generic stepper. It owns the four-beat newcomer story, local observer state,
-sticky desktop stage, and complete mobile/reduced-motion flow.
+`KafProfileSection` remains a section-owned product component. It owns one
+factual profile composition and semantic fact list; it has no observer,
+stepper, carousel, or sticky-stage responsibility.
 
 Do not extract a one-use layout wrapper or a purely cosmetic one-line element.
 Shared components are not a license to create a route-independent design-system
@@ -104,6 +104,18 @@ yet-another-react-lightbox   -> portal/focus/keyboard/swipe mechanics
 
 The adapter is lazy-loaded. Do not leak the package API through unrelated
 sections or create a generic app-wide modal abstraction for one gallery.
+
+For the era theatre:
+
+```text
+JourneySection.tsx           -> KAF era data, controlled value, panel layout
+@radix-ui/react-tabs         -> tab roles, aria links, roving focus, keyboard
+Motion                       -> active-panel opacity/transform entrance only
+```
+
+Keep Radix usage inside `JourneySection`. Do not build a generic app-wide Tabs
+wrapper while there is only one domain-specific consumer, and do not override
+Radix-generated trigger/panel IDs in a way that breaks `aria-controls`.
 
 ---
 
@@ -125,8 +137,8 @@ Current example:
 ```
 
 For primary page navigation, use `aria-current="location"` on the observed
-active section. For Journey step navigation, continue to use
-`aria-current="step"`.
+active section. Journey uses the standard Radix `tab` / `tabpanel` state rather
+than a second `aria-current` convention.
 
 ---
 
@@ -140,4 +152,6 @@ active section. For Journey step navigation, continue to use
 - Do not write raw `<img>` markup in a homepage section; extend the shared
   responsive-artwork contract when a real media role is missing.
 - Do not hand-build dialog focus trapping, Escape handling, swipe navigation, or body-scroll locking when the approved lightbox dependency already owns them.
+- Do not hand-build roving tabindex, arrow-key tabs, or tab/panel ARIA links
+  when the approved Radix Tabs primitive owns them.
 - Do not move static styling into JSX just because inline styles are convenient.

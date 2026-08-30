@@ -70,8 +70,8 @@ src/pages/HomePage/
     ├── SiteHeader.module.css
     ├── HeroSection.tsx
     ├── HeroSection.module.css
-    ├── KafPrimerSection.tsx
-    ├── KafPrimerSection.module.css
+    ├── KafProfileSection.tsx
+    ├── KafProfileSection.module.css
     ├── JourneySection.tsx
     ├── JourneySection.module.css
     ├── WorksSection.tsx
@@ -94,10 +94,13 @@ source index, and section headings. One-section integrations stay with their sec
 `GalleryLightbox.tsx` is the lazy package/style adapter owned by
 `GallerySection.tsx`.
 
-`KafPrimerSection.tsx` is an independently owned route section. Its four-beat
-Chinese onboarding data lives in `src/content/kaf.ts`; its observer and motion
-state stay in the section because no second product surface shares that
-behavior.
+`KafProfileSection.tsx` is an independently owned route section. Its factual
+biography and profile attributes live in `src/content/kaf.ts`; the section has
+no observer or interaction state.
+
+`JourneySection.tsx` owns the domain-specific Radix Tabs integration and active
+era state. Do not move it into `components/` or create a generic Tabs wrapper
+until another real product surface shares the same contract.
 
 Extract a separate module only after a real capability has an independent
 ownership boundary; do not recreate a second page-wide monolith beside the

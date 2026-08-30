@@ -1,0 +1,6 @@
+{"file":".trellis/spec/frontend/content-guidelines.md","reason":"Review final production copy against factual and anti-slogan constraints."}
+{"file":".trellis/spec/frontend/localization-and-storytelling-guidelines.md","reason":"Review Chinese naming, profile, era navigation, and source boundaries."}
+{"file":".trellis/spec/frontend/visual-system-guidelines.md","reason":"Review panel composition, typography, responsive rail, and reduced motion."}
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"Review Radix ownership and avoid speculative abstractions."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Review automated/browser evidence before archival."}
+{"file":".trellis/tasks/08-30-kaf-editorial-copy-era-theatre/research/editorial-copy-era-theatre.md","reason":"Verify implementation remains consistent with research decisions."}
