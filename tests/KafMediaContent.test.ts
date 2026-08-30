@@ -260,15 +260,11 @@ describe('KAF media manifest', () => {
     }
   });
 
-  it('resolves every journey visual through the shipping media manifest', () => {
+  it('resolves one primary visual per journey chapter through the media manifest', () => {
     const mediaIds = new Set(kafMedia.map((media) => media.id));
 
     for (const chapter of journeyChapters) {
       expect(mediaIds.has(chapter.primaryVisual.id)).toBe(true);
-
-      if (chapter.secondaryVisual) {
-        expect(mediaIds.has(chapter.secondaryVisual.id)).toBe(true);
-      }
     }
 
     for (const media of galleryMedia) {

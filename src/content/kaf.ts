@@ -90,7 +90,6 @@ export interface KafJourneyChapter {
   readonly theme: KafJourneyTheme;
   readonly milestones: readonly KafJourneyMilestone[];
   readonly primaryVisual: KafMedia;
-  readonly secondaryVisual?: KafMedia;
 }
 
 export interface KafGalleryVisual {
@@ -356,7 +355,6 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
       },
     ],
     primaryVisual: originItoMedia,
-    secondaryVisual: toriPortraitMedia,
   },
   {
     id: 'observation-2019',
@@ -381,7 +379,6 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
       },
     ],
     primaryVisual: observationPastMedia,
-    secondaryVisual: fukakaiMedia,
   },
   {
     id: 'magic-rebuilding-2020-2021',
@@ -416,7 +413,6 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
       },
     ],
     primaryVisual: magicKeshikiMedia,
-    secondaryVisual: wasureteShimaeMedia,
   },
   {
     id: 'expansion-2022-2023',
@@ -446,7 +442,6 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
       },
     ],
     primaryVisual: heroKaihouMedia,
-    secondaryVisual: observationPastMedia,
   },
   {
     id: 'fable-2024',
@@ -476,7 +471,6 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
       },
     ],
     primaryVisual: fableChewingDiscoMedia,
-    secondaryVisual: toriPortraitMedia,
   },
   {
     id: 'transcendent-love-2025-2026',
@@ -506,7 +500,6 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
       },
     ],
     primaryVisual: transcendentUfoMedia,
-    secondaryVisual: toriPortraitMedia,
   },
 ];
 

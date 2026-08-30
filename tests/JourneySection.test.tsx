@@ -1,13 +1,68 @@
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  within,
-} from '@testing-library/react';
+import { act, cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const motionPreference = vi.hoisted(() => ({ reduced: false }));
+
+const scrollamaHarness = vi.hoisted(() => {
+  type Direction = 'up' | 'down';
+  type EnterCallback = (response: {
+    element: HTMLElement;
+    index: number;
+    direction: Direction;
+  }) => void;
+
+  let enterCallback: EnterCallback | undefined;
+  const instance: {
+    setup: ReturnType<typeof vi.fn>;
+    onStepEnter: ReturnType<typeof vi.fn>;
+    offset: ReturnType<typeof vi.fn>;
+    resize: ReturnType<typeof vi.fn>;
+    destroy: ReturnType<typeof vi.fn>;
+  } = {
+    setup: vi.fn(),
+    onStepEnter: vi.fn(),
+    offset: vi.fn(),
+    resize: vi.fn(),
+    destroy: vi.fn(),
+  };
+
+  instance.setup.mockImplementation(() => instance);
+  instance.onStepEnter.mockImplementation((callback: EnterCallback) => {
+    enterCallback = callback;
+    return instance;
+  });
+  instance.offset.mockImplementation(() => instance);
+  instance.resize.mockImplementation(() => instance);
+
+  const factory = vi.fn(() => instance);
+
+  return {
+    factory,
+    instance,
+    enter(index: number, direction: Direction) {
+      const element = document.querySelectorAll<HTMLElement>(
+        '[data-journey-step]',
+      )[index];
+
+      if (!element || !enterCallback) {
+        throw new Error(`Unable to trigger Scrollama step ${index}.`);
+      }
+
+      enterCallback({ element, index, direction });
+    },
+    reset() {
+      enterCallback = undefined;
+      factory.mockClear();
+      instance.setup.mockClear();
+      instance.onStepEnter.mockClear();
+      instance.offset.mockClear();
+      instance.resize.mockClear();
+      instance.destroy.mockClear();
+    },
+  };
+});
+
+vi.mock('scrollama', () => ({ default: scrollamaHarness.factory }));
 
 vi.mock('motion/react', async (importOriginal) => {
   const actual = await importOriginal<typeof import('motion/react')>();
@@ -33,9 +88,8 @@ function chapterFixture(
     | 'fable'
     | 'transcendent',
   index: number,
-  secondary = false,
 ) {
-  const chapter = {
+  return {
     id,
     period: yearLabel,
     yearLabel,
@@ -57,32 +111,12 @@ function chapterFixture(
       height: 1600,
     }),
   } as const;
-
-  return secondary
-    ? {
-        ...chapter,
-        secondaryVisual: createMediaFixture({
-          id: `${id}-secondary-visual`,
-          src: `/fixtures/${id}-secondary.webp`,
-          alt: `${titleZh}辅助视觉`,
-          width: 1600,
-          height: 1200,
-        }),
-      }
-    : chapter;
 }
 
 const chapters = [
   chapterFixture('origin', '2018', '被发现的声音', 'origin', 0),
   chapterFixture('observation', '2019', '从网络走向现场', 'observation', 1),
-  chapterFixture(
-    'rebuild',
-    '2020–2021',
-    '在无法相聚时重构舞台',
-    'rebuild',
-    2,
-    true,
-  ),
+  chapterFixture('rebuild', '2020–2021', '在无法相聚时重构舞台', 'rebuild', 2),
   chapterFixture(
     'expansion',
     '2022–2023',
@@ -100,115 +134,132 @@ const chapters = [
   ),
 ] as const;
 
-describe('JourneySection', () => {
-  afterEach(() => cleanup());
+function stubBrowserLayout(wide = true) {
+  vi.stubGlobal('IntersectionObserver', class IntersectionObserver {});
+  vi.stubGlobal('ResizeObserver', class ResizeObserver {});
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn().mockImplementation((query: string) => ({
+      matches: query.includes('min-width') ? wide : true,
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  );
+}
 
-  beforeEach(() => {
-    motionPreference.reduced = true;
+describe('JourneySection', () => {
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllGlobals();
   });
 
-  it('renders six chronological accessible tabs with one active era panel', () => {
-    render(<JourneySection chapters={chapters} />);
+  beforeEach(() => {
+    motionPreference.reduced = false;
+    scrollamaHarness.reset();
+    stubBrowserLayout(true);
+  });
+
+  it('renders six source-ordered story steps and one dominant sticky image', () => {
+    const { container, unmount } = render(
+      <JourneySection chapters={chapters} />,
+    );
 
     const journey = screen.getByRole('region', { name: '成长轨迹' });
-    const tabList = within(journey).getByRole('tablist', {
-      name: '花谱成长阶段',
-    });
-    const tabs = within(tabList).getAllByRole('tab');
+    const articles = within(journey).getAllByRole('article');
+    const headings = within(journey).getAllByRole('heading', { level: 3 });
 
-    expect(tabs).toHaveLength(6);
-    expect(tabs.map((tab) => tab.textContent)).toEqual([
-      '2018',
-      '2019',
-      '2020–2021',
-      '2022–2023',
-      '2024',
-      '2025–2026',
-    ]);
-    expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
-    expect(tabs[1]).toHaveAttribute('aria-selected', 'false');
-
-    const panel = within(journey).getByRole('tabpanel');
-    expect(within(panel).getByRole('heading', { level: 3 })).toHaveTextContent(
+    expect(articles).toHaveLength(6);
+    expect(headings.map((heading) => heading.textContent)).toEqual([
       '被发现的声音',
+      '从网络走向现场',
+      '在无法相聚时重构舞台',
+      '把虚拟歌声带进武道馆',
+      '进入创作的第二章',
+      '走向更大的世界',
+    ]);
+    expect(container.querySelectorAll('[data-journey-step]')).toHaveLength(6);
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+
+    const stage = screen.getByTestId('journey-sticky-stage');
+    expect(stage).toHaveAttribute('data-active-index', '0');
+    expect(stage.querySelectorAll('img')).toHaveLength(1);
+    expect(
+      container.querySelectorAll('[class*="secondaryVisual"]'),
+    ).toHaveLength(0);
+    expect(scrollamaHarness.instance.setup).toHaveBeenCalledWith(
+      expect.objectContaining({ offset: 0.52, progress: false }),
+    );
+
+    unmount();
+    expect(scrollamaHarness.instance.destroy).toHaveBeenCalledOnce();
+  });
+
+  it('updates the active era in both downward and upward scroll directions', () => {
+    render(<JourneySection chapters={chapters} />);
+
+    act(() => scrollamaHarness.enter(2, 'down'));
+
+    let stage = screen.getByTestId('journey-sticky-stage');
+    expect(stage).toHaveAttribute('data-active-index', '2');
+    expect(document.querySelectorAll('[data-active="true"]')).not.toHaveLength(
+      0,
+    );
+    expect(document.querySelector('[data-journey-index="2"]')).toHaveAttribute(
+      'data-active',
+      'true',
+    );
+
+    act(() => scrollamaHarness.enter(1, 'up'));
+
+    stage = screen.getByTestId('journey-sticky-stage');
+    expect(stage).toHaveAttribute('data-active-index', '1');
+    expect(document.querySelector('[data-journey-index="1"]')).toHaveAttribute(
+      'data-active',
+      'true',
     );
     expect(
-      within(panel).getByText('被发现的声音的第一段事实说明。'),
-    ).toBeVisible();
-    expect(within(journey).queryByText('起源 / 発見')).not.toBeInTheDocument();
-    expect(within(journey).queryByText('网络中的投稿')).not.toBeInTheDocument();
+      screen.getByRole('link', {
+        name: /从网络走向现场关键节点的资料来源/,
+      }),
+    ).toHaveAttribute('href', 'https://example.com/observation-milestone');
+  });
+
+  it('uses a compact pixel offset and renders all six images in reduced motion', () => {
+    cleanup();
+    scrollamaHarness.reset();
+    vi.unstubAllGlobals();
+    stubBrowserLayout(false);
+
+    const { unmount } = render(<JourneySection chapters={chapters} />);
+    const setupOptions = scrollamaHarness.instance.setup.mock.calls[0]?.[0] as
+      { offset?: unknown } | undefined;
+
+    expect(setupOptions?.offset).toMatch(/^\d+px$/);
+    unmount();
+
+    cleanup();
+    scrollamaHarness.reset();
+    motionPreference.reduced = true;
+    render(<JourneySection chapters={chapters} />);
+
     expect(
       screen.queryByTestId('journey-sticky-stage'),
     ).not.toBeInTheDocument();
-  });
+    expect(screen.getAllByRole('article')).toHaveLength(6);
+    expect(screen.getAllByRole('img')).toHaveLength(6);
+    expect(scrollamaHarness.factory).not.toHaveBeenCalled();
 
-  it('changes the active era through tab and previous/next controls', () => {
-    render(<JourneySection chapters={chapters} />);
-
-    const tabList = screen.getByRole('tablist', { name: '花谱成长阶段' });
-    const rebuildTab = within(tabList).getByRole('tab', {
-      name: '2020–2021：在无法相聚时重构舞台',
-    });
-    fireEvent.mouseDown(rebuildTab, { button: 0, ctrlKey: false });
-
-    expect(rebuildTab).toHaveAttribute('aria-selected', 'true');
-    let panel = screen.getByRole('tabpanel');
-    expect(
-      within(panel).getByRole('heading', {
-        level: 3,
-        name: '在无法相聚时重构舞台',
-      }),
-    ).toBeVisible();
-    expect(
-      within(panel).getByRole('img', { name: '在无法相聚时重构舞台主视觉' }),
-    ).toHaveAttribute('loading', 'lazy');
-    expect(
-      within(panel).getByRole('img', { name: '在无法相聚时重构舞台辅助视觉' }),
-    ).toBeVisible();
-    expect(
-      within(panel).getByRole('link', {
-        name: /在无法相聚时重构舞台关键节点的资料来源/,
-      }),
-    ).toHaveAttribute('href', 'https://example.com/rebuild-milestone');
-
-    fireEvent.click(
-      within(panel).getByRole('button', {
-        name: '下一阶段：把虚拟歌声带进武道馆',
-      }),
-    );
-    panel = screen.getByRole('tabpanel');
-    expect(
-      within(panel).getByRole('heading', {
-        level: 3,
-        name: '把虚拟歌声带进武道馆',
-      }),
-    ).toBeVisible();
-
-    fireEvent.click(
-      within(panel).getByRole('button', {
-        name: '上一阶段：在无法相聚时重构舞台',
-      }),
-    );
-    expect(
-      screen.getByRole('heading', {
-        level: 3,
-        name: '在无法相聚时重构舞台',
-      }),
-    ).toBeVisible();
-  });
-
-  it('keeps the same tabs and factual panel content with reduced motion', () => {
-    motionPreference.reduced = true;
-    render(<JourneySection chapters={chapters} />);
-
-    expect(screen.getAllByRole('tab')).toHaveLength(6);
-    expect(screen.getByRole('tabpanel')).toBeVisible();
-    expect(screen.getByText('被发现的声音的第二段事实说明。')).toBeVisible();
-
-    const previous = screen.getByRole('button', { name: '已是第一个阶段' });
-    expect(previous).toBeDisabled();
-    expect(
-      screen.getByRole('button', { name: '下一阶段：从网络走向现场' }),
-    ).toBeEnabled();
+    for (const chapter of chapters) {
+      expect(
+        screen.getByRole('img', { name: chapter.primaryVisual.alt }),
+      ).toHaveAttribute('loading', 'lazy');
+      expect(screen.getByText(chapter.summary[1])).toBeVisible();
+    }
   });
 });

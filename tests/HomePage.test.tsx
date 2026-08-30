@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { BrowserRouter } from 'react-router';
 import { describe, expect, it } from 'vitest';
 
@@ -55,35 +55,27 @@ describe('home page', () => {
       throw new Error('Journey section was not rendered.');
     }
 
-    const eraTabs = within(journeySection).getAllByRole('tab');
-    expect(eraTabs).toHaveLength(6);
-    expect(eraTabs.map((tab) => tab.textContent)).toEqual([
-      '2018',
-      '2019',
-      '2020–2021',
-      '2022–2023',
-      '2024',
-      '2025–2026',
-    ]);
-    expect(
-      within(journeySection).getByRole('heading', {
-        level: 3,
-        name: '被发现的声音',
-      }),
-    ).toBeInTheDocument();
+    const eraArticles = within(journeySection).getAllByRole('article');
+    const eraHeadings = within(journeySection).getAllByRole('heading', {
+      level: 3,
+    });
 
-    fireEvent.mouseDown(
-      within(journeySection).getByRole('tab', {
-        name: '2020–2021：在无法相聚时重构舞台',
-      }),
-      { button: 0, ctrlKey: false },
+    expect(eraArticles).toHaveLength(6);
+    expect(eraHeadings.map((heading) => heading.textContent)).toEqual([
+      '被发现的声音',
+      '从网络走向现场',
+      '在无法相聚时重构舞台',
+      '把虚拟歌声带进武道馆',
+      '进入创作的第二章',
+      '走向更大的世界',
+    ]);
+    expect(journeySection.querySelectorAll('[data-journey-step]')).toHaveLength(
+      6,
     );
+    expect(within(journeySection).queryByRole('tab')).not.toBeInTheDocument();
     expect(
-      within(journeySection).getByRole('heading', {
-        level: 3,
-        name: '在无法相聚时重构舞台',
-      }),
-    ).toBeInTheDocument();
+      within(journeySection).queryByRole('button'),
+    ).not.toBeInTheDocument();
 
     const worksSection = screen
       .getByRole('heading', { level: 2, name: '代表作品' })
@@ -195,6 +187,9 @@ describe('home page', () => {
     expect(
       container.querySelector('[data-testid="journey-sticky-stage"]'),
     ).toBeNull();
+    expect(
+      journeySection.querySelectorAll('[data-journey-step] img'),
+    ).toHaveLength(6);
     expect(
       screen.getByText('日本虚拟歌手，KAMITSUBAKI STUDIO 旗下艺人。'),
     ).toBeInTheDocument();

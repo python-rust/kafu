@@ -1,10 +1,12 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 
 const targetViewports = [
   { width: 320, height: 800 },
   { width: 360, height: 800 },
   { width: 390, height: 844 },
+  { width: 430, height: 932 },
   { width: 768, height: 1024 },
+  { width: 844, height: 390 },
   { width: 1024, height: 768 },
   { width: 1440, height: 900 },
 ] as const;
@@ -17,13 +19,37 @@ const pageSections = [
   '#links',
 ] as const;
 
-const eraLabels = [
-  '2018：被发现的声音',
-  '2019：从网络走向现场',
-  '2020–2021：在无法相聚时重构舞台',
-  '2022–2023：把虚拟歌声带进武道馆',
-  '2024：进入创作的第二章',
-  '2025–2026：走向更大的世界',
+const journeyStages = [
+  {
+    selector: '#journey-origin-2018',
+    title: '被发现的声音',
+    year: '2018',
+  },
+  {
+    selector: '#journey-observation-2019',
+    title: '从网络走向现场',
+    year: '2019',
+  },
+  {
+    selector: '#journey-magic-rebuilding-2020-2021',
+    title: '在无法相聚时重构舞台',
+    year: '2020–2021',
+  },
+  {
+    selector: '#journey-expansion-2022-2023',
+    title: '把虚拟歌声带进武道馆',
+    year: '2022–2023',
+  },
+  {
+    selector: '#journey-fable-2024',
+    title: '进入创作的第二章',
+    year: '2024',
+  },
+  {
+    selector: '#journey-transcendent-love-2025-2026',
+    title: '走向更大的世界',
+    year: '2025–2026',
+  },
 ] as const;
 
 const galleryTitles = [
@@ -53,6 +79,29 @@ async function scrollToCenter(page: Page, selector: string) {
   });
 }
 
+async function activateJourneyStep(page: Page, index: number) {
+  const viewport = page.viewportSize();
+
+  if (!viewport) {
+    throw new Error('Journey scroll tests require an explicit viewport.');
+  }
+
+  const offsetRatio = viewport.width >= 1024 ? 0.52 : 0.72;
+  const step = page.locator(`[data-journey-index="${index}"]`);
+
+  await step.evaluate((element, ratio) => {
+    const absoluteTop = element.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+      top: Math.max(0, absoluteTop - window.innerHeight * ratio + 2),
+      behavior: 'instant',
+    });
+  }, offsetRatio);
+
+  const stage = page.getByTestId('journey-sticky-stage');
+  await expect(stage).toHaveAttribute('data-active-index', String(index));
+  await expect(step).toHaveAttribute('data-active', 'true');
+}
+
 async function expectNoHorizontalOverflow(page: Page, label: string) {
   const dimensions = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
@@ -77,9 +126,7 @@ async function expectNoEssentialHorizontalClipping(page: Page, label: string) {
         const style = getComputedStyle(element);
         const rect = element.getBoundingClientRect();
         const isInsideExplicitHorizontalScroller = Boolean(
-          element.closest(
-            'header nav, #journey [role="tablist"], #visuals [aria-label="选择图片"]',
-          ),
+          element.closest('header nav, #visuals [aria-label="选择图片"]'),
         );
 
         return (
@@ -101,6 +148,23 @@ async function expectNoEssentialHorizontalClipping(page: Page, label: string) {
   });
 
   expect(clippedElements, label).toEqual([]);
+}
+
+async function expectMinimumTargetHeight(
+  locator: Locator,
+  label: string,
+  minimum = 44,
+) {
+  const count = await locator.count();
+
+  for (let index = 0; index < count; index += 1) {
+    const box = await locator.nth(index).boundingBox();
+    expect(box, `${label} target ${index + 1}`).not.toBeNull();
+    expect(
+      box?.height ?? 0,
+      `${label} target ${index + 1}`,
+    ).toBeGreaterThanOrEqual(minimum);
+  }
 }
 
 async function expectAnchorBelowHeader(page: Page, headingName: string) {
@@ -170,14 +234,20 @@ test('desktop homepage uses factual artist copy and a complete five-album sequen
   await expect(profile.locator('[data-primer-index]')).toHaveCount(0);
 
   const journey = page.locator('#journey');
-  await expect(journey.getByRole('tab')).toHaveCount(6);
-  await expect(journey.getByRole('tabpanel')).toHaveCount(1);
+  await expect(journey.locator('[data-journey-step]')).toHaveCount(6);
+  await expect(journey.getByRole('article')).toHaveCount(6);
+  await expect(journey.getByRole('tab')).toHaveCount(0);
+  await expect(journey.getByRole('button')).toHaveCount(0);
   await expect(
     journey.getByRole('heading', { level: 3, name: '被发现的声音' }),
-  ).toBeVisible();
+  ).toBeAttached();
   await expect(
     journey.locator('[data-testid="journey-sticky-stage"]'),
-  ).toHaveCount(0);
+  ).toHaveCount(1);
+  await expect(
+    journey.locator('[data-testid="journey-sticky-stage"] img'),
+  ).toHaveCount(1);
+  await expect(journey.locator('[class*="secondaryVisual"]')).toHaveCount(0);
 
   const works = page.locator('#works');
   await expect(works.getByRole('article')).toHaveCount(5);
@@ -410,65 +480,48 @@ test('hero selects density-matched generated artwork at DPR 1 and DPR 2', async 
   }
 });
 
-test('journey exposes six keyboard-complete era tabs and previous/next controls', async ({
+test('journey follows downward and upward native scrolling through all six eras', async ({
   page,
 }) => {
   await openHome(page, { width: 1440, height: 900 });
-  await scrollToCenter(page, '#journey');
 
   const journey = page.locator('#journey');
-  const tabList = journey.getByRole('tablist', { name: '花谱成长阶段' });
-  const tabs = tabList.getByRole('tab');
-  await expect(tabs).toHaveCount(6);
-  await expect(
-    tabs.evaluateAll((items) =>
-      items.map((item) => item.getAttribute('aria-label')),
-    ),
-  ).resolves.toEqual(eraLabels);
+  const stage = page.getByTestId('journey-sticky-stage');
+  const steps = journey.locator('[data-journey-step]');
 
-  await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true');
-  await tabs.nth(0).focus();
-  await page.keyboard.press('ArrowRight');
-  await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
-  await expect(
-    journey.getByRole('heading', { level: 3, name: '从网络走向现场' }),
-  ).toBeVisible();
+  await expect(steps).toHaveCount(6);
+  await expect(stage).toHaveCSS('position', 'sticky');
+  await expect(stage.locator('img')).toHaveCount(1);
+  await expect(journey.getByRole('tab')).toHaveCount(0);
+  await expect(journey.getByRole('button')).toHaveCount(0);
 
-  await page.keyboard.press('End');
-  await expect(tabs.nth(5)).toHaveAttribute('aria-selected', 'true');
-  await page.keyboard.press('Home');
-  await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true');
+  for (let index = 0; index < journeyStages.length; index += 1) {
+    const stageRecord = journeyStages[index];
 
-  await tabs.nth(2).click();
-  await expect(tabs.nth(2)).toHaveAttribute('aria-selected', 'true');
-  const panel = journey.getByRole('tabpanel');
-  await expect(
-    panel.getByRole('heading', { level: 3, name: '在无法相聚时重构舞台' }),
-  ).toBeVisible();
-  await expect(panel).toContainText('2020 年，受现场条件影响');
-  await expect(panel.getByRole('img')).toHaveCount(2);
+    if (!stageRecord) {
+      throw new Error(`Missing Journey stage ${index}.`);
+    }
 
-  const selectedControls = await tabs.nth(2).getAttribute('aria-controls');
-  expect(selectedControls).not.toBeNull();
-  await expect(page.locator(`[id="${selectedControls}"]`)).toHaveCount(1);
+    await activateJourneyStep(page, index);
+    await expect(page.locator(stageRecord.selector)).toHaveAttribute(
+      'data-active',
+      'true',
+    );
+    await expect(stage).toContainText(stageRecord.title);
+    await expect(stage).toContainText(stageRecord.year);
+    await expect(stage.locator('img')).toHaveCount(1);
+  }
 
-  await panel
-    .getByRole('button', { name: '下一阶段：把虚拟歌声带进武道馆' })
-    .click();
-  await expect(tabs.nth(3)).toHaveAttribute('aria-selected', 'true');
-  await expect(
-    journey.getByRole('heading', { level: 3, name: '把虚拟歌声带进武道馆' }),
-  ).toBeVisible();
-  await journey
-    .getByRole('button', { name: '上一阶段：在无法相聚时重构舞台' })
-    .click();
-  await expect(tabs.nth(2)).toHaveAttribute('aria-selected', 'true');
+  await activateJourneyStep(page, 2);
+  await expect(stage).toContainText('在无法相聚时重构舞台');
+  await activateJourneyStep(page, 1);
+  await expect(stage).toContainText('从网络走向现场');
 
   await expect(journey).not.toContainText('网络中的投稿');
   await expect(journey).not.toContainText('第一次被看见');
-  await expect(
-    journey.locator('[data-testid="journey-sticky-stage"]'),
-  ).toHaveCount(0);
+
+  await page.locator('#works article').first().scrollIntoViewIfNeeded();
+  await expect(stage).not.toBeInViewport();
 });
 
 test('gallery provides eight selectors and localized keyboard lightbox navigation', async ({
@@ -532,7 +585,7 @@ test('gallery reserves generated thumbnails for the rail and atmospheric backdro
   await expect(backdropImage).toHaveAttribute('src', /-thumb-/);
 });
 
-test('mobile profile and era theatre remain linear, contained, and touch-safe', async ({
+test('mobile profile and guided Journey remain contained, readable, and touch-safe', async ({
   page,
 }) => {
   await openHome(page, { width: 390, height: 844 });
@@ -548,39 +601,103 @@ test('mobile profile and era theatre remain linear, contained, and touch-safe', 
   ).toHaveCount(0);
   await expect(page.locator('#about dl')).toBeAttached();
 
-  const tabs = page.locator('#journey').getByRole('tab');
-  await expect(tabs).toHaveCount(6);
-  const railMetrics = await page
-    .locator('#journey')
-    .getByRole('tablist')
-    .evaluate((element) => {
-      const rect = element.getBoundingClientRect();
-      return {
-        clientWidth: element.clientWidth,
-        scrollWidth: element.scrollWidth,
-        left: rect.left,
-        right: rect.right,
-        viewport: window.innerWidth,
-      };
-    });
-  expect(railMetrics.scrollWidth).toBeGreaterThan(railMetrics.clientWidth);
-  expect(railMetrics.left).toBeGreaterThanOrEqual(-1);
-  expect(railMetrics.right).toBeLessThanOrEqual(railMetrics.viewport + 1);
-
-  for (let index = 0; index < (await tabs.count()); index += 1) {
-    const box = await tabs.nth(index).boundingBox();
-    expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+  for (const [label, locator] of [
+    [
+      'mobile navigation',
+      page
+        .getByRole('navigation', { name: '花谱观察站页面导航' })
+        .getByRole('link'),
+    ],
+    ['mobile Hero', page.locator('#top').getByRole('link')],
+  ] as const) {
+    await expectMinimumTargetHeight(locator, label);
   }
 
-  await tabs.nth(4).click();
-  await expect(tabs.nth(4)).toHaveAttribute('aria-selected', 'true');
-  await expect(
-    page.locator('#journey').getByRole('heading', {
-      level: 3,
-      name: '进入创作的第二章',
-    }),
-  ).toBeVisible();
+  const journey = page.locator('#journey');
+  const stage = page.getByTestId('journey-sticky-stage');
+  await expect(journey.locator('[data-journey-step]')).toHaveCount(6);
+  await expect(journey.getByRole('tab')).toHaveCount(0);
+  await expect(journey.getByRole('button')).toHaveCount(0);
+  await expect(stage.locator('img')).toHaveCount(1);
+
+  await activateJourneyStep(page, 0);
+  await expect(stage).toHaveCSS('position', 'sticky');
+  const stageGeometry = await page.evaluate(() => {
+    const header = document.querySelector<HTMLElement>('body > div header');
+    const stage = document.querySelector<HTMLElement>(
+      '[data-testid="journey-sticky-stage"]',
+    );
+    const activeStep = document.querySelector<HTMLElement>(
+      '[data-journey-step][data-active="true"]',
+    );
+
+    if (!header || !stage || !activeStep) {
+      throw new Error('Missing mobile Journey geometry targets.');
+    }
+
+    const headerRect = header.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+    const activeStepRect = activeStep.getBoundingClientRect();
+    return {
+      activeStepTop: activeStepRect.top,
+      headerBottom: headerRect.bottom,
+      stageTop: stageRect.top,
+      stageBottom: stageRect.bottom,
+      viewportHeight: window.innerHeight,
+    };
+  });
+  expect(stageGeometry.stageTop).toBeGreaterThanOrEqual(
+    stageGeometry.headerBottom - 2,
+  );
+  expect(
+    stageGeometry.viewportHeight - stageGeometry.stageBottom,
+  ).toBeGreaterThan(120);
+  expect(stageGeometry.activeStepTop).toBeGreaterThan(
+    stageGeometry.stageBottom + 40,
+  );
+
+  await activateJourneyStep(page, 4);
+  await expect(stage).toContainText('进入创作的第二章');
+  await activateJourneyStep(page, 2);
+  await expect(stage).toContainText('在无法相聚时重构舞台');
   await expectNoHorizontalOverflow(page, '390×844 journey');
+});
+
+test('Journey recalibrates its compact trigger after orientation changes', async ({
+  page,
+}) => {
+  await openHome(page, { width: 390, height: 844 });
+  const stage = page.getByTestId('journey-sticky-stage');
+
+  await activateJourneyStep(page, 2);
+  await expect(stage).toHaveAttribute('data-active-index', '2');
+
+  await page.setViewportSize({ width: 844, height: 390 });
+  await activateJourneyStep(page, 4);
+  await expect(stage).toHaveAttribute('data-active-index', '4');
+  await expect(stage).toContainText('进入创作的第二章');
+
+  const landscapeGeometry = await stage.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return {
+      bottom: rect.bottom,
+      height: rect.height,
+      top: rect.top,
+      viewportHeight: window.innerHeight,
+    };
+  });
+  expect(landscapeGeometry.height).toBeLessThan(
+    landscapeGeometry.viewportHeight,
+  );
+  expect(
+    landscapeGeometry.viewportHeight - landscapeGeometry.bottom,
+  ).toBeGreaterThan(80);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await activateJourneyStep(page, 1);
+  await expect(stage).toHaveAttribute('data-active-index', '1');
+  await expect(stage).toContainText('从网络走向现场');
+  await expectNoHorizontalOverflow(page, 'portrait after orientation return');
 });
 
 test('all target viewport sizes remain free of horizontal overflow', async ({
@@ -599,9 +716,58 @@ test('all target viewport sizes remain free of horizontal overflow', async ({
     await expect(
       page.locator('[data-testid="primer-sticky-stage"]'),
     ).toHaveCount(0);
+    await expect(page.locator('#journey [data-journey-step]')).toHaveCount(6);
+    await expect(page.getByTestId('journey-sticky-stage')).toHaveCount(1);
     await expect(
-      page.locator('[data-testid="journey-sticky-stage"]'),
-    ).toHaveCount(0);
+      page.getByTestId('journey-sticky-stage').locator('img'),
+    ).toHaveCount(1);
+
+    await activateJourneyStep(page, 0);
+    const stageGeometry = await page
+      .getByTestId('journey-sticky-stage')
+      .evaluate((stage) => {
+        const rect = stage.getBoundingClientRect();
+        return {
+          bottom: rect.bottom,
+          height: rect.height,
+          position: getComputedStyle(stage).position,
+          top: rect.top,
+          viewportHeight: window.innerHeight,
+        };
+      });
+    expect(stageGeometry.position).toBe('sticky');
+    expect(stageGeometry.height).toBeLessThan(stageGeometry.viewportHeight);
+
+    if (viewport.height <= 430) {
+      expect(
+        stageGeometry.viewportHeight - stageGeometry.bottom,
+      ).toBeGreaterThan(80);
+    }
+
+    if (viewport.width < 1024) {
+      await expectMinimumTargetHeight(
+        page
+          .getByRole('navigation', { name: '花谱观察站页面导航' })
+          .getByRole('link'),
+        `${viewport.width}×${viewport.height} navigation`,
+      );
+      await expectMinimumTargetHeight(
+        page.locator('#top').getByRole('link'),
+        `${viewport.width}×${viewport.height} Hero`,
+      );
+      await expectMinimumTargetHeight(
+        page.locator('#works').getByRole('link'),
+        `${viewport.width}×${viewport.height} Works`,
+      );
+      await expectMinimumTargetHeight(
+        page.locator('#visuals').getByRole('button'),
+        `${viewport.width}×${viewport.height} Gallery`,
+      );
+      await expectMinimumTargetHeight(
+        page.locator('#links').getByRole('link'),
+        `${viewport.width}×${viewport.height} official links`,
+      );
+    }
 
     for (const selector of pageSections) {
       await scrollToCenter(page, selector);
@@ -613,7 +779,7 @@ test('all target viewport sizes remain free of horizontal overflow', async ({
   }
 });
 
-test('large user text preferences preserve essential reflow and era controls', async ({
+test('large user text preferences preserve essential reflow and guided Journey', async ({
   page,
 }) => {
   await openHome(page, { width: 640, height: 900 });
@@ -624,7 +790,36 @@ test('large user text preferences preserve essential reflow and era controls', a
     page,
     '640×900 with 200% root text essential content',
   );
-  await expect(page.locator('#journey').getByRole('tab')).toHaveCount(6);
+  await expect(page.locator('#journey [data-journey-step]')).toHaveCount(6);
+  await expect(page.locator('#journey').getByRole('tab')).toHaveCount(0);
+  await expect(
+    page.getByTestId('journey-sticky-stage').locator('img'),
+  ).toHaveCount(1);
+  await activateJourneyStep(page, 2);
+  await expect(page.getByTestId('journey-sticky-stage')).toHaveAttribute(
+    'data-active-index',
+    '2',
+  );
+  const largeTextJourneyGeometry = await page.evaluate(() => {
+    const stage = document.querySelector<HTMLElement>(
+      '[data-testid="journey-sticky-stage"]',
+    );
+    const activeStep = document.querySelector<HTMLElement>(
+      '[data-journey-index="2"]',
+    );
+
+    if (!stage || !activeStep) {
+      throw new Error('Missing 200% Journey geometry targets.');
+    }
+
+    return {
+      activeStepTop: activeStep.getBoundingClientRect().top,
+      stageBottom: stage.getBoundingClientRect().bottom,
+    };
+  });
+  expect(largeTextJourneyGeometry.activeStepTop).toBeGreaterThanOrEqual(
+    largeTextJourneyGeometry.stageBottom - 1,
+  );
 
   for (const selector of pageSections) {
     await scrollToCenter(page, selector);
@@ -635,37 +830,54 @@ test('large user text preferences preserve essential reflow and era controls', a
   }
 });
 
-test('reduced motion preserves profile, tabs, and active-panel controls', async ({
+test('reduced motion renders every Journey era and image in normal flow', async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await openHome(page, { width: 1440, height: 900 });
 
-  await expect(page.locator('#about dl')).toBeVisible();
-  await expect(page.locator('#journey').getByRole('tab')).toHaveCount(6);
-  await page.locator('#journey').getByRole('tab').nth(5).click();
-  await expect(
-    page.locator('#journey').getByRole('heading', {
-      level: 3,
-      name: '走向更大的世界',
-    }),
-  ).toBeVisible();
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    await openHome(page, viewport);
 
-  const panelMotion = await page
-    .getByTestId('journey-era-panel')
-    .evaluate((element) => {
-      const style = getComputedStyle(element);
-      return { opacity: style.opacity, transform: style.transform };
-    });
-  expect(panelMotion).toEqual({ opacity: '1', transform: 'none' });
+    await expect(page.locator('#about dl')).toBeAttached();
+    await expect(page.getByTestId('journey-sticky-stage')).toHaveCount(0);
+    await expect(page.locator('#journey [data-journey-step]')).toHaveCount(6);
+    await expect(page.locator('#journey [data-journey-step] img')).toHaveCount(
+      6,
+    );
+    await expect(page.locator('#journey').getByRole('tab')).toHaveCount(0);
+    await expect(page.locator('#journey').getByRole('button')).toHaveCount(0);
 
-  const heroMotionState = await page.locator('#top h1').evaluate((element) => {
-    const animatedParent = element.parentElement;
-    if (!animatedParent) return null;
-    const style = getComputedStyle(animatedParent);
-    return { opacity: style.opacity, transform: style.transform };
-  });
-  expect(heroMotionState).toEqual({ opacity: '1', transform: 'none' });
+    for (const stageRecord of journeyStages) {
+      await expect(
+        page.getByRole('heading', { level: 3, name: stageRecord.title }),
+      ).toBeAttached();
+    }
+
+    const firstStepState = await page
+      .locator('[data-journey-index="0"]')
+      .evaluate((element) => {
+        const style = getComputedStyle(element);
+        return { opacity: style.opacity, transform: style.transform };
+      });
+    expect(firstStepState).toEqual({ opacity: '1', transform: 'none' });
+
+    const heroMotionState = await page
+      .locator('#top h1')
+      .evaluate((element) => {
+        const animatedParent = element.parentElement;
+        if (!animatedParent) return null;
+        const style = getComputedStyle(animatedParent);
+        return { opacity: style.opacity, transform: style.transform };
+      });
+    expect(heroMotionState).toEqual({ opacity: '1', transform: 'none' });
+    await expectNoHorizontalOverflow(
+      page,
+      `${viewport.width}×${viewport.height} reduced motion`,
+    );
+  }
 });
 
 test('only the hero image is eager and responsive candidates remain explicit', async ({
@@ -708,10 +920,10 @@ test('only the hero image is eager and responsive candidates remain explicit', a
   }
 });
 
-test('captures the editorial profile and era-theatre visual evidence', async ({
+test('captures the responsive guided-Journey visual evidence', async ({
   page,
 }) => {
-  const evidenceDirectory = 'test-results/kaf-round5-editorial-era-theatre';
+  const evidenceDirectory = 'test-results/kaf-round6-guided-journey';
 
   await openHome(page, { width: 1440, height: 900 });
   await page.screenshot({ path: `${evidenceDirectory}/1440x900-hero.png` });
@@ -719,10 +931,9 @@ test('captures the editorial profile and era-theatre visual evidence', async ({
   await scrollToCenter(page, '#about');
   await page.screenshot({ path: `${evidenceDirectory}/1440x900-profile.png` });
 
-  await scrollToCenter(page, '#journey');
-  await page.locator('#journey').getByRole('tab').nth(3).click();
+  await activateJourneyStep(page, 3);
   await page.screenshot({
-    path: `${evidenceDirectory}/1440x900-era-theatre.png`,
+    path: `${evidenceDirectory}/1440x900-guided-journey.png`,
   });
 
   await scrollToCenter(page, '#works');
@@ -730,8 +941,14 @@ test('captures the editorial profile and era-theatre visual evidence', async ({
 
   await openHome(page, { width: 390, height: 844 });
   await page.screenshot({ path: `${evidenceDirectory}/390x844-hero.png` });
-  await scrollToCenter(page, '#journey');
+  await activateJourneyStep(page, 2);
   await page.screenshot({
-    path: `${evidenceDirectory}/390x844-era-theatre.png`,
+    path: `${evidenceDirectory}/390x844-guided-journey.png`,
+  });
+
+  await openHome(page, { width: 844, height: 390 });
+  await activateJourneyStep(page, 4);
+  await page.screenshot({
+    path: `${evidenceDirectory}/844x390-guided-journey.png`,
   });
 });
