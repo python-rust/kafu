@@ -1,0 +1,29 @@
+{
+  "id": "kaf-mobile-hero-journey-viewport-ux",
+  "name": "kaf-mobile-hero-journey-viewport-ux",
+  "title": "Polish mobile Hero and Journey viewport UX",
+  "description": "Redesign the mobile Hero as a stable full-viewport art-directed composition, eliminate the header-to-Journey-stage gap, align Scrollama activation with the actual mobile media dock, and harden whole-site mobile/short-landscape behavior.",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": "frontend/mobile-viewport-hero-journey-ux",
+  "package": null,
+  "priority": "P1",
+  "creator": "pythonrust",
+  "assignee": "pythonrust",
+  "createdAt": "2026-08-30",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "research": "mobile-viewport-art-direction",
+    "interaction": "flush-media-dock-scrollama"
+  }
+}

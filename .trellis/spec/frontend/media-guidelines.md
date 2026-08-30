@@ -133,15 +133,17 @@ Default output:
 />
 ```
 
-The density descriptors are intentional. The Hero uses `object-fit: cover`, so
-its source-pixel demand depends on both viewport dimensions and device density,
-not CSS width alone.
+The density descriptors are intentional. Desktop/landscape Hero uses
+`object-fit: cover`; portrait mobile uses the same responsive candidate as a
+contained foreground. Source-pixel demand therefore depends on the rendered
+role and device density, not CSS width alone.
 
 ### Role matrix
 
 | Role | Variant | Loading | Priority |
 | --- | --- | --- | --- |
-| Hero | responsive display/high-density | eager | high |
+| Hero foreground | responsive display/high-density | eager | high |
+| Hero portrait ambience | thumbnail | lazy | normal |
 | Journey stage and linear media | responsive display/high-density | lazy | normal |
 | Works media | responsive display/high-density | lazy | normal |
 | Gallery active stage | responsive display/high-density | lazy | normal |
@@ -149,8 +151,9 @@ not CSS width alone.
 | Gallery rail | thumbnail | lazy | normal |
 | Gallery lightbox | high-density | interaction-only | lazy chunk |
 
-Only the Hero may set `fetchPriority="high"`. Every rendered image keeps
-explicit intrinsic width and height.
+Only the Hero foreground may set `fetchPriority="high"`. The portrait ambience
+is decorative (`alt=""`, `aria-hidden`) and never receives a `srcset`. Every
+rendered image keeps explicit intrinsic width and height.
 
 ### Wrong vs correct
 
@@ -178,7 +181,16 @@ explicit intrinsic width and height.
 
 ## Hero Quality Contract
 
-- Preserve the existing full-bleed composition and intentional crop.
+- Desktop and landscape retain the full-bleed composition and intentional
+  `cover` crop.
+- Portrait mobile preserves the complete landscape artwork as a contained
+  responsive foreground. Reuse the generated 480px thumbnail as a subordinate
+  blurred ambience so unused space feels intentional without acquiring or
+  inventing another asset.
+- Do not add a portrait `<picture>` source until a reviewed alternate crop with
+  verified provenance exists. Resolution switching is not art direction.
+- Keep exactly one eager/high-priority image. The ambience is lazy and
+  decorative.
 - Do not add a fractional image scale to hide seams; it unnecessarily resamples
   the artwork.
 - At the 1440×900 reference viewport, DPR 1 selects the 1720×968 Hero and DPR 2
@@ -236,7 +248,10 @@ Automated checks must assert:
 - source preview hashes and 27 derivative dimensions/hashes;
 - variant dimensions and filenames in typed content;
 - Hero current source at DPR 1 and DPR 2;
-- one eager/high-priority Hero and lazy offscreen images;
+- one eager/high-priority Hero foreground, one lazy thumbnail ambience on
+  portrait mobile, and lazy offscreen images;
+- mobile Hero equals or exceeds the stable initial viewport, does not expose
+  `#about`, and uses `contain` for the portrait foreground;
 - responsive `srcset` on display images;
 - thumbnail-only sources for Gallery rail/backdrop;
 - no Piapro work-page credit links inside `<main>`;

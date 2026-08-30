@@ -1,0 +1,7 @@
+{"file":".trellis/spec/frontend/index.md","reason":"Frontend spec entry points and required reading."}
+{"file":".trellis/spec/frontend/localization-and-storytelling-guidelines.md","reason":"Journey scrollytelling and Chinese product structure contracts."}
+{"file":".trellis/spec/frontend/visual-system-guidelines.md","reason":"Responsive layout, viewport, motion, and sticky-stage rules."}
+{"file":".trellis/spec/frontend/media-guidelines.md","reason":"Responsive generated artwork and loading-priority contracts."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Viewport matrix, accessibility, and browser validation requirements."}
+{"file":".trellis/tasks/08-30-kaf-mobile-hero-journey-viewport-ux/research/mobile-viewport-art-direction.md","reason":"Primary-source research and measured local geometry."}
+

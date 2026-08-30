@@ -1,0 +1,6 @@
+{"file":".trellis/spec/frontend/content-guidelines.md","reason":"Prevent interface narration while adjusting mobile composition."}
+{"file":".trellis/spec/frontend/localization-and-storytelling-guidelines.md","reason":"Review Journey interaction and fallback behavior."}
+{"file":".trellis/spec/frontend/visual-system-guidelines.md","reason":"Review Hero viewport, mobile dock, and sticky geometry."}
+{"file":".trellis/spec/frontend/media-guidelines.md","reason":"Review Hero derivative roles and loading priority."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Review tested viewports, overflow, 200% text, and touch targets."}
+{"file":".trellis/tasks/08-30-kaf-mobile-hero-journey-viewport-ux/research/mobile-viewport-art-direction.md","reason":"Review implementation against measured evidence and primary sources."}

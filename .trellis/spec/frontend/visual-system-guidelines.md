@@ -139,6 +139,13 @@ or an equivalent CJK SC font) before generic Latin/system fallbacks.
 
 - `--page-max`, `--page-gutter`, `--section-space`, and
   `--section-space-compact` define the shared page rhythm.
+- The portrait mobile Hero is a stable `100svh` scene. It must not use a fixed
+  `rem` height that exposes the following section on tall phones or creates an
+  oversized first scene on short phones.
+- The landscape Hero artwork uses mobile art direction: one contained
+  high-density foreground over an existing generated-thumbnail ambience. A
+  portrait-specific `<picture>` source is preferred only after a deliberate,
+  verified alternate crop exists.
 - Source/DOM order remains the reading and keyboard order at every viewport.
 - Essential headings, paragraphs, links, credits, dates, and actions wrap
   without horizontal clipping at 320px.
@@ -216,10 +223,16 @@ It must not regress to eight equally weighted irregular cards.
 - Journey renders one active image only. Do not restore an overlapping
   secondary image or keep previous/current/next image layers alive.
 - Wide layouts use a side-by-side sticky stage. Compact layouts use a top sticky
-  stage beneath the fixed header and opaque story surfaces below it.
+  full-bleed media dock flush with the fixed header and opaque story surfaces
+  below it.
 - Compact stage sizing uses stable `svh`; its Scrollama activation line uses a
-  pixel offset near 72% of the initial layout viewport. Do not use legacy `vh`,
-  continuously recalculate from `visualViewport`, or animate stage geometry.
+  pixel offset derived from measured header + stage geometry. A local
+  ResizeObserver may refresh that geometry for font/layout changes. Do not use
+  a generic percentage, continuously recalculate from `visualViewport`, or
+  animate stage geometry.
+- The compact header/stage seam is <=1px, the dock has no floating-card shadow
+  or side gutter, portrait layouts leave >=180px of viewport reading space, and
+  short landscape leaves >=120px.
 - Short landscape layouts reduce the stage height and must leave readable space
   below it.
 - Respect `MotionConfig reducedMotion="user"`; all chapters, images, sources,
@@ -244,18 +257,21 @@ mise run e2e
 
 The browser suite must cover:
 
-- 320, 360, 390, 430, 768, 1024, and 1440px viewport widths plus a short
-  844×390 landscape viewport;
+- 320×568, 360×640, 360×800, 390×844, 430×932, 768×1024,
+  844×390, 1024×768, and 1440×900;
 - document overflow and essential-content bounding boxes;
 - 200% root text reflow;
 - 14px recurring-text and 16px body floors;
 - section-heading ceiling;
 - dark-system contrast roles and primary-action contrast;
 - fixed-header worst-case contrast and five `aria-current` locations;
+- stable mobile Hero viewport coverage, no next-section exposure, contained
+  foreground/ambient-thumbnail roles, and short-screen content fit;
 - factual profile layout with no sticky/observer state;
 - six Journey steps, downward/upward activation, sticky release before Works,
-  one active image, compact pixel-offset geometry, short-landscape reading
-  space, and six-image reduced-motion flow;
+  one active image, full-bleed compact media dock, <=1px header seam, measured
+  pixel-offset geometry, portrait/short-landscape reading space, and six-image
+  reduced-motion flow;
 - eight source-ordered gallery selectors;
 - active gallery selection, lightbox open, keyboard navigation, and Escape close;
 - intrinsic media sizing and one eager/high-priority Hero image.
@@ -288,6 +304,10 @@ Also inspect the diff for:
   still be clipped while document scroll width reports no overflow.
 - Using dynamic viewport units for a sticky mobile stage so browser toolbar
   changes move the trigger line while the reader scrolls.
+- Using a fixed `48rem` or similar mobile Hero height instead of the stable
+  visible viewport.
+- Stretching a landscape Hero through a portrait `cover` box and assuming
+  `object-position` restores the discarded composition.
 - Sending Scrollama progress callbacks through React state when only discrete
   step-entry changes are needed.
 - Writing a custom modal/lightbox despite an installed, tested open-source

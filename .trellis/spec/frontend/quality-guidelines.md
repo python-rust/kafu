@@ -109,14 +109,18 @@ Use for browser-level smoke behavior and routing whose environment matters.
 Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies desktop/mobile
 Chinese identity, five fixed navigation locations, worst-case header contrast,
 anti-template/slogan absence, 14px/16px type floors, static factual profile,
+stable full-viewport mobile Hero coverage, portrait contained-artwork plus
+thumbnail ambience, no premature next-section exposure,
 six Scrollama-driven Journey steps with downward/upward activation, one-image
-sticky stages on desktop/mobile, short-landscape geometry, sticky release before
-Works, six-image reduced-motion flow, the complete five-album sequence, the
+sticky stages on desktop/mobile, a full-bleed <=1px header seam, measured
+header+stage trigger geometry, portrait/short-landscape reading space, sticky
+release before Works, six-image reduced-motion flow, the complete five-album sequence, the
 one-stage eight-selector Gallery, DPR-aware Hero sources, thumbnail-specific
 Gallery assets, consolidated bottom attribution, lazy lightbox
 Zoom/keyboard/Escape behavior, essential-content clipping, touch targets, image
-loading, 320/360/390/430px portrait reflow, 844×390 landscape, `200%` text
-preferences, and horizontal-overflow safety.
+loading, 320×568 / 360×640 / 360×800 / 390×844 / 430×932 portrait,
+768×1024 tablet, 844×390 landscape, `200%` text preferences, and
+horizontal-overflow safety.
 
 > **Responsive clipping gotcha**: `document.documentElement.scrollWidth` is not sufficient by itself. A section using `overflow: clip` or `overflow: hidden` can conceal an oversized child while the document still reports no horizontal overflow. For critical responsive layouts, also assert the horizontal bounding boxes of user-visible headings, copy, links, credits, and other essential content. This catches over-constrained CSS Grid gaps/tracks and similar clipped-content defects.
 
@@ -171,11 +175,15 @@ The provenance document is evidence for this project context, not a blanket lice
   marked and source-faithful?
 - Does a navigation/story change preserve active orientation and equivalent
   mobile/reduced-motion content?
+- Does the portrait Hero use stable `svh`, cover the initial visual viewport,
+  keep the next section below the fold, preserve the complete foreground
+  artwork, and keep exactly one eager/high-priority image?
 - Does Journey use Scrollama only for discrete step entry, destroy the instance
   on cleanup, update offsets on layout/orientation changes, and avoid scroll or
   visual-viewport listeners?
-- Does compact Journey use a stable `svh` stage with adequate reading space in
-  portrait, landscape, and 200% text modes?
+- Does compact Journey use a full-bleed stage flush with the occupied header,
+  calculate its trigger from measured geometry, and preserve adequate reading
+  space in portrait, landscape, and 200% text modes?
 - Did the change avoid eyebrow/preheader filler, leading-zero decoration, and interface narration?
 - If presentation repeats across sections, is it using the page-local shared component rather than drifting copies?
 - If an open-source package owns difficult interaction mechanics, is it isolated and lazy-loaded behind the owning section boundary?

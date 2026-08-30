@@ -79,6 +79,20 @@ Rules:
 
 - The role line is a factual identity statement, not a poetic campaign line.
 - Actions identify their destinations and use native anchors.
+- The initial Hero covers at least the stable small viewport. On supported
+  portrait phones/tablets, `#about` must begin at or below the initial visual
+  viewport edge; a fixed `rem` height is not a viewport contract.
+- Portrait layouts preserve the complete `邂逅` composition with a contained
+  responsive foreground. The existing generated thumbnail may provide a
+  decorative blurred ambience behind it. Do not force the landscape artwork
+  through a full-height `cover` crop.
+- Keep exactly one eager/high-priority Hero image. Any ambient derivative is
+  decorative, lazy, and absent from the accessibility tree.
+- Use stable `svh` for the initial mobile scene. Do not use `dvh` as the primary
+  Hero height because browser chrome would resize the composition while the
+  reader scrolls.
+- Short portrait and landscape viewports may tighten image height, typography,
+  and spacing, but must preserve the identity, role, and both actions.
 - Do not state how many minutes the page takes, what it will “teach”, how to
   scroll, or how the visitor should feel.
 - Do not add rhetorical constructions such as `X 是入口，Y 才会留下人`,
@@ -159,8 +173,10 @@ copy where they identify real works/events.
 - Every step keeps a stable `#journey-<id>` anchor and contains its complete
   factual text and source links.
 - Scrollama must be destroyed on unmount. Compact/wide breakpoint and orientation
-  changes update its offset and call `resize()`; do not attach continuous resize
-  or scroll handlers.
+  changes update its offset and call `resize()`.
+- A local `ResizeObserver` may watch the occupied fixed-header and stage geometry
+  so font zoom or a real layout change recalibrates the compact trigger. Do not
+  attach continuous scroll or `visualViewport` listeners.
 
 ### Visual-stage contract
 
@@ -169,13 +185,18 @@ copy where they identify real works/events.
 - The stage is contextual/decorative (`aria-hidden`); the ordered articles are
   the authoritative reading and accessibility content.
 - Desktop uses a side-by-side sticky stage and chronology steps.
-- Compact layouts use one sticky image beneath the fixed header and opaque story
-  surfaces in the remaining reading area.
-- Compact activation uses a pixel Scrollama offset derived from approximately
-  72% of the stable layout viewport. Do not use a percentage offset that shifts
-  when mobile browser chrome changes.
+- Compact layouts use one full-bleed sticky media dock attached to the occupied
+  fixed-header edge and opaque story surfaces in the remaining reading area.
+  Do not present it as an inset floating card.
+- The measured header-to-stage seam is between -1px and +1px. Do not leave a
+  gutter where scrolling article text can appear above the image.
+- Compact activation uses a pixel Scrollama offset derived from the rendered
+  header height plus rendered stage height. Content padding, not an arbitrary
+  percentage or extra trigger gap, provides the reading separation.
 - Use stable `svh` geometry for stage/step pacing. Short landscape viewports
-  require a reduced stage height that leaves readable space beneath it.
+  require a reduced stage height that leaves readable space beneath it. Tested
+  portrait layouts leave at least 180px below the media dock; short landscape
+  leaves at least 120px.
 - The sticky stage must release before `代表作品`.
 
 ### Step content
@@ -289,18 +310,23 @@ and all six images without the changing stage.
 Tests must verify:
 
 - factual Hero identity and direct actions;
+- initial mobile Hero coverage, no premature `#about` exposure, contained
+  portrait foreground, decorative generated-thumbnail ambience, and one
+  eager/high-priority image;
 - absence of banned explanatory/slogan copy;
 - static profile facts and absence of primer sticky/observer markup;
 - six semantic Journey steps in source order;
 - downward and upward scroll activation for early, middle, and final eras;
 - one sticky Journey image, no secondary image, and release before Works;
-- compact sticky-stage geometry, pixel trigger behavior, short-landscape space,
+- compact full-bleed sticky-stage geometry, a <=1px header seam, measured pixel
+  trigger behavior, >=180px portrait / >=120px short-landscape reading space,
   and no document-level horizontal overflow;
 - reduced-motion linear chronology with six in-flow images;
 - the complete five-album sequence including `狂想β` and its official URL;
 - no image assigned to the third album without a verified asset;
 - fixed-header contrast/current section;
-- 320/360/390/430 portrait, 844×390 landscape, tablet, desktop, and 200% reflow;
+- 320×568, 360×640, 360×800, 390×844, 430×932, 768×1024,
+  844×390, 1024×768, 1440×900, and 200% reflow;
 - reduced-motion equivalence;
 - preserved media, Gallery, and source contracts.
 
@@ -327,7 +353,10 @@ tests/e2e/home.spec.ts
   boundary.
 - Adding a horizontal timeline that again requires the user to discover a
   separate gesture or control.
-- Letting mobile cards cover the sticky image at the trigger line or using `vh`
-  so browser chrome repeatedly changes the stage height.
+- Letting mobile story content appear in a seam above the sticky image, keeping
+  an inset floating stage, or using dynamic/legacy viewport geometry so browser
+  chrome changes the composition while scrolling.
+- Treating `object-position` as a fix for an extreme portrait `cover` crop; it
+  only chooses which part of the artwork is removed.
 - Removing official Japanese proper nouns in the name of localization.
 - Omitting an album because no verified cover image exists.
