@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate a Vite artifact intended for a GitHub Pages project subpath."""
+"""Validate the root-hosted Vite artifact used for production deployment."""
 
 from __future__ import annotations
 
@@ -45,26 +45,14 @@ class ResourceParser(HTMLParser):
             )
 
 
-def normalize_base_path(value: str) -> str:
-    stripped = value.strip().strip("/")
-    return f"/{stripped}/" if stripped else "/"
-
-
-def resolve_resource(
-    resource: str, *, artifact_dir: Path, base_path: str, source_file: Path
-) -> Path:
+def resolve_resource(resource: str, *, artifact_dir: Path, source_file: Path) -> Path:
     parsed = urlsplit(resource)
     if parsed.scheme or parsed.netloc:
         raise ValueError(f"External runtime resource is not allowed: {resource}")
 
     decoded_path = unquote(parsed.path)
     if decoded_path.startswith("/"):
-        if not decoded_path.startswith(base_path):
-            raise ValueError(
-                f"Root resource does not use Pages base {base_path}: {resource}"
-            )
-        relative_path = decoded_path[len(base_path) :]
-        return artifact_dir / relative_path
+        return artifact_dir / decoded_path.lstrip("/")
 
     return source_file.parent / decoded_path
 
@@ -98,19 +86,15 @@ def parse_width_srcset(value: str) -> list[tuple[str, int]]:
 
 
 def main() -> int:
-    if len(sys.argv) != 3:
-        print(
-            "usage: verify_pages_build.py <artifact-directory> <base-path>",
-            file=sys.stderr,
-        )
+    if len(sys.argv) != 2:
+        print("usage: verify_static_build.py <artifact-directory>", file=sys.stderr)
         return 2
 
     artifact_dir = Path(sys.argv[1]).resolve()
-    base_path = normalize_base_path(sys.argv[2])
     index_file = artifact_dir / "index.html"
 
     if not index_file.is_file():
-        raise SystemExit(f"Missing Pages entry file: {index_file}")
+        raise SystemExit(f"Missing deployment entry file: {index_file}")
 
     parser = ResourceParser()
     parser.feed(index_file.read_text(encoding="utf-8"))
@@ -119,19 +103,21 @@ def main() -> int:
 
     checked_resources: list[str] = []
     for resource in parser.resources:
-        resolved = resolve_resource(
-            resource,
-            artifact_dir=artifact_dir,
-            base_path=base_path,
-            source_file=index_file,
-        )
+        try:
+            resolved = resolve_resource(
+                resource,
+                artifact_dir=artifact_dir,
+                source_file=index_file,
+            )
+        except ValueError as error:
+            raise SystemExit(str(error)) from error
         if not resolved.is_file():
             raise SystemExit(f"Missing referenced resource: {resource} -> {resolved}")
         checked_resources.append(resource)
 
     if len(parser.image_preloads) != 1:
         raise SystemExit(
-            "Pages entry must contain exactly one responsive Hero image preload"
+            "Deployment entry must contain exactly one responsive Hero image preload"
         )
     image_preload = parser.image_preloads[0]
     if image_preload["fetchpriority"] != "high":
@@ -149,12 +135,14 @@ def main() -> int:
         raise SystemExit("Hero preload href must be present in imagesrcset")
 
     for resource, _ in preload_candidates:
-        resolved = resolve_resource(
-            resource,
-            artifact_dir=artifact_dir,
-            base_path=base_path,
-            source_file=index_file,
-        )
+        try:
+            resolved = resolve_resource(
+                resource,
+                artifact_dir=artifact_dir,
+                source_file=index_file,
+            )
+        except ValueError as error:
+            raise SystemExit(str(error)) from error
         if not resolved.is_file():
             raise SystemExit(
                 f"Missing responsive preload candidate: {resource} -> {resolved}"
@@ -168,12 +156,14 @@ def main() -> int:
             resource = match.group("url").strip()
             if resource.startswith("data:"):
                 continue
-            resolved = resolve_resource(
-                resource,
-                artifact_dir=artifact_dir,
-                base_path=base_path,
-                source_file=css_file,
-            )
+            try:
+                resolved = resolve_resource(
+                    resource,
+                    artifact_dir=artifact_dir,
+                    source_file=css_file,
+                )
+            except ValueError as error:
+                raise SystemExit(str(error)) from error
             if not resolved.is_file():
                 raise SystemExit(
                     f"Missing CSS resource: {resource} from {css_file.name}"
@@ -185,11 +175,11 @@ def main() -> int:
     if not any(resource.endswith(".css") for resource in checked_resources):
         raise SystemExit("index.html does not reference a stylesheet")
     if not list(artifact_dir.rglob("*.woff2")):
-        raise SystemExit("Pages artifact does not contain the self-hosted WOFF2 fonts")
+        raise SystemExit("Deployment artifact does not contain self-hosted WOFF2 fonts")
 
     print(
-        "Verified GitHub Pages artifact: "
-        f"base={base_path}, html_resources={len(checked_resources)}, "
+        "Verified static deployment artifact: "
+        f"html_resources={len(checked_resources)}, "
         f"css_resources={checked_css_resources}, "
         f"image_preload_candidates={len(preload_candidates)}"
     )

@@ -60,8 +60,8 @@ Do not document `pnpm run ...` as the normal project workflow. The package manag
 - Do not rely solely on visual/manual verification for user-visible behavior changes when an automated test can cover the behavior.
 - Do not make interactive UI with non-semantic click targets when native HTML provides the behavior/accessibility.
 - Do not commit third-party images merely because they are publicly reachable; a shipping asset needs a verified reuse basis and provenance record.
-- Do not commit `dist`, create a generated `gh-pages` branch, or add an
-  automatic production trigger for the current manual GitHub Pages release.
+- Do not commit `dist`, create a generated deployment branch, or add an
+  automatic production trigger for the current manual Cloudflare Pages release.
 
 ---
 
@@ -210,8 +210,8 @@ The provenance document is evidence for this project context, not a blanket lice
   elements in a layout effect, and avoid making `decode()` a visibility gate?
 - Is loaded state keyed to the exact responsive request context rather than any
   candidate URL for the same artwork?
-- Does the Hero preload match the rendered candidate set and remain valid under
-  the `/kafu/` Pages base path?
+- Does the Hero preload match the rendered candidate set and remain valid from
+  the production site root?
 - Does Journey use Scrollama only for discrete step entry, destroy the instance
   on cleanup, update offsets on layout/orientation changes, and avoid scroll or
   visual-viewport listeners?
@@ -235,9 +235,9 @@ The provenance document is evidence for this project context, not a blanket lice
 - Does an official cover addition use a documented source-specific usage basis
   rather than assuming that public availability grants reuse rights?
 - Does every added third-party media file have a verified provenance entry and compatible usage basis?
-- If deployment changed, is the workflow manual-only, are Actions pinned to
-  immutable SHAs, does the `/kafu/` artifact verifier pass, and does a real
-  browser render the repository-subpath build without external runtime assets?
+- If deployment changed, is the workflow manual-only and main-only, are Actions
+  pinned to immutable SHAs, does the static artifact verifier pass, and does the
+  live Cloudflare Pages site render without external required runtime assets?
 - Are props/types narrow and explicit?
 - Are user interactions semantic and keyboard accessible?
 - Were affected tests added or updated?

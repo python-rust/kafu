@@ -179,7 +179,7 @@ image. Every rendered image keeps explicit intrinsic width and height.
 The Hero foreground additionally has one responsive `<link rel="preload"
 as="image">` in `index.html`. The preload `href`, `imagesrcset`, `imagesizes`,
 and `fetchpriority="high"` must describe the same candidates as the rendered
-Hero image and remain valid after Vite rewrites the Pages `/kafu/` base path.
+Hero image and remain valid when production is served from the Cloudflare Pages root.
 
 ### Wrong vs correct
 

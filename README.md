@@ -2,7 +2,7 @@
 
 面向中文读者的花谱（花譜 / KAF）非官方资料站。项目整理人物简介、2018 年以来的活动轨迹、代表专辑、视觉作品和官方平台入口；资料与图片来源集中列在页面底部。
 
-**[访问花谱观察站](https://python-rust.github.io/kafu/)**
+**[访问花谱观察站](https://kafu-8bd.pages.dev/)**
 
 ## 页面内容
 
@@ -43,6 +43,16 @@ mise run dev
 | `mise run e2e`         | 运行浏览器端回归测试           |
 
 使用 `mise tasks ls` 可以查看全部任务。
+
+## 发布
+
+生产站点托管在 Cloudflare Pages。代码推送不会自动上线；需要发布时，在 GitHub Actions 中运行 **Deploy Cloudflare Pages** 工作流即可。工作流会自动完成质量检查、生产构建、静态资源校验、部署和线上可用性检查。
+
+也可以使用 GitHub CLI 一键触发：
+
+```bash
+gh workflow run deploy-cloudflare-pages.yml --ref main
+```
 
 ## 目录结构
 

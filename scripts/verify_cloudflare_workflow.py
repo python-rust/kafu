@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the repository's manual-only GitHub Pages workflow policy."""
+"""Validate the repository's manual-only Cloudflare Pages workflow policy."""
 
 from __future__ import annotations
 
@@ -11,15 +11,12 @@ from pathlib import Path
 EXPECTED_ACTIONS = {
     "actions/checkout": "3d3c42e5aac5ba805825da76410c181273ba90b1",
     "jdx/mise-action": "3c2e0cf82a5b2e5249f0d3635a4d83d0ae861518",
-    "actions/configure-pages": "45bfe0192ca1faeb007ade9deae92b16b8254a0d",
-    "actions/upload-pages-artifact": "fc324d3547104276b827a68afc52ff2a11cc49c9",
-    "actions/deploy-pages": "cd2ce8fcbc39b97be8ca5fce6e763baed58fa128",
 }
 
 
 def main() -> int:
     if len(sys.argv) != 2:
-        print("usage: verify_pages_workflow.py <workflow-file>", file=sys.stderr)
+        print("usage: verify_cloudflare_workflow.py <workflow-file>", file=sys.stderr)
         return 2
 
     workflow_file = Path(sys.argv[1])
@@ -56,20 +53,21 @@ def main() -> int:
         raise SystemExit("Mutable major-version Action references are not allowed")
 
     required_fragments = (
-        "VITE_BASE_PATH: /${{ github.event.repository.name }}/",
+        "if: github.ref == 'refs/heads/main'",
         "pnpm install --frozen-lockfile",
         "mise run check",
-        "python3 scripts/verify_pages_build.py dist \"$VITE_BASE_PATH\"",
-        "name: github-pages",
-        "pages: write",
-        "id-token: write",
+        "python3 scripts/verify_static_build.py dist",
+        "CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}",
+        "CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}",
+        "pnpm exec wrangler pages deploy dist --project-name kafu",
+        "https://kafu-8bd.pages.dev/",
     )
     missing = [fragment for fragment in required_fragments if fragment not in workflow]
     if missing:
         raise SystemExit("Workflow is missing required policy fragments: " + repr(missing))
 
     print(
-        "Verified GitHub Pages workflow: manual-only trigger, "
+        "Verified Cloudflare Pages workflow: manual-only trigger, main-only release, "
         f"{len(action_references)} immutable Action pins"
     )
     return 0

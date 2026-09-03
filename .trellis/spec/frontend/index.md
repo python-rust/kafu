@@ -18,7 +18,7 @@ These files document the codebase as it exists now. Do not treat future possibil
 |-------|-------------|--------|
 | [Directory Structure](./directory-structure.md) | `app` / `pages` / styles and test ownership | Active |
 | [Component Guidelines](./component-guidelines.md) | Function components, props, CSS Modules, accessibility | Active |
-| [Static Deployment](./deployment-guidelines.md) | GitHub Pages, manual releases, base paths, and asset-origin contracts | Active |
+| [Static Deployment](./deployment-guidelines.md) | Cloudflare Pages, manual releases, root hosting, and asset-origin contracts | Active |
 | [Interface Content Guidelines](./content-guidelines.md) | Visible-string jobs and anti-template copy constraints | Active |
 | [Hook Guidelines](./hook-guidelines.md) | Built-in hooks, cleanup, extraction threshold | Active |
 | [Chinese Localization & Storytelling](./localization-and-storytelling-guidelines.md) | Chinese audience, factual artist copy, profile, guided Journey, and discography | Active |
@@ -39,7 +39,7 @@ Before changing frontend code:
 2. Identify the current owner of the behavior: application shell, route page, typed static content, local media, or global style.
 3. Check whether a real existing pattern already solves the problem before creating a new abstraction/dependency.
 4. Keep implementation details in the narrowest owner instead of leaking them into unrelated route/page state.
-5. For GitHub Pages, workflows, public base paths, router basename, or production asset origins, read [Static Deployment](./deployment-guidelines.md).
+5. For Cloudflare Pages, deployment workflows, production hosting, or asset origins, read [Static Deployment](./deployment-guidelines.md).
 6. For any visible copy, section label, button/link label, caption, or copy-bearing prop, read [Interface Content Guidelines](./content-guidelines.md).
 7. For Chinese/Japanese naming, Hero/profile copy, guided chronology, or album coverage, read [Chinese Localization & Storytelling](./localization-and-storytelling-guidelines.md).
 8. For KAF image imports, variants, source links, derivatives, or lightbox image behavior, read [Media Guidelines](./media-guidelines.md).
