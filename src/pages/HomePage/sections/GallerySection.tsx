@@ -125,7 +125,7 @@ export function GallerySection({
                 <ResponsiveArtwork
                   source={activeVisual}
                   loading="lazy"
-                  fetchPriority="low"
+                  fetchPriority="auto"
                   decoding="async"
                   sizes="(max-width: 56rem) calc(100vw - 2.5rem), (max-width: 88rem) 68vw, 58rem"
                 />

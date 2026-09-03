@@ -10,6 +10,12 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 
+MAX_ENTRY_CSS_BYTES = 64 * 1024
+MAX_ENTRY_JAVASCRIPT_BYTES = 450 * 1024
+EXPECTED_WEBP_COUNT = 50
+MAX_WEBP_BYTES = 4_500_000
+
+
 class ResourceParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
@@ -102,6 +108,7 @@ def main() -> int:
         raise SystemExit("index.html does not reference any deployable resources")
 
     checked_resources: list[str] = []
+    checked_resource_paths: list[Path] = []
     for resource in parser.resources:
         try:
             resolved = resolve_resource(
@@ -114,6 +121,7 @@ def main() -> int:
         if not resolved.is_file():
             raise SystemExit(f"Missing referenced resource: {resource} -> {resolved}")
         checked_resources.append(resource)
+        checked_resource_paths.append(resolved)
 
     if len(parser.image_preloads) != 1:
         raise SystemExit(
@@ -129,6 +137,14 @@ def main() -> int:
         preload_candidates = parse_width_srcset(image_preload["imagesrcset"])
     except ValueError as error:
         raise SystemExit(str(error)) from error
+
+    preload_widths = [width for _, width in preload_candidates]
+    expected_preload_widths = [480, 960, 1280, 1920, 2560]
+    if preload_widths != expected_preload_widths:
+        raise SystemExit(
+            "Hero preload candidate ladder differs from the initial-load policy: "
+            f"expected {expected_preload_widths}, received {preload_widths}"
+        )
 
     candidate_urls = {resource for resource, _ in preload_candidates}
     if image_preload["href"] not in candidate_urls:
@@ -174,14 +190,74 @@ def main() -> int:
         raise SystemExit("index.html does not reference a JavaScript bundle")
     if not any(resource.endswith(".css") for resource in checked_resources):
         raise SystemExit("index.html does not reference a stylesheet")
-    if not list(artifact_dir.rglob("*.woff2")):
-        raise SystemExit("Deployment artifact does not contain self-hosted WOFF2 fonts")
+
+    entry_css_bytes = sum(
+        path.stat().st_size
+        for path in checked_resource_paths
+        if path.suffix == ".css"
+    )
+    if entry_css_bytes > MAX_ENTRY_CSS_BYTES:
+        raise SystemExit(
+            f"Entry CSS budget exceeded: {entry_css_bytes} > "
+            f"{MAX_ENTRY_CSS_BYTES} bytes"
+        )
+
+    entry_javascript_bytes = sum(
+        path.stat().st_size
+        for path in checked_resource_paths
+        if path.suffix == ".js"
+    )
+    if entry_javascript_bytes > MAX_ENTRY_JAVASCRIPT_BYTES:
+        raise SystemExit(
+            f"Entry JavaScript budget exceeded: {entry_javascript_bytes} > "
+            f"{MAX_ENTRY_JAVASCRIPT_BYTES} bytes"
+        )
+
+    font_files = [
+        path
+        for pattern in ("*.woff", "*.woff2", "*.ttf", "*.otf")
+        for path in artifact_dir.rglob(pattern)
+    ]
+    if font_files:
+        raise SystemExit(
+            "Initial-load policy forbids bundled webfonts: "
+            + ", ".join(str(path.relative_to(artifact_dir)) for path in font_files)
+        )
+
+    source_format_images = [
+        path
+        for pattern in ("*.jpg", "*.jpeg", "*.png")
+        for path in artifact_dir.rglob(pattern)
+    ]
+    if source_format_images:
+        raise SystemExit(
+            "Immutable provenance inputs must not enter the runtime artifact: "
+            + ", ".join(
+                str(path.relative_to(artifact_dir)) for path in source_format_images
+            )
+        )
+
+    webp_files = list(artifact_dir.rglob("*.webp"))
+    if len(webp_files) != EXPECTED_WEBP_COUNT:
+        raise SystemExit(
+            f"Responsive WebP set differs from policy: expected "
+            f"{EXPECTED_WEBP_COUNT}, received {len(webp_files)}"
+        )
+    webp_bytes = sum(path.stat().st_size for path in webp_files)
+    if webp_bytes > MAX_WEBP_BYTES:
+        raise SystemExit(
+            f"Responsive WebP budget exceeded: {webp_bytes} > "
+            f"{MAX_WEBP_BYTES} bytes"
+        )
 
     print(
         "Verified static deployment artifact: "
         f"html_resources={len(checked_resources)}, "
         f"css_resources={checked_css_resources}, "
-        f"image_preload_candidates={len(preload_candidates)}"
+        f"entry_css_bytes={entry_css_bytes}, "
+        f"entry_javascript_bytes={entry_javascript_bytes}, "
+        f"image_preload_candidates={len(preload_candidates)}, "
+        f"webp_files={len(webp_files)}, webp_bytes={webp_bytes}, webfonts=0"
     )
     return 0
 

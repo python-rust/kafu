@@ -191,10 +191,11 @@ describe('KAF production editorial data', () => {
       if (!work.visual) throw new Error(`Missing work visual: ${work.id}`);
 
       expect(work.visual.alt.trim()).not.toBe('');
-      expectVariant(work.visual.preview);
-      expectVariant(work.visual.display);
-      expectVariant(work.visual.highDensity);
       expectVariant(work.visual.thumbnail);
+      expectVariant(work.visual.medium);
+      expectVariant(work.visual.display);
+      expectVariant(work.visual.large);
+      expectVariant(work.visual.highDensity);
       expect(work.visual.credit.trim()).not.toBe('');
       expect(new URL(work.visual.sourceUrl).protocol).toBe('https:');
       expect(kafMedia.some((media) => media.id === work.visual?.id)).toBe(true);
@@ -211,9 +212,11 @@ describe('KAF production editorial data', () => {
       expect(visual.id.trim()).not.toBe('');
       expect(visual.title.trim()).not.toBe('');
       expect(visual.alt.trim()).not.toBe('');
-      expectVariant(visual.display);
-      expectVariant(visual.highDensity);
       expectVariant(visual.thumbnail);
+      expectVariant(visual.medium);
+      expectVariant(visual.display);
+      expectVariant(visual.large);
+      expectVariant(visual.highDensity);
       expect(visual.credit.trim()).not.toBe('');
       expect(new URL(visual.sourceUrl).protocol).toBe('https:');
       expect(kafMedia.some((media) => media.id === visual.id)).toBe(true);
@@ -243,27 +246,46 @@ describe('KAF media manifest', () => {
       expect(media.alt.trim()).not.toBe('');
       expect(media.credit.trim()).not.toBe('');
       expect(media.licenseSummary.trim()).not.toBe('');
-      expectVariant(media.preview);
-      expectVariant(media.display);
-      expectVariant(media.highDensity);
       expectVariant(media.thumbnail);
+      expectVariant(media.medium);
+      expectVariant(media.display);
+      expectVariant(media.large);
+      expectVariant(media.highDensity);
       expect(media.placeholderDataUrl).toMatch(/^data:image\/webp;base64,/);
       expect(Math.max(media.thumbnail.width, media.thumbnail.height)).toBe(480);
       expect(media.thumbnail.src).toContain(`${media.id}-thumb`);
+      expect(media.medium.src).toContain(`${media.id}-medium`);
+      expect(media.display.src).toContain(`${media.id}-display`);
+      expect(media.large.src).toContain(`${media.id}-large`);
+      expect(media.highDensity.src).toContain(`${media.id}-high`);
+
+      const candidateLongEdges = [
+        media.thumbnail,
+        media.medium,
+        media.display,
+        media.large,
+        media.highDensity,
+      ].map((variant) => Math.max(variant.width, variant.height));
+      expect(candidateLongEdges).toEqual(
+        [...candidateLongEdges].sort((first, second) => first - second),
+      );
+      expect(new Set(candidateLongEdges).size).toBe(candidateLongEdges.length);
 
       if (media.id === 'kyousou-beta') {
-        expect(media.preview).toMatchObject({ width: 1600, height: 1600 });
-        expect(media.display).toMatchObject({ width: 800, height: 800 });
+        expect(media.medium).toMatchObject({ width: 960, height: 960 });
+        expect(media.display).toMatchObject({ width: 1200, height: 1200 });
+        expect(media.large).toMatchObject({ width: 1440, height: 1440 });
         expect(media.highDensity).toMatchObject({ width: 1600, height: 1600 });
-        expect(media.display.src).toContain('kyousou-beta-display');
-        expect(media.highDensity.src).toContain('kyousou-beta-high');
       } else {
-        expect(media.display.width).toBe(media.preview.width * 2);
-        expect(media.display.height).toBe(media.preview.height * 2);
-        expect(media.highDensity.width).toBe(media.preview.width * 4);
-        expect(media.highDensity.height).toBe(media.preview.height * 4);
-        expect(media.display.src).toContain(`${media.id}-2x`);
-        expect(media.highDensity.src).toContain(`${media.id}-4x`);
+        expect(Math.max(media.medium.width, media.medium.height)).toBe(960);
+        expect(Math.max(media.display.width, media.display.height)).toBe(1280);
+        expect(Math.max(media.large.width, media.large.height)).toBe(1920);
+        expect(
+          Math.max(media.highDensity.width, media.highDensity.height),
+        ).toBeLessThanOrEqual(2560);
+        expect(
+          Math.max(media.highDensity.width, media.highDensity.height),
+        ).toBeGreaterThan(1920);
       }
 
       expect(media.retrievedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);

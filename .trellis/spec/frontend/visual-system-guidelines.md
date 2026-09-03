@@ -96,7 +96,7 @@ They are not allowed as a replacement for composition.
 
 ## Typography Contract
 
-Font-family selection, package versions, self-hosting, licensing, and transfer
+Font-family selection, platform fallback order, WebFont policy, and transfer
 budgets are owned by [Typography Guidelines](./typography-guidelines.md). This
 section owns scale, hierarchy, spacing, and reflow.
 

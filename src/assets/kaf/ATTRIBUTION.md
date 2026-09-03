@@ -14,17 +14,17 @@ The original local files use piapro's published display thumbnails and remain un
 
 ## Responsive display derivatives
 
-On **2026-08-30**, the nine verified piapro preview inputs were converted into responsive display derivatives under `src/assets/kaf/generated/`:
+On **2026-08-30**, the nine verified piapro preview inputs were converted into responsive display derivatives under `src/assets/kaf/generated/`. The delivery ladder was re-encoded on **2026-09-03** to reduce first-visit transfer:
 
 - tool: official `waifu2x-ncnn-vulkan` portable macOS release `20250915`;
 - model: `models-cunet`;
 - processing: 4× scale with noise level `-1` (no denoise), preserving the verified preview as closely as the selected model permits;
-- outputs: 4× WebP, a Lanczos-downsampled 2× WebP, and a longest-edge 480px WebP thumbnail;
-- WebP quality: 90;
+- outputs: longest-edge 480/960/1280/1920/2560 WebP candidates downsampled from the verified 4× master;
+- WebP quality: 78 for thumbnails and 82 for larger candidates;
 - reproducibility: `scripts/generate_kaf_media_variants.py` verifies every source SHA-256 before generation;
 - derivative dimensions, byte sizes, and SHA-256 values: `src/assets/kaf/generated/manifest.json`.
 
-The official 1600×1600 `狂想β` cover is not AI-upscaled. Its responsive files are source-native technical derivatives only: an 800px display WebP, a 1600px high-density WebP, a 480px thumbnail, and a 32px inline placeholder. No creative alteration is applied.
+The official 1600×1600 `狂想β` cover is not AI-upscaled. Its responsive files are source-native technical derivatives only: 480/960/1200/1440/1600 WebP candidates and a 32px inline placeholder. No creative alteration is applied.
 
 These derivatives improve display density and reduce browser enlargement. They do **not** restore the inaccessible original pixels and must not be represented as source originals. The source preview files listed below remain the authoritative local provenance inputs.
 
@@ -40,7 +40,7 @@ These derivatives improve display density and reduce browser enlargement. They d
 - Required credit: none required by the creator-name icon; the bottom source index renders `花譜 / piapro`
 - Source dimensions: 1920×1080
 - Local dimensions: 860×484
-- Display derivatives: `generated/kaihou-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
+- Display derivatives: `generated/kaihou-{thumb,medium,display,large,high}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-24; license rechecked 2026-08-25
 - SHA-256: `850e38af66e1f28a9ad00677d53568ea9fa52ff5a12e8317b84207e609acd516`
 
@@ -57,7 +57,7 @@ These derivatives improve display density and reduce browser enlargement. They d
 - Required credit: none required by the creator-name icon; project voluntarily credits `Character design: PALOW. · 3DCG: 川サキケンジ · via 花譜 / piapro`
 - Source dimensions: 1280×720
 - Local dimensions: 860×484
-- Display derivatives: `generated/wasurete-shimae-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
+- Display derivatives: `generated/wasurete-shimae-{thumb,medium,display,large,high}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-24; license rechecked 2026-08-25
 - SHA-256: `cf39ce8eefbc57ef9652bd434d1a250454b26bffa3fb960e2f2cfbb6ef01d7d8`
 
@@ -74,7 +74,7 @@ These derivatives improve display density and reduce browser enlargement. They d
 - Required credit: none required by the creator-name icon; project voluntarily credits `Character design: PALOW. · 3DCG: 川サキケンジ · via 花譜 / piapro`
 - Source dimensions: 1280×720
 - Local dimensions: 860×484
-- Display derivatives: `generated/fukakai-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
+- Display derivatives: `generated/fukakai-{thumb,medium,display,large,high}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-24; license rechecked 2026-08-25
 - SHA-256: `caef91a45a66d9c9a5e720446d2a81c030b9b45973e77588cca60d72beeb531a`
 
@@ -91,7 +91,7 @@ These derivatives improve display density and reduce browser enlargement. They d
 - Required credit: none required by the creator-name icon; project voluntarily credits `Character design: PALOW · 3DCG design: 川サキケンジ · via 花譜 / piapro`
 - Source dimensions: 1280×720
 - Local dimensions: 860×484
-- Display derivatives: `generated/origin-ito-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
+- Display derivatives: `generated/origin-ito-{thumb,medium,display,large,high}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-25
 - SHA-256: `0d2a25eae4996247ee4272ef8e29ee7ef206348d496dd2b5faf0a95c7071c44c`
 
@@ -108,7 +108,7 @@ These derivatives improve display density and reduce browser enlargement. They d
 - Required credit: none required by the creator-name icon; project voluntarily credits `Character design: PALOW · 3DCG design: 川サキケンジ · via 花譜 / piapro`
 - Source dimensions: 1920×1080
 - Local dimensions: 860×484
-- Display derivatives: `generated/observation-past-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
+- Display derivatives: `generated/observation-past-{thumb,medium,display,large,high}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-25
 - SHA-256: `a445f01b893a93e38c7c977c00997763b160ebc0bea30fd12907916b12c6f523`
 
@@ -124,7 +124,7 @@ These derivatives improve display density and reduce browser enlargement. They d
 - Required credit: none required by the creator-name icon; the bottom source index renders `花譜 / piapro`
 - Source dimensions: 1280×720
 - Local dimensions: 860×484
-- Display derivatives: `generated/magic-keshiki-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
+- Display derivatives: `generated/magic-keshiki-{thumb,medium,display,large,high}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-25
 - SHA-256: `5fab05560238bf1ff0e1a0bcf4fa01c21ab855086fc8004ac81c5999208d0169`
 
@@ -140,7 +140,7 @@ These derivatives improve display density and reduce browser enlargement. They d
 - Required credit: `花譜`; project renders `花譜 / piapro`
 - Source dimensions: 1920×1080
 - Local dimensions: 860×484
-- Display derivatives: `generated/fable-chewing-disco-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
+- Display derivatives: `generated/fable-chewing-disco-{thumb,medium,display,large,high}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-25
 - SHA-256: `42dd8bf80d83f2bc306f31c778d5ddbed9f5aac66779edb24daef0d4cb4c4850`
 
@@ -156,7 +156,7 @@ These derivatives improve display density and reduce browser enlargement. They d
 - Required credit: `花譜`; project renders `花譜 / piapro`
 - Source dimensions: 3000×3000
 - Local dimensions: 600×600
-- Display derivatives: `generated/transcendent-ufo-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
+- Display derivatives: `generated/transcendent-ufo-{thumb,medium,display,large,high}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-25
 - SHA-256: `72448105038392b96d68ec713cd93d758b29ee52019268daa6262d750ed38a55`
 
@@ -173,7 +173,7 @@ These derivatives improve display density and reduce browser enlargement. They d
 - Required credit: `とり`; project renders `とり / piapro`
 - Source dimensions: 2122×2976
 - Local dimensions: 428×600
-- Display derivatives: `generated/tori-portrait-{2x,4x,thumb}.webp`; see generated manifest for dimensions and hashes
+- Display derivatives: `generated/tori-portrait-{thumb,medium,display,large,high}.webp`; see generated manifest for dimensions and hashes
 - Retrieval date: 2026-08-25
 - SHA-256: `0638aa003a71475dde64a6cbc7c724343aeb3eff17c2272fdea41302c549d116`
 
@@ -188,7 +188,7 @@ These derivatives improve display density and reduce browser enlargement. They d
 - Distribution boundary: no advertising, monetization, merchandise, download feature, or claim of official affiliation
 - Modification boundary: technical format conversion and responsive resizing only; no creative alteration
 - Local dimensions: 1600×1600
-- Responsive derivatives: `generated/kyousou-beta-{display,high,thumb}.webp`; see generated manifest for dimensions and hashes
+- Responsive derivatives: `generated/kyousou-beta-{thumb,medium,display,large,high}.webp`; see generated manifest for dimensions and hashes
 - Retrieval and guideline review date: 2026-08-30
 - SHA-256: `161fe38755a496e70a703a60848b385184bcca293685a781ee63d2372fd094f1`
 

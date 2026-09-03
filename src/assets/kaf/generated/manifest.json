@@ -5,14 +5,20 @@
     "model": "models-cunet",
     "noiseLevel": -1,
     "scale": 4,
-    "webpQuality": 90,
+    "webpQuality": 82,
+    "thumbnailWebpQuality": 78,
     "thumbnailLongEdge": 480,
+    "mediumLongEdge": 960,
+    "displayLongEdge": 1280,
+    "largeLongEdge": 1920,
+    "highDensityLongEdge": 2560,
     "placeholderLongEdge": 32,
     "placeholderWebpQuality": 35
   },
   "items": [
     {
       "id": "kaihou",
+      "strategy": "upscale",
       "source": {
         "path": "src/assets/kaf/hero-kaihou.jpg",
         "width": 860,
@@ -20,38 +26,58 @@
         "sha256": "850e38af66e1f28a9ad00677d53568ea9fa52ff5a12e8317b84207e609acd516"
       },
       "variants": {
-        "2x": {
-          "path": "src/assets/kaf/generated/kaihou-2x.webp",
-          "width": 1720,
-          "height": 968,
-          "sha256": "ce1db383f1ec1e18a0cb1d7f5bceadd6b18b0e0cf8cbf26fd1cd53e47721cc32",
-          "bytes": 178570
-        },
-        "4x": {
-          "path": "src/assets/kaf/generated/kaihou-4x.webp",
-          "width": 3440,
-          "height": 1936,
-          "sha256": "e4a45a9e2085da81c57e3dd9ac64a9489cf2dc600751a2ce23e172e0efe86148",
-          "bytes": 424608
-        },
         "thumb": {
           "path": "src/assets/kaf/generated/kaihou-thumb.webp",
           "width": 480,
           "height": 270,
-          "sha256": "a93bab1877b969ddccc1cdf3c0999859b839a43fea551350352accb2d89fd749",
-          "bytes": 21102
+          "sha256": "4611793d16746835eec7d7d13b300b1c5b36d68ca847e3e98f5f05264a994180",
+          "bytes": 12692,
+          "quality": 78
+        },
+        "medium": {
+          "path": "src/assets/kaf/generated/kaihou-medium.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "2a923ad992fdcd459d0a0509e67e26e5444922eb3214d4867aaf74a017090dc6",
+          "bytes": 37740,
+          "quality": 82
+        },
+        "display": {
+          "path": "src/assets/kaf/generated/kaihou-display.webp",
+          "width": 1280,
+          "height": 720,
+          "sha256": "1f4939b98793705d018c9785c8572d889b8df25e8a223eaf59e629ac9cb23c27",
+          "bytes": 57048,
+          "quality": 82
+        },
+        "large": {
+          "path": "src/assets/kaf/generated/kaihou-large.webp",
+          "width": 1920,
+          "height": 1081,
+          "sha256": "4d9b00026cfa34d85950884ad0b504400b396bdfd3a1d9e4272a6671b47daf43",
+          "bytes": 107314,
+          "quality": 82
+        },
+        "high": {
+          "path": "src/assets/kaf/generated/kaihou-high.webp",
+          "width": 2560,
+          "height": 1441,
+          "sha256": "38c609e8e13391c770d4c6a4d8fe4f467bcd293f9d29247d8f1c0198a0087fc3",
+          "bytes": 169112,
+          "quality": 82
         }
       },
       "placeholder": {
-        "dataUrl": "data:image/webp;base64,UklGRsQAAABXRUJQVlA4ILgAAAAQBQCdASogABIAPwFsrU8rJiQiMAgBYCAJbADCoNmwAALnOSET5v3C1BRcNWVAQBYQAP7nQI9LL7JiV0YGJnoq0g1WNFY1lxTcgb3V6uWA88RGzbXxTBqimI+DGODYZrS7B4kJmEmVfaVW8Bq1qnALf+v/WI08uFdwrOHxn5fEn4EN4N3ZFd6a+9a9leu7i68PssO9un86Afx3HBrvAbJlBXwa+SS9xBkXNk9JqoLVjveaNCVn6AAA",
+        "dataUrl": "data:image/webp;base64,UklGRsgAAABXRUJQVlA4ILwAAAAwBQCdASogABIAPwFurU6rJqQiMAgBYCAJbADCjXAAGV0j9OD54rAWH7KzpZLx+X77BAD+50CPSy+xD6X9rWiLbb85j1jLtvAGfjbtUthLJ4uNhJrk8n9/2cdXM2DYZrS8eYlDKw3yF7CTWhqQfGjeA7Zn8+qqfCw7qrrYaS8o2kD1hBGwaeuNtYp/H3PWy5So5ji16x/2suMQ/wTnWP+1lxiH+DbM6S9xDo02Ayk1vf8V3S8kl2zge7AAAA==",
         "width": 32,
         "height": 18,
-        "bytes": 204,
-        "sha256": "2777040849cad9604c5ca4e9b7ed2a98cd7b7e1a17f925ed6d266ad7acd25728"
+        "bytes": 208,
+        "sha256": "1fdabd7caf1155503bcd7b313f78351cb0c023e92b30dc2f7feadf609690bc91"
       }
     },
     {
       "id": "wasurete-shimae",
+      "strategy": "upscale",
       "source": {
         "path": "src/assets/kaf/visual-wasurete-shimae.jpg",
         "width": 860,
@@ -59,38 +85,58 @@
         "sha256": "cf39ce8eefbc57ef9652bd434d1a250454b26bffa3fb960e2f2cfbb6ef01d7d8"
       },
       "variants": {
-        "2x": {
-          "path": "src/assets/kaf/generated/wasurete-shimae-2x.webp",
-          "width": 1720,
-          "height": 968,
-          "sha256": "ddeb1ffa1f1b643d91ad442318208176be11281a6f6fbaf43dfa5a1c68286f19",
-          "bytes": 70510
-        },
-        "4x": {
-          "path": "src/assets/kaf/generated/wasurete-shimae-4x.webp",
-          "width": 3440,
-          "height": 1936,
-          "sha256": "dd0f9fcf94a7ccff8ded5e55e800db0ccd70b65c0f4e7b9efe4e98b324d23a04",
-          "bytes": 168380
-        },
         "thumb": {
           "path": "src/assets/kaf/generated/wasurete-shimae-thumb.webp",
           "width": 480,
           "height": 270,
-          "sha256": "e0a3bfe16c7b10de835946f5f8271a57aea44f0a69994b981ef78fc7a484cd11",
-          "bytes": 13100
+          "sha256": "ae3e89f1ad33691692386c317bb696edba78c11c26c62a7430830987cc769451",
+          "bytes": 7436,
+          "quality": 78
+        },
+        "medium": {
+          "path": "src/assets/kaf/generated/wasurete-shimae-medium.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "4f5fcac0ddad010f978554ef35099386417dbfc94dd20234c0bd1d9f38347a55",
+          "bytes": 20318,
+          "quality": 82
+        },
+        "display": {
+          "path": "src/assets/kaf/generated/wasurete-shimae-display.webp",
+          "width": 1280,
+          "height": 720,
+          "sha256": "c4fdc755dd5c28c029af4fa379a471fc8ba2dd8a8ed5240365adc799a023ac76",
+          "bytes": 29946,
+          "quality": 82
+        },
+        "large": {
+          "path": "src/assets/kaf/generated/wasurete-shimae-large.webp",
+          "width": 1920,
+          "height": 1081,
+          "sha256": "2f29aefae909d7d3e46ab1cccb718773e4d5f1660122d22633c292d463bc6d8c",
+          "bytes": 52006,
+          "quality": 82
+        },
+        "high": {
+          "path": "src/assets/kaf/generated/wasurete-shimae-high.webp",
+          "width": 2560,
+          "height": 1441,
+          "sha256": "6ddb2a591d4380893e0530eac1fe89861a4f15c0d9f37e7265e078eb1770acee",
+          "bytes": 75406,
+          "quality": 82
         }
       },
       "placeholder": {
-        "dataUrl": "data:image/webp;base64,UklGRpwAAABXRUJQVlA4IJAAAADwBACdASogABIAPwFsrE8rJiQiMAgBYCAJQBTihDwFUWrb4xRsKrZ+v6PN1bd2jtAA/q6r3FTBqJoc8QbxfW0fl4iZxe4K5bJuLPNNpguVaXx8HgjQsg7R69Eni0i3Ffp36EcaaYtliJ3/gdJ7bjPBXvSU1LApEmBGHwPJKh9YL1wShrl5rNcQMFP5xHeRIAA=",
+        "dataUrl": "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAADwBACdASogABIAPwFsrU8rJiQiMAgBYCAJQBZwBDwFUWrbbJS3sVhvfZMVYG7tHaAA/q6r3FTBqJoc8QbxfW0fl4ibhBiD8bTM72OwjA2kFdnweCNCyDtHr0STy2qC/NlPH9cGzCKXDfE+hd66TtCBYnJ9bQr8JRfSZvNAd9cOazXDT43aUbhm0AA=",
         "width": 32,
         "height": 18,
-        "bytes": 164,
-        "sha256": "e3199a46f8f6bfd8c00b879af59ca5eab4ab7bd5b7723d7c74b0845d357befef"
+        "bytes": 158,
+        "sha256": "703265c694cef3991523c8fc0339c9e3d3ccbf7188429e9341fee37e557d987a"
       }
     },
     {
       "id": "fukakai",
+      "strategy": "upscale",
       "source": {
         "path": "src/assets/kaf/visual-fukakai.jpg",
         "width": 860,
@@ -98,38 +144,58 @@
         "sha256": "caef91a45a66d9c9a5e720446d2a81c030b9b45973e77588cca60d72beeb531a"
       },
       "variants": {
-        "2x": {
-          "path": "src/assets/kaf/generated/fukakai-2x.webp",
-          "width": 1720,
-          "height": 968,
-          "sha256": "ffe77dfe8fee5a0cf0cddd241b44ec23093b341adcba6049de80469b5bfc5434",
-          "bytes": 62322
-        },
-        "4x": {
-          "path": "src/assets/kaf/generated/fukakai-4x.webp",
-          "width": 3440,
-          "height": 1936,
-          "sha256": "df01e636747b55048dfbd6e6a114dc0edefc2a3b7d379002109489c4fa0046c5",
-          "bytes": 150642
-        },
         "thumb": {
           "path": "src/assets/kaf/generated/fukakai-thumb.webp",
           "width": 480,
           "height": 270,
-          "sha256": "e89988892bb24b711fa510415b91f8414b1ccf99206c33b2b32c3f60b265d6a6",
-          "bytes": 14392
+          "sha256": "231c6257d23428b56878f25fedc7b3a970ac7a3183d9357ef15d6229ca17f514",
+          "bytes": 8718,
+          "quality": 78
+        },
+        "medium": {
+          "path": "src/assets/kaf/generated/fukakai-medium.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "0b74861dc13efb5bf7bbdc4f33091450a50ff7ae4b6e0c08013c7788c04e3029",
+          "bytes": 21902,
+          "quality": 82
+        },
+        "display": {
+          "path": "src/assets/kaf/generated/fukakai-display.webp",
+          "width": 1280,
+          "height": 720,
+          "sha256": "5d497a8abd50a8526d5c3853199a4f19b15f3cf77496695aa9e2a901c1e8f712",
+          "bytes": 29996,
+          "quality": 82
+        },
+        "large": {
+          "path": "src/assets/kaf/generated/fukakai-large.webp",
+          "width": 1920,
+          "height": 1081,
+          "sha256": "c0927491f04357261b18e757b337ddd1bbdf5e8ead498591a4583871c63f5380",
+          "bytes": 46536,
+          "quality": 82
+        },
+        "high": {
+          "path": "src/assets/kaf/generated/fukakai-high.webp",
+          "width": 2560,
+          "height": 1441,
+          "sha256": "5db9853719ff31d4a6c4b5448e99c56505644575e62b80cd87008a3c1fab6794",
+          "bytes": 67092,
+          "quality": 82
         }
       },
       "placeholder": {
-        "dataUrl": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAwBACdASogABIAPwFyrlCrJyQisBgIAWAgCWUAAI9CqCUsWJSyZbEbhoAA/vQk8dUFyNwmQuf8Ojgr8dC9n9CgVleFXFXOqMEwDhv6JhIsN8jHQNhB4BTtbY29Na2PM7MAAA==",
+        "dataUrl": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAABQBACdASogABIAPwF0rlArJyQisBgIAWAgCWUAAI9CqCUt1bLAkWkpJ10AAP70JPHVBcjcJkLn/Do4K/HQvZ/QoFZXhVxVuMqdira+G63bo3b3RvojaczvqYpQvkXIk2AAAA==",
         "width": 32,
         "height": 18,
         "bytes": 118,
-        "sha256": "c205d1d20eccafaf061f711c7887f32d9465d5bbe3765dcbab6f203710d3713a"
+        "sha256": "40fec1b6cbf0875b76f5149bca10e8e35009684c15caf5c4e258c26f92b3a290"
       }
     },
     {
       "id": "origin-ito",
+      "strategy": "upscale",
       "source": {
         "path": "src/assets/kaf/journey/2018-origin-ito.jpg",
         "width": 860,
@@ -137,38 +203,58 @@
         "sha256": "0d2a25eae4996247ee4272ef8e29ee7ef206348d496dd2b5faf0a95c7071c44c"
       },
       "variants": {
-        "2x": {
-          "path": "src/assets/kaf/generated/origin-ito-2x.webp",
-          "width": 1720,
-          "height": 968,
-          "sha256": "4edc191a230d19a9136b38a7555b2126169e159d3d5386d3fa300b289cde7b14",
-          "bytes": 99670
-        },
-        "4x": {
-          "path": "src/assets/kaf/generated/origin-ito-4x.webp",
-          "width": 3440,
-          "height": 1936,
-          "sha256": "f2b0a31791b597c67adb512d299daec8685f831ce7e8350bed92373013d3524e",
-          "bytes": 236412
-        },
         "thumb": {
           "path": "src/assets/kaf/generated/origin-ito-thumb.webp",
           "width": 480,
           "height": 270,
-          "sha256": "ef6dbcb21a7398908cea56e8f1950bf908312a23c9065bc375efda3a9574592d",
-          "bytes": 18842
+          "sha256": "e9da2c84bf824a040a3dd2936710e2748c920883c33ebe188234fd3dbef8d3e9",
+          "bytes": 11182,
+          "quality": 78
+        },
+        "medium": {
+          "path": "src/assets/kaf/generated/origin-ito-medium.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "12ecaa044c67d5076b5c03ee6236517e89d770118f86fa22dbd574f62204d793",
+          "bytes": 29992,
+          "quality": 82
+        },
+        "display": {
+          "path": "src/assets/kaf/generated/origin-ito-display.webp",
+          "width": 1280,
+          "height": 720,
+          "sha256": "9907512fed012af83bf2c1f4ec6e6c1047a04e473401a841e6b7392dbce63a9f",
+          "bytes": 42120,
+          "quality": 82
+        },
+        "large": {
+          "path": "src/assets/kaf/generated/origin-ito-large.webp",
+          "width": 1920,
+          "height": 1081,
+          "sha256": "c40e75f9ecb1f7ec172c152c9435e3c665b8b6ee9ace8ed30edb71c0502ba285",
+          "bytes": 68118,
+          "quality": 82
+        },
+        "high": {
+          "path": "src/assets/kaf/generated/origin-ito-high.webp",
+          "width": 2560,
+          "height": 1441,
+          "sha256": "3aa50e02393e97e1a68bdae660f33891542b472dbe25430ac1a8c4de272d2a2a",
+          "bytes": 98166,
+          "quality": 82
         }
       },
       "placeholder": {
-        "dataUrl": "data:image/webp;base64,UklGRsgAAABXRUJQVlA4ILwAAAAQBQCdASogABIAPwF0rlKrJqQiqAqpYCAJZAC1GxipACqvJYK0Vs3sQSrpoarMXVwAAP7yPRZPvM2VN9e79Zkmxz06nYH4kEUAXXYXwL7Bwzeo0ZOM1szODX2TiTTq/qsHFrC4bJo7xudFH3DEgE8teDwaJ8hv+U0S9WG/ikSHlN5NoLIz4kxrczhZA4YEFoyIbViSxC07cdlIBnQBvvw7FFt4iSH/n8QLBlh8aT2hZhiyQjwmzFyQdmAAAA==",
+        "dataUrl": "data:image/webp;base64,UklGRsgAAABXRUJQVlA4ILwAAACwBACdASogABIAPwF0rlKrJqQiqAqpYCAJZAC06DGdSGCARUec1n9Ab2yAhwPQAP7yPRZPvM2VN9e79ZkvxndOp242QTSzMmGPRVErbOIKTUU/KqhSCAyLERtdBnz3Sq07i2vMvh3NTYeLpsBN6zw0y0vOhcmvy1PcPyLU8L3v2OcxwDzVKbElqNDKqWPZzWiuwfqpSsbn9urwb4b86DY5lxCeQjKuHAYLWKR9RWl/IgldFh242YuSCRAAAA==",
         "width": 32,
         "height": 18,
         "bytes": 208,
-        "sha256": "9b634f3095b02af2e3e3899e88c1518f566d5621ced8570bccadca233974984f"
+        "sha256": "b7569a5c63a2cc79143b312d432a07b7c6afe73d10898de7b7accb4687fa4abb"
       }
     },
     {
       "id": "observation-past",
+      "strategy": "upscale",
       "source": {
         "path": "src/assets/kaf/journey/2019-observation-past.jpg",
         "width": 860,
@@ -176,38 +262,58 @@
         "sha256": "a445f01b893a93e38c7c977c00997763b160ebc0bea30fd12907916b12c6f523"
       },
       "variants": {
-        "2x": {
-          "path": "src/assets/kaf/generated/observation-past-2x.webp",
-          "width": 1720,
-          "height": 968,
-          "sha256": "5a29f1a8d3475e2e9499597e5e499dcfefcb2bba986564e89ec86a792caac9fd",
-          "bytes": 131240
-        },
-        "4x": {
-          "path": "src/assets/kaf/generated/observation-past-4x.webp",
-          "width": 3440,
-          "height": 1936,
-          "sha256": "c36b548a39c43e61698b61af0c3d6bec6c0d43b8aa4c170e8f9f4626f65565ee",
-          "bytes": 289276
-        },
         "thumb": {
           "path": "src/assets/kaf/generated/observation-past-thumb.webp",
           "width": 480,
           "height": 270,
-          "sha256": "5589d9d8c543aeb4a49b610e9d4975cf6f5a4878848026ea16598b3cf304da40",
-          "bytes": 20840
+          "sha256": "e293fbbea58220919f9d081f725881884614b74498f78b052b706ae5ad53029e",
+          "bytes": 12804,
+          "quality": 78
+        },
+        "medium": {
+          "path": "src/assets/kaf/generated/observation-past-medium.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "1ea46fafa6724554ab64eae42c7233b20596991482e8240c5c9003f0912e51eb",
+          "bytes": 33254,
+          "quality": 82
+        },
+        "display": {
+          "path": "src/assets/kaf/generated/observation-past-display.webp",
+          "width": 1280,
+          "height": 720,
+          "sha256": "e147d415c095d59f32162912ed1fab65d4898cb74ef3cf70ba0e0df157f221c0",
+          "bytes": 46810,
+          "quality": 82
+        },
+        "large": {
+          "path": "src/assets/kaf/generated/observation-past-large.webp",
+          "width": 1920,
+          "height": 1081,
+          "sha256": "e0beff2f9fc309a8dd6134556a828eb6c0445a70348d3c1302edbab2601856ae",
+          "bytes": 79906,
+          "quality": 82
+        },
+        "high": {
+          "path": "src/assets/kaf/generated/observation-past-high.webp",
+          "width": 2560,
+          "height": 1441,
+          "sha256": "f35e1220bcbcf85574ea0cf6390f08a2c89b4e1f56ec23f3b8f730dc5fd0845f",
+          "bytes": 120600,
+          "quality": 82
         }
       },
       "placeholder": {
-        "dataUrl": "data:image/webp;base64,UklGRtgAAABXRUJQVlA4IMwAAACwBACdASogABIAPwFuqU8rJqOiMBgMAWAgCWgABmgCUTmattqpe6p8Z2c/OBWAAP6l9qepgI6IoX7FKUj8y2uptoMqpaXuUx6Rc+TZNQqOei//9TKdUIgf/P76UPrYGSf9vAqJYRFhfg+Sgx61pX1mwumxJ5xXY9FYVYzepKi+CPMNHOphutEfrFVVmgj+L7s/OTKr6j+wVzFht4BY4g5UCSXu4OsULM0HGQhHlztB9t8xeTUUb+rl1Y77CVCC437SuRsYu7uxdyAAAAA=",
+        "dataUrl": "data:image/webp;base64,UklGRtgAAABXRUJQVlA4IMwAAAAwBQCdASogABIAPwFsqU8rJiOiMBgMAWAgCWgAAIPh6PFvQO9iBHwG6S/6lYPy2bD5wAD+pfc05l97GFCocLPzDDc/9Kn5gNzJjK35tO9lnJEp9kbu3/9TKdUIgf/P76UPrYGTfqpZU29aDD3W8Rr+4945RCfDhaRt1YLVBxwGwrhDHKNmN9zMXIJjZ1mdeWmT8HVCSECzokukncsAZscQcqBJL60sB+KNXWIf6affQQZKWgdPRavIGczf8/9KIvCFILiiSQzrW3cAAAA=",
         "width": 32,
         "height": 18,
         "bytes": 224,
-        "sha256": "2c2c18a660f9aa050aba84574698bd55095ab25d5b6ba3b72e07941517e6b353"
+        "sha256": "081541d66665f1e8d46b2c98b31c71860835ac615e4db0f2925adbfc14744cfd"
       }
     },
     {
       "id": "magic-keshiki",
+      "strategy": "upscale",
       "source": {
         "path": "src/assets/kaf/journey/2020-magic-keshiki.jpg",
         "width": 860,
@@ -215,38 +321,58 @@
         "sha256": "5fab05560238bf1ff0e1a0bcf4fa01c21ab855086fc8004ac81c5999208d0169"
       },
       "variants": {
-        "2x": {
-          "path": "src/assets/kaf/generated/magic-keshiki-2x.webp",
-          "width": 1720,
-          "height": 968,
-          "sha256": "648848144568ee67181ff0175db23ace950b02e61e89d0540a8794ef6590889a",
-          "bytes": 94904
-        },
-        "4x": {
-          "path": "src/assets/kaf/generated/magic-keshiki-4x.webp",
-          "width": 3440,
-          "height": 1936,
-          "sha256": "d1fbfdda7725626b9fdf1e69e9cf42bbec299670037120df522e1fc58e48c720",
-          "bytes": 226866
-        },
         "thumb": {
           "path": "src/assets/kaf/generated/magic-keshiki-thumb.webp",
           "width": 480,
           "height": 270,
-          "sha256": "5d88517b90c34c1d25a4a20ff4f65fc46ad937fa377d2800b894bcb3dcd33291",
-          "bytes": 15126
+          "sha256": "2a65a61553d1bd80e4df968dbb542fe6d2cfc8fb719ae7e161829cefe16abdaa",
+          "bytes": 8328,
+          "quality": 78
+        },
+        "medium": {
+          "path": "src/assets/kaf/generated/magic-keshiki-medium.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "844e1d5affb21a468223a33e8c00445170a731fbd0809e376e9a942ff81a4f7e",
+          "bytes": 24370,
+          "quality": 82
+        },
+        "display": {
+          "path": "src/assets/kaf/generated/magic-keshiki-display.webp",
+          "width": 1280,
+          "height": 720,
+          "sha256": "659c15ff5441da5500bd8b59b0f88ff043fa3cb4f79bf913709657cea623982d",
+          "bytes": 34844,
+          "quality": 82
+        },
+        "large": {
+          "path": "src/assets/kaf/generated/magic-keshiki-large.webp",
+          "width": 1920,
+          "height": 1081,
+          "sha256": "5823a2c966226c27a06e8893fef0cd83dff2dff25dbb351ead8a246cf1efe639",
+          "bytes": 59436,
+          "quality": 82
+        },
+        "high": {
+          "path": "src/assets/kaf/generated/magic-keshiki-high.webp",
+          "width": 2560,
+          "height": 1441,
+          "sha256": "c30712d70a741c6e1e148051d602a5abbfa11a2dc93bdc7c772fc3b8eda78cd4",
+          "bytes": 87764,
+          "quality": 82
         }
       },
       "placeholder": {
-        "dataUrl": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAADQBACdASogABIAPwF0sVIrJqSiqAqpYCAJYwCdM0LBm63iteP5uBKJ2NM+r1MtYAD99FVo2g99/H09FkA/KB9ZRWuD3NL1+IfY6kyYMcLRch5vARRnTrl2CdhVZzmAhKgHlr59dgR0R/jmod6XKnoANa82RLCvIJGTsufoWAA=",
+        "dataUrl": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAABwBACdASogABIAPwFyslIrJqSiqAqpYCAJYwCdM0xBmwQcT4cZ9GYYoIvRYAD99FYCuKeJ+wC+vzhfvu2SVNasyBSWq0yxWjMEcMbqnVYfO4CPCXqMzUT9AyI+iyU3mcKxkyepZvzpr3XNxgWyH/s35wYO0RLMQUD6KlQA",
         "width": 32,
         "height": 18,
-        "bytes": 146,
-        "sha256": "904e7a14fc682583234246be38716f1f0f7914b64ce85e021eccdefdee74bb1f"
+        "bytes": 144,
+        "sha256": "86a9848a10db776b860370231c88a261ce7d531120956e80c03a8b53f2122d38"
       }
     },
     {
       "id": "fable-chewing-disco",
+      "strategy": "upscale",
       "source": {
         "path": "src/assets/kaf/journey/2024-fable-chewing-disco.png",
         "width": 860,
@@ -254,38 +380,58 @@
         "sha256": "42dd8bf80d83f2bc306f31c778d5ddbed9f5aac66779edb24daef0d4cb4c4850"
       },
       "variants": {
-        "2x": {
-          "path": "src/assets/kaf/generated/fable-chewing-disco-2x.webp",
-          "width": 1720,
-          "height": 968,
-          "sha256": "f29cd994ac40989d24b1e08657fff767b036f7b200a2a6e08dc615bcf02235b3",
-          "bytes": 194386
-        },
-        "4x": {
-          "path": "src/assets/kaf/generated/fable-chewing-disco-4x.webp",
-          "width": 3440,
-          "height": 1936,
-          "sha256": "9aa73c8a974acae63d24a8bb5f33a80dcc3d28d48048cc84fa02570a7a7f5704",
-          "bytes": 436508
-        },
         "thumb": {
           "path": "src/assets/kaf/generated/fable-chewing-disco-thumb.webp",
           "width": 480,
           "height": 270,
-          "sha256": "8836a07ed5e132e57760a799a27b9bcd3c501c055b3acd9b020ca0bbb66de89c",
-          "bytes": 39018
+          "sha256": "ddece85d7f40ba0eaa76bf8113a45d6b9b7ecd2d48947a97b844f1487cdb214d",
+          "bytes": 24932,
+          "quality": 78
+        },
+        "medium": {
+          "path": "src/assets/kaf/generated/fable-chewing-disco-medium.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "871ca5ee5510b06984061d61bef3eada7dd4a27cc35f649724ce0a3becd9109f",
+          "bytes": 63004,
+          "quality": 82
+        },
+        "display": {
+          "path": "src/assets/kaf/generated/fable-chewing-disco-display.webp",
+          "width": 1280,
+          "height": 720,
+          "sha256": "d526b3bc761589aca628a30605eeb1f5727a97ba76bb1efe6a611648a522ddeb",
+          "bytes": 89732,
+          "quality": 82
+        },
+        "large": {
+          "path": "src/assets/kaf/generated/fable-chewing-disco-large.webp",
+          "width": 1920,
+          "height": 1081,
+          "sha256": "e9869d8fe2c6b1e3e76cc34dbb4a14e8046e1fe60b5ccac2aef3a78f8841de3e",
+          "bytes": 144924,
+          "quality": 82
+        },
+        "high": {
+          "path": "src/assets/kaf/generated/fable-chewing-disco-high.webp",
+          "width": 2560,
+          "height": 1441,
+          "sha256": "aa38625677b1456bdca183ce4106b6776dbfce9a169985c46c109936282af5b4",
+          "bytes": 201924,
+          "quality": 82
         }
       },
       "placeholder": {
-        "dataUrl": "data:image/webp;base64,UklGRi4BAABXRUJQVlA4ICIBAADQBgCdASogABIAPwForE6rJaQiMAgBYCAJbACdM5NBY//0bA1puPQK82OsQi05LCIIBZag45MAhY21xt6osAAA/GdXriY6Jp1KEusWEl7BOuKXQNBGVGLVIlJJCrzs6/DbCPdcXL4i3cQVz5hTZvJMlryMd/D6WMdsoBwF45FAHc+xih1X7qxKnM+8iMyZU53lorzT2kWGye7dwqI069osbaZBtLT4/Nb4243yz0SPvK0i/Z17IV55QDvxXhXmtoVRRDXlMB9KbTAjrhSEPJsiAOxkocXwMUz3/3LYGpaC8/VnoUW+XWILlSTubj+zc8yfBv7yUF5tD4N/yTeIf9e/stzJ9QC54hHFf6y6kIQMwpaMy2515AhO9zyXb1KBpQAAAA==",
+        "dataUrl": "data:image/webp;base64,UklGRioBAABXRUJQVlA4IB4BAACQBgCdASogABIAPwForE8rJaQiMAgBYCAJbACdM5NBWGwHYEGA61wpid83YZZKMSj/6u1Oht2WINyXtkVgAPxnQKhxUTDknwZGEMh5mdapmTHY0bEu2P0c1Nhrl17zNRTW91L6JzpPOY3npeQB+UvlnSZoKhI3GuOl1xSPUwCaaNr4nkpCoV1i1sJiK2PF9vYrgmCKUdC5VQF7wLo0LBfH7v/ODyXDUspb3Tz+ZbyJVhGDCoIF8hS1b4qXSUQsHEr3X5LULb3TDOhuAPGEPhOQXEWCxsKcpHkf/jqplu4ALSNT2OPB5J0b+M3w4/ruf2IfBv7yTYA82bwb/guwX+vf2SDOozHXDqw6by4n+FsjKc+6jdOFa7Nl5bkqEPAA",
         "width": 32,
         "height": 18,
-        "bytes": 310,
-        "sha256": "ec93cea305d2e10b83529aff84d9b09f867488d60e426e013bd18a2edd670e12"
+        "bytes": 306,
+        "sha256": "25f6eb810341d67e55b5fcdba5ed5568cb4147805c9b28339e53bf4b588f4454"
       }
     },
     {
       "id": "transcendent-ufo",
+      "strategy": "upscale",
       "source": {
         "path": "src/assets/kaf/journey/2025-transcendent-ufo.png",
         "width": 600,
@@ -293,38 +439,58 @@
         "sha256": "72448105038392b96d68ec713cd93d758b29ee52019268daa6262d750ed38a55"
       },
       "variants": {
-        "2x": {
-          "path": "src/assets/kaf/generated/transcendent-ufo-2x.webp",
-          "width": 1200,
-          "height": 1200,
-          "sha256": "63412a3f3a17ef2a612176a1fc3a0f068c3993f0d1f7379525d5e3274f737f81",
-          "bytes": 184378
-        },
-        "4x": {
-          "path": "src/assets/kaf/generated/transcendent-ufo-4x.webp",
-          "width": 2400,
-          "height": 2400,
-          "sha256": "cacab6ccddf5380f1572b39811c2f8a55daf0c380b54220a383cfcdf70f78296",
-          "bytes": 392866
-        },
         "thumb": {
           "path": "src/assets/kaf/generated/transcendent-ufo-thumb.webp",
           "width": 480,
           "height": 480,
-          "sha256": "5fc91d8bc2b83f22a38080a113dba3fa3fed7007788c386590a2e0ed9c5bd0d6",
-          "bytes": 53178
+          "sha256": "fada45c1ac4ce79932580a8a6d0bfaae9d7dafd9106cb90b42e6c17a9786f84f",
+          "bytes": 31226,
+          "quality": 78
+        },
+        "medium": {
+          "path": "src/assets/kaf/generated/transcendent-ufo-medium.webp",
+          "width": 960,
+          "height": 960,
+          "sha256": "43a828390867ef2d70bb9b2ad45e072fbf1413d855661686fbc50792b2f2baf7",
+          "bytes": 89266,
+          "quality": 82
+        },
+        "display": {
+          "path": "src/assets/kaf/generated/transcendent-ufo-display.webp",
+          "width": 1280,
+          "height": 1280,
+          "sha256": "f12c692ea358d6d329c11d86008612a655f58abc59d287faa94c33a161f1f9e4",
+          "bytes": 124146,
+          "quality": 82
+        },
+        "large": {
+          "path": "src/assets/kaf/generated/transcendent-ufo-large.webp",
+          "width": 1920,
+          "height": 1920,
+          "sha256": "1374ca5cbf80665f2d817752ecb17851ae4822873ec18b309e138fca36e190c2",
+          "bytes": 196098,
+          "quality": 82
+        },
+        "high": {
+          "path": "src/assets/kaf/generated/transcendent-ufo-high.webp",
+          "width": 2400,
+          "height": 2400,
+          "sha256": "d2cc9f47b3609002efb24b82b1467b7d2b22da51f797c05763eba189ec68ee39",
+          "bytes": 250368,
+          "quality": 82
         }
       },
       "placeholder": {
-        "dataUrl": "data:image/webp;base64,UklGRl4BAABXRUJQVlA4IFIBAABQBwCdASogACAAPuFYo06opSMiN+gBEBwJbACdMoM6OSicVOxWWKDjs1K2IlJ35aJybZePIn6RsPvcU21pjEO7KVwgAP75yIr1vySUiLXRCWGuW+LdyGChn0d3i9TqXKwytp9lXdH8lIpawf/MioMZKr6zHHrc60Xixpg9oQbGsN4x87MrO0O0wDhYA5JdkvFswWqgP9Zh0sMLgfAQvFMo0+x0B554PT0dDGmKKtC6k8qej828dY1pivRvWkgxgUsKHI2M3uasT4O6vT37uikQn71fknoBo/upTWXzt9AUla+UL9eXOCWWX7vkzgSZbjyeP+x8KDeFglZ1hlzlIHeknKj5b+zt3+iW2Y8hzr8yKC4cO1vYAI1p0U04R8k3903v0mmUnLC+2y6k+IZH45ZLywzkv98MnAOoPbi8b+LCHtEUe2DtMP4+gskU9oQxQDGQAA==",
+        "dataUrl": "data:image/webp;base64,UklGRlYBAABXRUJQVlA4IEoBAAAwBwCdASogACAAPuVao06pJSMiN+gBIByJbACdMoM8WR0iwPv0w1tfLTF92VW7mDZ/6Kql8famyeeINGyfvurWfAAA/vnIivg/joK1KM1ljk2MzZNqTsR/FoUB3VT9qnuJvIgd22C7y6SH+zDEPV1Pi90Wnp4tGVUWK1i/rSBhkOWY6NoedetoB8sAHEDn6x4qx1jn+sw6V1og/VnIKbbGJDGCON/qTosaSh/GglAEAzN/NXcsBCNiNfdAe37wy2Zgvnjp6dHamwTx8xAoceI63Gno/u5NhLYg1L7uFTp6uuszfGy4c9NXDdyIh9+9Bt1h6UVeBW0T/r6iQLwMRxnY2sbZzyaEb3EidHowswY51j3dls+x973l2/8Ob0by3juPwchqKPCF653ATJ5/fpouE0UydmOcSFZ4uNAS+NqCD+SMrLWZAgWAAAA=",
         "width": 32,
         "height": 32,
-        "bytes": 358,
-        "sha256": "5c9473d4a2a111296f3d65d7a851fd1b9b7a688da2131722166ff3d0a6462b7a"
+        "bytes": 350,
+        "sha256": "e537047af7e0168eabecfce07ec0618d0b0fdfbe0fa3df6ac8be3e7e8df09f45"
       }
     },
     {
       "id": "tori-portrait",
+      "strategy": "upscale",
       "source": {
         "path": "src/assets/kaf/gallery/kaf-tori-portrait.jpg",
         "width": 428,
@@ -332,34 +498,53 @@
         "sha256": "0638aa003a71475dde64a6cbc7c724343aeb3eff17c2272fdea41302c549d116"
       },
       "variants": {
-        "2x": {
-          "path": "src/assets/kaf/generated/tori-portrait-2x.webp",
-          "width": 856,
-          "height": 1200,
-          "sha256": "ff89ac308fa1008e31af7aef3bf8fa1d4c480c1dd03828d4d4baba9413323d6e",
-          "bytes": 50662
-        },
-        "4x": {
-          "path": "src/assets/kaf/generated/tori-portrait-4x.webp",
-          "width": 1712,
-          "height": 2400,
-          "sha256": "f74e53f0a7b45e02dcbd599f8d8e9c189609c36259ca7cd9e3e97ad9f99524be",
-          "bytes": 126006
-        },
         "thumb": {
           "path": "src/assets/kaf/generated/tori-portrait-thumb.webp",
           "width": 342,
           "height": 480,
-          "sha256": "dacb3aaecf007353eaad19715c5e58861fc3e6c7610e5550d2ccaa638cbb70d8",
-          "bytes": 14424
+          "sha256": "ff5fcdc4eb9d64ad6cd2fd9f4c32c64814cf838051b890622ff9d2096df9d997",
+          "bytes": 9372,
+          "quality": 78
+        },
+        "medium": {
+          "path": "src/assets/kaf/generated/tori-portrait-medium.webp",
+          "width": 685,
+          "height": 960,
+          "sha256": "0c6e79f5940a941d63daa81af9b3524f955bfe36265833807fc5a1637cac4378",
+          "bytes": 26308,
+          "quality": 82
+        },
+        "display": {
+          "path": "src/assets/kaf/generated/tori-portrait-display.webp",
+          "width": 913,
+          "height": 1280,
+          "sha256": "9a4423fc20c0bb2f49fa9a28cb5c76d157544b5b8c6988147a59bdc7e1c3a4b3",
+          "bytes": 38734,
+          "quality": 82
+        },
+        "large": {
+          "path": "src/assets/kaf/generated/tori-portrait-large.webp",
+          "width": 1370,
+          "height": 1920,
+          "sha256": "17ed70cd756529cc8f71f9424e903af138f16010a810addc8d5448e39b16e2f6",
+          "bytes": 65216,
+          "quality": 82
+        },
+        "high": {
+          "path": "src/assets/kaf/generated/tori-portrait-high.webp",
+          "width": 1712,
+          "height": 2400,
+          "sha256": "790fec7c2229a66589a40e407dd0b64bd9ee14822170d31bd0e76996714c3ab8",
+          "bytes": 85640,
+          "quality": 82
         }
       },
       "placeholder": {
-        "dataUrl": "data:image/webp;base64,UklGRpoAAABXRUJQVlA4II4AAACQBQCdASoXACAAPwFyr1CrJyQisBgIAWAgCWIAzgN4BsriC7wq9xyxIZfUBKYKJntWIlV9AAD+8dAl+I9Q55k+VfP3+z68aWLgckMLizFsuBYGwnV72BpuZSs72keLFlqwURAOTmdghkTfjb4uF5dIhANZAfVpb8BVGfhHrr3OxHCoTxoY2CIXtzY5AAAA",
+        "dataUrl": "data:image/webp;base64,UklGRp4AAABXRUJQVlA4IJIAAAAQBQCdASoXACAAPwFyrlCrJyQisBgIAWAgCWIAAC2q/C6GhItBH9V3szQW3Kf9U0gAAP7x0C3LTtBin+RwqLnQ7UaFRspsCms/jimPUWzZfeY9b+e0g4TFc10D3FG/4EK6nol7JgpPDK9DN/Ejt/KF+1cKYWvr2XhtXAIHZaxLvbM9WFGAIv7Qxxpi51J2EKKAAA==",
         "width": 23,
         "height": 32,
-        "bytes": 162,
-        "sha256": "1190d17d82a7f1b38fa7c033beab8f0ab858ef653e79a6d9df6697c5538cd7c5"
+        "bytes": 166,
+        "sha256": "a560d2dfd7774246919b42b764be67374bd517bfb0e1150dd341579ffbd516ec"
       }
     },
     {
@@ -372,26 +557,45 @@
         "sha256": "161fe38755a496e70a703a60848b385184bcca293685a781ee63d2372fd094f1"
       },
       "variants": {
+        "thumb": {
+          "path": "src/assets/kaf/generated/kyousou-beta-thumb.webp",
+          "width": 480,
+          "height": 480,
+          "sha256": "c6315167bd0b2c7ad897c0a9d69daa168a88c04eaa2c989087839e42a05c91ae",
+          "bytes": 36324,
+          "quality": 78
+        },
+        "medium": {
+          "path": "src/assets/kaf/generated/kyousou-beta-medium.webp",
+          "width": 960,
+          "height": 960,
+          "sha256": "9f63fffee673b840d3cd23701eda65f3011fb2261fb7b3c43becbcdd265f99e8",
+          "bytes": 97202,
+          "quality": 82
+        },
         "display": {
           "path": "src/assets/kaf/generated/kyousou-beta-display.webp",
-          "width": 800,
-          "height": 800,
-          "sha256": "bab195f229a9403ba6f71e7b77d5f40b1d861b3878eaead939631f75869fb212",
-          "bytes": 105520
+          "width": 1200,
+          "height": 1200,
+          "sha256": "2ae30c31796ec4972d8763d0f23c5f3c6ffa344daef5e840eb9f1c797bcf0876",
+          "bytes": 124900,
+          "quality": 82
+        },
+        "large": {
+          "path": "src/assets/kaf/generated/kyousou-beta-large.webp",
+          "width": 1440,
+          "height": 1440,
+          "sha256": "c77afea5b78f342ed82d3a7b4f8d64b57dac8a1585c5d8c03edf78ecfa43dd14",
+          "bytes": 150614,
+          "quality": 82
         },
         "high": {
           "path": "src/assets/kaf/generated/kyousou-beta-high.webp",
           "width": 1600,
           "height": 1600,
-          "sha256": "dc8d8c1f24bb8368c88a10f013ee3889ce75885675c647f82f12034154178707",
-          "bytes": 233108
-        },
-        "thumb": {
-          "path": "src/assets/kaf/generated/kyousou-beta-thumb.webp",
-          "width": 480,
-          "height": 480,
-          "sha256": "223c9668a4a57892d9cd9468a27a21147a7d6c2bad30e677ae2bf47ee2af1be9",
-          "bytes": 54982
+          "sha256": "e87c42d11269ab12ab4cfb3fdba5a9f011d85cf3ada48e9598666d08c19f2d8c",
+          "bytes": 169912,
+          "quality": 82
         }
       },
       "placeholder": {

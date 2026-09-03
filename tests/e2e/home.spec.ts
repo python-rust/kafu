@@ -401,7 +401,7 @@ test('desktop homepage uses factual artist copy and a complete five-album sequen
   expect(hierarchy.smallVisibleText).toEqual([]);
 });
 
-test('self-hosted typography assigns reading, display, and Japanese-name roles', async ({
+test('system typography preserves reading, display, and Japanese-name roles without webfonts', async ({
   page,
 }) => {
   await openHome(page, { width: 1440, height: 900 });
@@ -420,7 +420,9 @@ test('self-hosted typography assigns reading, display, and Japanese-name roles',
     const fontResources = performance
       .getEntriesByType('resource')
       .map((entry) => entry.toJSON())
-      .filter((entry) => String(entry.name).includes('noto-'));
+      .filter((entry) =>
+        /\.(?:woff2?|ttf|otf)$/i.test(new URL(String(entry.name)).pathname),
+      );
 
     return {
       bodyFamily: readFamily('body'),
@@ -430,21 +432,7 @@ test('self-hosted typography assigns reading, display, and Japanese-name roles',
       workTitleFamily: readFamily('#works h3'),
       galleryTitleFamily: readFamily('#visuals h3'),
       journeyYearFamily: readFamily('#journey [data-journey-step] header p'),
-      sansLoaded: document.fonts.check(
-        '400 16px "Noto Sans SC Variable"',
-        '花谱观察站成长轨迹',
-      ),
-      serifLoaded: document.fonts.check(
-        '600 48px "Noto Serif SC Variable"',
-        '花谱成长轨迹代表作品',
-      ),
-      fontOrigins: Array.from(
-        new Set(fontResources.map((entry) => new URL(entry.name).origin)),
-      ),
       fontRequestCount: fontResources.length,
-      fontResourcesAreWoff2: fontResources.every((entry) =>
-        new URL(String(entry.name)).pathname.endsWith('.woff2'),
-      ),
       fontTransferBytes: fontResources.reduce(
         (sum, entry) => sum + (entry.transferSize || 0),
         0,
@@ -452,23 +440,16 @@ test('self-hosted typography assigns reading, display, and Japanese-name roles',
     };
   });
 
-  expect(typography.bodyFamily).toContain('Noto Sans SC Variable');
-  expect(typography.heroFamily).toContain('Noto Serif SC Variable');
+  expect(typography.bodyFamily).toContain('PingFang SC');
+  expect(typography.bodyFamily).toContain('system-ui');
+  expect(typography.heroFamily).toContain('Songti SC');
   expect(typography.identityFamily).toContain('Hiragino Mincho ProN');
-  expect(typography.sectionFamily).toContain('Noto Serif SC Variable');
+  expect(typography.sectionFamily).toContain('Songti SC');
   expect(typography.workTitleFamily).toContain('Hiragino Mincho ProN');
   expect(typography.galleryTitleFamily).toContain('Hiragino Mincho ProN');
-  expect(typography.journeyYearFamily).toContain('Noto Serif SC Variable');
-  expect(typography.sansLoaded).toBe(true);
-  expect(typography.serifLoaded).toBe(true);
-  expect(typography.fontOrigins).toEqual(['http://127.0.0.1:4173']);
-  expect(typography.fontRequestCount).toBeLessThanOrEqual(60);
-  expect(typography.fontResourcesAreWoff2).toBe(true);
-  expect(typography.fontTransferBytes).toBeLessThanOrEqual(3_500_000);
-
-  const license = await page.request.get('/font-licenses/Noto-OFL-1.1.txt');
-  expect(license.ok()).toBe(true);
-  expect(await license.text()).toContain('SIL OPEN FONT LICENSE Version 1.1');
+  expect(typography.journeyYearFamily).toContain('Iowan Old Style');
+  expect(typography.fontRequestCount).toBe(0);
+  expect(typography.fontTransferBytes).toBe(0);
 });
 
 test('fixed navigation keeps contrast and reports the current page location', async ({
@@ -583,17 +564,22 @@ test('hero selects a right-sized responsive candidate across desktop and mobile 
     {
       density: 1,
       viewport: { width: 1440, height: 900 },
-      expectedCandidate: 'kaihou-2x',
+      expectedCandidate: 'kaihou-large',
     },
     {
       density: 2,
       viewport: { width: 1440, height: 900 },
-      expectedCandidate: 'kaihou-4x',
+      expectedCandidate: 'kaihou-high',
+    },
+    {
+      density: 2,
+      viewport: { width: 390, height: 844 },
+      expectedCandidate: 'kaihou-medium',
     },
     {
       density: 3,
       viewport: { width: 390, height: 844 },
-      expectedCandidate: 'kaihou-2x',
+      expectedCandidate: 'kaihou-display',
     },
   ] as const) {
     const context = await browser.newContext({
@@ -617,14 +603,19 @@ test('hero selects a right-sized responsive candidate across desktop and mobile 
         height: image.getAttribute('height'),
       };
     });
-    expect(source.src).toContain('kaihou-2x');
+    expect(source.src).toContain('kaihou-display');
     expect(source.srcSet).toContain('kaihou-thumb');
     expect(source.srcSet).toContain('480w');
-    expect(source.srcSet).toContain('1720w');
-    expect(source.srcSet).toContain('kaihou-4x');
-    expect(source.srcSet).toContain('3440w');
-    expect(source.width).toBe('1720');
-    expect(source.height).toBe('968');
+    expect(source.srcSet).toContain('kaihou-medium');
+    expect(source.srcSet).toContain('960w');
+    expect(source.srcSet).toContain('kaihou-display');
+    expect(source.srcSet).toContain('1280w');
+    expect(source.srcSet).toContain('kaihou-large');
+    expect(source.srcSet).toContain('1920w');
+    expect(source.srcSet).toContain('kaihou-high');
+    expect(source.srcSet).toContain('2560w');
+    expect(source.width).toBe('1280');
+    expect(source.height).toBe('720');
     expect(source.currentSrc).toContain(scenario.expectedCandidate);
     await context.close();
   }
@@ -654,14 +645,17 @@ test('slow image responses keep visible feedback and stable layout before reveal
     });
   });
 
-  await page.route(/\/assets\/kaihou-(?:2x|4x)-[^/]+\.webp$/, async (route) => {
-    heroRequestIntercepted = true;
-    const response = await route.fetch();
-    await heroGate;
-    await route.fulfill({ response });
-  });
   await page.route(
-    /\/assets\/kyousou-beta-(?:thumb|display|high)-[^/]+\.webp$/,
+    /\/assets\/kaihou-(?:medium|display|large|high)-[^/]+\.webp$/,
+    async (route) => {
+      heroRequestIntercepted = true;
+      const response = await route.fetch();
+      await heroGate;
+      await route.fulfill({ response });
+    },
+  );
+  await page.route(
+    /\/assets\/kyousou-beta-(?:thumb|medium|display|large|high)-[^/]+\.webp$/,
     async (route) => {
       thirdAlbumRequestIntercepted = true;
       const response = await route.fetch();
@@ -717,7 +711,7 @@ test('slow image responses keep visible feedback and stable layout before reveal
   await expect(thirdAlbumShell.getByText('图片加载中')).toBeVisible();
   await expect(thirdAlbumShell.locator('img')).toHaveAttribute(
     'srcset',
-    /kyousou-beta-thumb.*480w.*kyousou-beta-display.*800w.*kyousou-beta-high.*1600w/,
+    /kyousou-beta-thumb.*480w.*kyousou-beta-medium.*960w.*kyousou-beta-display.*1200w.*kyousou-beta-large.*1440w.*kyousou-beta-high.*1600w/,
   );
   await expect.poll(() => thirdAlbumRequestIntercepted).toBe(true);
 
@@ -848,7 +842,7 @@ test('Journey keeps the previous clear image while an uncached next era transfer
   let interceptedRequests = 0;
 
   await page.route(
-    /\/assets\/observation-past-(?:2x|4x)-[^/]+\.webp$/,
+    /\/assets\/observation-past-(?:medium|display|large|high)-[^/]+\.webp$/,
     async (route) => {
       interceptedRequests += 1;
       await nextImageGate;
@@ -920,7 +914,7 @@ test('gallery provides eight selectors and localized keyboard lightbox navigatio
   await expect(page.getByRole('button', { name: '下一张图片' })).toBeVisible();
   await expect(
     page.locator('.yarl__slide_image[alt^="黑色舞台上"]'),
-  ).toHaveAttribute('src', /fukakai-4x/);
+  ).toHaveAttribute('src', /fukakai-high/);
 
   await page.keyboard.press('ArrowRight');
   await expect(
@@ -1366,6 +1360,19 @@ test('reduced motion renders every Journey era and image in normal flow', async 
     await expect(page.locator('#journey [data-journey-step] img')).toHaveCount(
       6,
     );
+    const journeyLoading = await page
+      .locator('#journey [data-journey-step] img')
+      .evaluateAll((images) =>
+        images.map((image) => image.getAttribute('loading')),
+      );
+    expect(journeyLoading).toEqual([
+      'eager',
+      'lazy',
+      'lazy',
+      'lazy',
+      'lazy',
+      'lazy',
+    ]);
     await expect(page.locator('#journey').getByRole('tab')).toHaveCount(0);
     await expect(page.locator('#journey').getByRole('button')).toHaveCount(0);
 
@@ -1406,13 +1413,27 @@ test('image discovery and priority follow the page reading order', async ({
 
   const heroPreload = page.locator('link[rel="preload"][as="image"]');
   await expect(heroPreload).toHaveCount(1);
-  await expect(heroPreload).toHaveAttribute('href', /kaihou-2x/);
+  await expect(heroPreload).toHaveAttribute('href', /kaihou-display/);
   await expect(heroPreload).toHaveAttribute(
     'imagesrcset',
     /kaihou-thumb.*480w/,
   );
-  await expect(heroPreload).toHaveAttribute('imagesrcset', /kaihou-2x.*1720w/);
-  await expect(heroPreload).toHaveAttribute('imagesrcset', /kaihou-4x.*3440w/);
+  await expect(heroPreload).toHaveAttribute(
+    'imagesrcset',
+    /kaihou-medium.*960w/,
+  );
+  await expect(heroPreload).toHaveAttribute(
+    'imagesrcset',
+    /kaihou-display.*1280w/,
+  );
+  await expect(heroPreload).toHaveAttribute(
+    'imagesrcset',
+    /kaihou-large.*1920w/,
+  );
+  await expect(heroPreload).toHaveAttribute(
+    'imagesrcset',
+    /kaihou-high.*2560w/,
+  );
   await expect(heroPreload).toHaveAttribute('imagesizes', '100vw');
   await expect(heroPreload).toHaveAttribute('fetchpriority', 'high');
 
@@ -1429,16 +1450,28 @@ test('image discovery and priority follow the page reading order', async ({
     })),
   );
   const eagerImages = imageLoading.filter((image) => image.loading === 'eager');
-  expect(eagerImages).toHaveLength(1);
-  expect(eagerImages[0]?.fetchPriority).toBe('high');
-  expect(eagerImages[0]?.src).toContain('kaihou-2x');
-  expect(eagerImages[0]?.srcSet).toContain('kaihou-4x');
+  expect(eagerImages).toHaveLength(3);
+  expect(eagerImages.map((image) => image.src)).toEqual(
+    expect.arrayContaining([
+      expect.stringContaining('kaihou-display'),
+      expect.stringContaining('wasurete-shimae-display'),
+      expect.stringContaining('origin-ito-display'),
+    ]),
+  );
+  const highPriorityImages = imageLoading.filter(
+    (image) => image.fetchPriority === 'high',
+  );
+  expect(highPriorityImages).toHaveLength(1);
+  expect(highPriorityImages[0]?.src).toContain('kaihou-display');
+  expect(highPriorityImages[0]?.srcSet).toContain('kaihou-high');
 
   for (const image of imageLoading) {
     expect(Number(image.width)).toBeGreaterThan(0);
     expect(Number(image.height)).toBeGreaterThan(0);
-    if (image !== eagerImages[0]) {
+    if (!eagerImages.includes(image)) {
       expect(image.loading).toBe('lazy');
+    }
+    if (image !== highPriorityImages[0]) {
       expect(image.fetchPriority).not.toBe('high');
     }
     if (image.mediaVariant === 'responsive') {
@@ -1468,10 +1501,10 @@ test('image discovery and priority follow the page reading order', async ({
       images.map((image) => image.getAttribute('fetchpriority')),
     );
   expect(workPriorities).toHaveLength(5);
-  expect(workPriorities.every((priority) => priority === 'low')).toBe(true);
+  expect(workPriorities.every((priority) => priority === 'auto')).toBe(true);
   await expect(
     page.locator('#visuals img[data-media-variant="responsive"]'),
-  ).toHaveAttribute('fetchpriority', 'low');
+  ).toHaveAttribute('fetchpriority', 'auto');
 });
 
 test('captures the responsive guided-Journey visual evidence', async ({

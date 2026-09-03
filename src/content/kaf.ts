@@ -1,14 +1,4 @@
-import galleryToriPortrait from '../assets/kaf/gallery/kaf-tori-portrait.jpg';
 import { generatedMediaVariants } from '../assets/kaf/generated/mediaVariants';
-import heroKaihou from '../assets/kaf/hero-kaihou.jpg';
-import journeyOriginIto from '../assets/kaf/journey/2018-origin-ito.jpg';
-import journeyObservationPast from '../assets/kaf/journey/2019-observation-past.jpg';
-import journeyMagicKeshiki from '../assets/kaf/journey/2020-magic-keshiki.jpg';
-import journeyFableChewingDisco from '../assets/kaf/journey/2024-fable-chewing-disco.png';
-import journeyTranscendentUfo from '../assets/kaf/journey/2025-transcendent-ufo.png';
-import visualFukakai from '../assets/kaf/visual-fukakai.jpg';
-import visualWasureteShimae from '../assets/kaf/visual-wasurete-shimae.jpg';
-import workKyousouBeta from '../assets/kaf/works/2023-kyousou-beta.png';
 
 const PIAPRO_LICENSE_URL = 'https://piapro.jp/license/pc/icon';
 const KAF_HISTORY_URL = 'https://kaf.kamitsubaki.jp/history/';
@@ -44,14 +34,6 @@ export interface KafReferenceSource {
   readonly href: string;
 }
 
-export interface KafVisual {
-  title: string;
-  image: string;
-  alt: string;
-  credit: string;
-  sourceUrl: string;
-}
-
 export interface KafMediaVariant {
   readonly src: string;
   readonly width: number;
@@ -61,10 +43,11 @@ export interface KafMediaVariant {
 export interface KafMedia {
   readonly id: string;
   readonly title: string;
-  readonly preview: KafMediaVariant;
-  readonly display: KafMediaVariant;
-  readonly highDensity: KafMediaVariant;
   readonly thumbnail: KafMediaVariant;
+  readonly medium: KafMediaVariant;
+  readonly display: KafMediaVariant;
+  readonly large: KafMediaVariant;
+  readonly highDensity: KafMediaVariant;
   readonly placeholderDataUrl: string;
   readonly alt: string;
   readonly credit: string;
@@ -98,9 +81,11 @@ export interface KafJourneyChapter {
 export interface KafGalleryVisual {
   readonly id: string;
   readonly title: string;
-  readonly display: KafMediaVariant;
-  readonly highDensity: KafMediaVariant;
   readonly thumbnail: KafMediaVariant;
+  readonly medium: KafMediaVariant;
+  readonly display: KafMediaVariant;
+  readonly large: KafMediaVariant;
+  readonly highDensity: KafMediaVariant;
   readonly placeholderDataUrl: string;
   readonly alt: string;
   readonly credit: string;
@@ -124,7 +109,6 @@ const officialNonCommercialFanUse =
 const heroKaihouMedia: KafMedia = {
   id: 'kaihou',
   title: '邂逅',
-  preview: { src: heroKaihou, width: 860, height: 484 },
   ...generatedMediaVariants.kaihou,
   alt: '粉色短发的花谱正面肖像，画面右侧写有“邂逅”二字。',
   credit: '花譜 / piapro',
@@ -138,7 +122,6 @@ const heroKaihouMedia: KafMedia = {
 const wasureteShimaeMedia: KafMedia = {
   id: 'wasurete-shimae',
   title: '忘れてしまえ',
-  preview: { src: visualWasureteShimae, width: 860, height: 484 },
   ...generatedMediaVariants['wasurete-shimae'],
   alt: '花谱站在青绿色天空与城市风景前的视觉图。',
   credit: 'Character design: PALOW. · 3DCG: 川サキケンジ · via 花譜 / piapro',
@@ -152,7 +135,6 @@ const wasureteShimaeMedia: KafMedia = {
 const fukakaiMedia: KafMedia = {
   id: 'fukakai',
   title: '不可解',
-  preview: { src: visualFukakai, width: 860, height: 484 },
   ...generatedMediaVariants.fukakai,
   alt: '黑色舞台上，花谱与现场乐队同台演出的“不可解”视觉图。',
   credit: 'Character design: PALOW. · 3DCG: 川サキケンジ · via 花譜 / piapro',
@@ -166,7 +148,6 @@ const fukakaiMedia: KafMedia = {
 const originItoMedia: KafMedia = {
   id: 'origin-ito',
   title: '糸',
-  preview: { src: journeyOriginIto, width: 860, height: 484 },
   ...generatedMediaVariants['origin-ito'],
   alt: '早期造型的花谱戴着深色兜帽，身后漂浮着彩色几何碎片，画面写有“糸”。',
   credit:
@@ -181,7 +162,6 @@ const originItoMedia: KafMedia = {
 const observationPastMedia: KafMedia = {
   id: 'observation-past',
   title: '過去を喰らう',
-  preview: { src: journeyObservationPast, width: 860, height: 484 },
   ...generatedMediaVariants['observation-past'],
   alt: '蓝色夜景前的花谱近景，黑色兜帽与粉色发梢被霓虹映亮，旁侧写有“過去を喰らう”。',
   credit:
@@ -196,7 +176,6 @@ const observationPastMedia: KafMedia = {
 const magicKeshikiMedia: KafMedia = {
   id: 'magic-keshiki',
   title: '景色',
-  preview: { src: journeyMagicKeshiki, width: 860, height: 484 },
   ...generatedMediaVariants['magic-keshiki'],
   alt: '夕阳海面前的花谱半身剪影，画面右侧写有“景色”。',
   credit: '花譜 / piapro',
@@ -210,7 +189,6 @@ const magicKeshikiMedia: KafMedia = {
 const fableChewingDiscoMedia: KafMedia = {
   id: 'fable-chewing-disco',
   title: 'チューイン・ディスコ',
-  preview: { src: journeyFableChewingDisco, width: 860, height: 484 },
   ...generatedMediaVariants['fable-chewing-disco'],
   alt: '高饱和霓虹背景与卡通角色组成的“チューイン・ディスコ”视觉图。',
   credit: '花譜 / piapro',
@@ -224,7 +202,6 @@ const fableChewingDiscoMedia: KafMedia = {
 const transcendentUfoMedia: KafMedia = {
   id: 'transcendent-ufo',
   title: 'ユーフォーを見にいこう',
-  preview: { src: journeyTranscendentUfo, width: 600, height: 600 },
   ...generatedMediaVariants['transcendent-ufo'],
   alt: '星空与蓝色文字之间，粉色短发的花谱伸手望向前方。',
   credit: '花譜 / piapro',
@@ -238,7 +215,6 @@ const transcendentUfoMedia: KafMedia = {
 const toriPortraitMedia: KafMedia = {
   id: 'tori-portrait',
   title: '花譜ちゃん',
-  preview: { src: galleryToriPortrait, width: 428, height: 600 },
   ...generatedMediaVariants['tori-portrait'],
   alt: '白色背景上的花谱全身二次创作插画，身穿深蓝外套与白色裙装。',
   credit: 'とり / piapro',
@@ -252,7 +228,6 @@ const toriPortraitMedia: KafMedia = {
 const kyousouBetaMedia: KafMedia = {
   id: 'kyousou-beta',
   title: '狂想β',
-  preview: { src: workKyousouBeta, width: 1600, height: 1600 },
   ...generatedMediaVariants['kyousou-beta'],
   alt: '花谱第三张专辑《狂想β》封面，红蓝花朵环绕粉色短发的花谱与蓝色鱼形意象。',
   credit: '花譜 / PALOW. / KAMITSUBAKI STUDIO',
@@ -292,9 +267,11 @@ export const galleryMedia: readonly KafMedia[] = [
 const toGalleryVisual = (media: KafMedia): KafGalleryVisual => ({
   id: media.id,
   title: media.title,
-  display: media.display,
-  highDensity: media.highDensity,
   thumbnail: media.thumbnail,
+  medium: media.medium,
+  display: media.display,
+  large: media.large,
+  highDensity: media.highDensity,
   placeholderDataUrl: media.placeholderDataUrl,
   alt: media.alt,
   credit: media.credit,
@@ -522,31 +499,6 @@ export const journeyChapters: readonly KafJourneyChapter[] = [
       },
     ],
     primaryVisual: transcendentUfoMedia,
-  },
-];
-
-export const heroVisual: KafVisual = {
-  title: '邂逅',
-  image: heroKaihou,
-  alt: heroKaihouMedia.alt,
-  credit: heroKaihouMedia.credit,
-  sourceUrl: heroKaihouMedia.sourceUrl,
-};
-
-export const visualArchive: KafVisual[] = [
-  {
-    title: '忘れてしまえ',
-    image: visualWasureteShimae,
-    alt: wasureteShimaeMedia.alt,
-    credit: wasureteShimaeMedia.credit,
-    sourceUrl: wasureteShimaeMedia.sourceUrl,
-  },
-  {
-    title: '不可解',
-    image: visualFukakai,
-    alt: fukakaiMedia.alt,
-    credit: fukakaiMedia.credit,
-    sourceUrl: fukakaiMedia.sourceUrl,
   },
 ];
 

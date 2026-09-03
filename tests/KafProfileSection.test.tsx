@@ -41,10 +41,10 @@ describe('KafProfileSection', () => {
     const visual = within(section).getByRole('img', {
       name: profile.visual.alt,
     });
-    expect(visual).toHaveAttribute('loading', 'lazy');
+    expect(visual).toHaveAttribute('loading', 'eager');
     expect(visual).toHaveAttribute(
       'srcset',
-      `${profile.visual.thumbnail.src} ${profile.visual.thumbnail.width}w, ${profile.visual.display.src} ${profile.visual.display.width}w, ${profile.visual.highDensity.src} ${profile.visual.highDensity.width}w`,
+      `${profile.visual.thumbnail.src} ${profile.visual.thumbnail.width}w, ${profile.visual.medium.src} ${profile.visual.medium.width}w, ${profile.visual.display.src} ${profile.visual.display.width}w, ${profile.visual.large.src} ${profile.visual.large.width}w, ${profile.visual.highDensity.src} ${profile.visual.highDensity.width}w`,
     );
     expect(visual).toHaveAttribute(
       'sizes',

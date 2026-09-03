@@ -19,9 +19,11 @@ const artworkLoadHarness = vi.hoisted(() => {
 
   interface Source {
     id: string;
-    display: Variant;
-    highDensity: Variant;
     thumbnail: Variant;
+    medium: Variant;
+    display: Variant;
+    large: Variant;
+    highDensity: Variant;
   }
 
   interface PendingRequest {
@@ -36,7 +38,13 @@ const artworkLoadHarness = vi.hoisted(() => {
   const preload = vi.fn();
 
   const sourceSet = (source: Source) =>
-    [source.thumbnail, source.display, source.highDensity]
+    [
+      source.thumbnail,
+      source.medium,
+      source.display,
+      source.large,
+      source.highDensity,
+    ]
       .sort((first, second) => first.width - second.width)
       .map((variant) => `${variant.src} ${variant.width}w`)
       .join(', ');
@@ -453,10 +461,10 @@ describe('JourneySection', () => {
     expect(screen.getAllByRole('img')).toHaveLength(6);
     expect(scrollamaHarness.factory).not.toHaveBeenCalled();
 
-    for (const chapter of chapters) {
+    for (const [index, chapter] of chapters.entries()) {
       expect(
         screen.getByRole('img', { name: chapter.primaryVisual.alt }),
-      ).toHaveAttribute('loading', 'lazy');
+      ).toHaveAttribute('loading', index === 0 ? 'eager' : 'lazy');
       expect(screen.getByText(chapter.summary[1])).toBeVisible();
     }
   });

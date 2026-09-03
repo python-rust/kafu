@@ -202,7 +202,7 @@ describe('home page', () => {
     expect(screen.getByText('14 岁')).toBeVisible();
   });
 
-  it('uses all verified local visuals while only prioritizing the hero image', () => {
+  it('discovers the first reading images early while only prioritizing the hero', () => {
     const { container } = renderHomePage();
     const images = Array.from(container.querySelectorAll('img'));
     const uniqueSources = new Set(
@@ -213,17 +213,24 @@ describe('home page', () => {
     );
 
     expect(uniqueSources.size).toBeGreaterThanOrEqual(10);
-    expect(eagerImages).toHaveLength(1);
+    expect(eagerImages).toHaveLength(3);
+    expect(
+      eagerImages.map((image) => image.getAttribute('data-media-id')),
+    ).toEqual(['kaihou', 'wasurete-shimae', 'origin-ito']);
     expect(eagerImages[0]).toHaveAttribute('fetchpriority', 'high');
-    expect(eagerImages[0]?.getAttribute('src')).toContain('kaihou-2x');
-    expect(eagerImages[0]?.getAttribute('srcset')).toContain('kaihou-4x');
+    expect(eagerImages[0]?.getAttribute('src')).toContain('kaihou-display');
+    expect(eagerImages[0]?.getAttribute('srcset')).toContain('kaihou-high');
+    expect(eagerImages[1]).toHaveAttribute('fetchpriority', 'auto');
+    expect(eagerImages[2]).toHaveAttribute('fetchpriority', 'auto');
 
     for (const image of images) {
       expect(Number(image.getAttribute('width'))).toBeGreaterThan(0);
       expect(Number(image.getAttribute('height'))).toBeGreaterThan(0);
 
-      if (image !== eagerImages[0]) {
+      if (!eagerImages.includes(image)) {
         expect(image).toHaveAttribute('loading', 'lazy');
+      }
+      if (image !== eagerImages[0]) {
         expect(image).not.toHaveAttribute('fetchpriority', 'high');
       }
     }

@@ -17,7 +17,7 @@
 - React 19、TypeScript、Vite
 - Motion 与 Scrollama
 - Yet Another React Lightbox
-- Noto Sans SC、Noto Serif SC 自托管字体
+- 系统中文无衬线与宋体字体栈，不下载额外 WebFont
 - Vitest、Testing Library、Playwright
 
 页面支持桌面端和移动端。系统开启“减少动态效果”后，成长轨迹会改为普通列表，内容不会缺失。

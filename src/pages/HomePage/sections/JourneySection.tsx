@@ -337,7 +337,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                       <ResponsiveArtwork
                         source={displayedChapter.primaryVisual}
                         alt=""
-                        loading="lazy"
+                        loading="eager"
                         fetchPriority="auto"
                         decoding="async"
                         sizes={JOURNEY_STAGE_SIZES}
@@ -423,8 +423,8 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                       <figure className={styles.linearVisual}>
                         <ResponsiveArtwork
                           source={chapter.primaryVisual}
-                          loading="lazy"
-                          fetchPriority="low"
+                          loading={index === 0 ? 'eager' : 'lazy'}
+                          fetchPriority="auto"
                           decoding="async"
                           sizes="(max-width: 88rem) calc(100vw - 2.5rem), 88rem"
                         />

@@ -64,7 +64,7 @@ scripts, logs, or documentation.
 - `mise run check` completes before deployment.
 - `scripts/verify_static_build.py` verifies artifact-root `index.html`,
   same-origin HTML/CSS resources, file existence, JavaScript/CSS entries, the
-  responsive Hero preload and all width candidates, and self-hosted WOFF2 output.
+  responsive Hero preload and all width candidates, and zero bundled WebFonts.
 - Wrangler is an exact project devDependency and is executed through pnpm, so
   local releases and GitHub Actions use the same lockfile-controlled version.
 - `pnpm-workspace.yaml` explicitly allows only Wrangler's required `esbuild`
@@ -102,7 +102,7 @@ origins:
   placeholder behavior;
 - page-session loaded-state records remain memory-only and keyed by build-hashed
   asset URLs plus responsive selection context;
-- Noto fonts are self-hosted WOFF2 build assets;
+- typography uses installed system fonts and issues no font request;
 - application JavaScript and CSS are hashed Vite assets;
 - external media/social URLs remain user-initiated outbound links only.
 
@@ -132,7 +132,7 @@ After deployment:
 
 - confirm the workflow conclusion is `success`;
 - confirm `https://kafu-8bd.pages.dev/` returns HTTP success;
-- request representative hashed JavaScript, CSS, image, and WOFF2 resources;
+- request representative hashed JavaScript, CSS, and image resources;
 - confirm the Hero preload and `srcset` candidates remain same-origin under
   `/assets/`;
 - perform a browser smoke check at `/` when deployment behavior itself changes.

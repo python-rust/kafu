@@ -141,9 +141,11 @@ src/assets/kaf/
 ├── ATTRIBUTION.md
 ├── generated/
 │   ├── manifest.json
-│   ├── *-2x.webp
-│   ├── *-4x.webp
 │   ├── *-thumb.webp
+│   ├── *-medium.webp
+│   ├── *-display.webp
+│   ├── *-large.webp
+│   ├── *-high.webp
 │   └── mediaVariants.ts
 ├── hero-kaihou.jpg
 ├── visual-fukakai.jpg

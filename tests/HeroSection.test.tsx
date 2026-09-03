@@ -77,7 +77,7 @@ describe('HeroSection', () => {
     expect(visual).toHaveAttribute('height', '2000');
     expect(visual).toHaveAttribute(
       'srcset',
-      `${visualFixture.thumbnail.src} ${visualFixture.thumbnail.width}w, ${visualFixture.display.src} ${visualFixture.display.width}w, ${visualFixture.highDensity.src} ${visualFixture.highDensity.width}w`,
+      `${visualFixture.thumbnail.src} ${visualFixture.thumbnail.width}w, ${visualFixture.medium.src} ${visualFixture.medium.width}w, ${visualFixture.display.src} ${visualFixture.display.width}w, ${visualFixture.large.src} ${visualFixture.large.width}w, ${visualFixture.highDensity.src} ${visualFixture.highDensity.width}w`,
     );
     expect(visual).toHaveAttribute('sizes', '100vw');
     expect(visual).toHaveAttribute('fetchpriority', 'high');

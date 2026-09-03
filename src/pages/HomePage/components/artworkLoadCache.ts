@@ -17,7 +17,13 @@ function absoluteArtworkUrl(value: string) {
 }
 
 function responsiveCandidates(source: ResponsiveArtworkSource) {
-  const candidates = [source.thumbnail, source.display, source.highDensity];
+  const candidates = [
+    source.thumbnail,
+    source.medium,
+    source.display,
+    source.large,
+    source.highDensity,
+  ];
   const uniqueCandidates = new Map<number, ArtworkVariant>();
 
   for (const candidate of candidates) {

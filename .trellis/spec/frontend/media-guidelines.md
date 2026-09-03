@@ -39,10 +39,11 @@ interface KafMediaVariant {
 interface KafMedia {
   readonly id: string;
   readonly title: string;
-  readonly preview: KafMediaVariant;
-  readonly display: KafMediaVariant;
-  readonly highDensity: KafMediaVariant;
   readonly thumbnail: KafMediaVariant;
+  readonly medium: KafMediaVariant;
+  readonly display: KafMediaVariant;
+  readonly large: KafMediaVariant;
+  readonly highDensity: KafMediaVariant;
   readonly placeholderDataUrl: string;
   readonly alt: string;
   readonly credit: string;
@@ -56,21 +57,24 @@ interface KafMedia {
 
 Field meaning:
 
-- `preview` — unchanged verified local provenance input;
-- `display` — normal page candidate appropriate to the verified source;
-- `highDensity` — larger page/lightbox candidate appropriate to the verified
-  source;
 - `thumbnail` — longest-edge 480px derivative used only for thumbnail/backdrop
   roles;
+- `medium` — longest-edge 960px responsive candidate;
+- `display` — longest-edge 1280px normal responsive fallback;
+- `large` — longest-edge 1920px responsive candidate;
+- `highDensity` — longest-edge 2560px candidate, capped by the verified 4×
+  master and used by large/high-DPR layouts and the lightbox;
 - `placeholderDataUrl` — generated longest-edge 32px WebP embedded inline for
   immediate weak-network feedback without another request;
 - source/license fields — retained regardless of where attribution is rendered.
 
-All variants preserve the preview aspect ratio exactly. The nine Piapro preview
-inputs keep the established 2× display / 4× high-density contract. A reviewed
-source-native asset may instead downsample the verified source; the current
-`狂想β` cover uses 800px display, 1600px high-density, and 480px thumbnail
-variants rather than artificial upscaling.
+The immutable previews remain generation/provenance inputs under `src/assets/`
+and in `generated/manifest.json`; they are not imported into the browser bundle.
+All variants preserve the preview aspect ratio. The nine Piapro previews use a
+verified 4× master only as the source for the responsive ladder; browsers do not
+receive that full master. A reviewed source-native asset may instead downsample
+the verified source. The current `狂想β` cover uses longest edges
+480/960/1200/1440/1600 rather than artificial upscaling.
 
 ---
 
@@ -87,9 +91,8 @@ tool: waifu2x-ncnn-vulkan 20250915 (official portable macOS build)
 model: models-cunet
 noise: -1 (no denoise)
 master scale: 4
-output: WebP quality 90
-display: Lanczos downsample from 4× to 2×
-thumbnail: Lanczos downsample, longest edge 480px
+outputs: Lanczos-downsampled 480/960/1280/1920/2560 responsive WebP candidates
+WebP quality: 78 for thumbnails, 82 for all larger candidates
 ```
 
 Run generation with an external tool path; do not commit the binary or models:
@@ -115,6 +118,8 @@ The script must:
 5. generate and verify `generated/mediaVariants.ts` from the same dimensions so
    runtime imports cannot drift from the manifest.
 6. generate and verify a tiny inline WebP placeholder for every media record.
+7. reject stale derivative filenames, policy drift, or more than 4.5 MB across
+   the full generated candidate set.
 
 Reviewed source-native images use the same manifest/type pipeline without
 waifu2x. Generate those independently with:
@@ -144,7 +149,7 @@ Default output:
 ```tsx
 <img
   src={media.display.src}
-  srcSet={`${media.thumbnail.src} 480w, ${media.display.src} 1720w, ${media.highDensity.src} 3440w`}
+  srcSet={`${media.thumbnail.src} 480w, ${media.medium.src} 960w, ${media.display.src} 1280w, ${media.large.src} 1920w, ${media.highDensity.src} 2560w`}
   sizes="...layout-specific CSS width..."
   width={media.display.width}
   height={media.display.height}
@@ -153,28 +158,33 @@ Default output:
 ```
 
 Responsive images use width descriptors plus an explicit caller-owned `sizes`
-expression. This allows the browser to combine layout width, DPR, connection,
-and available candidates rather than assuming every DPR 2/3 device must fetch
-the largest file. At 390px/DPR 3, the 1720px Hero is sufficient; at
-1440px/DPR 2, the 3440px candidate remains available.
+expression. This lets the browser combine layout width, DPR, connection, and
+available candidates. The candidate ladder deliberately closes the former
+480px-to-1720px gap: a 390px/DPR 2 Hero selects 960px, 390px/DPR 3 selects
+1280px, 1440px/DPR 1 selects 1920px, and 1440px/DPR 2 uses the capped 2560px
+high-density candidate.
 
 ### Role matrix
 
 | Role | Variant | Loading | Priority |
 | --- | --- | --- | --- |
 | Hero foreground | responsive display/high-density | eager | high |
-| Profile | responsive width candidates | lazy | auto |
-| Active Journey stage | responsive width candidates | lazy | auto |
-| Linear/reduced-motion Journey media | responsive width candidates | lazy | low |
-| Works media | responsive width candidates | lazy | low |
-| Gallery active stage | responsive width candidates | lazy | low |
+| Profile | responsive width candidates | eager | auto |
+| Active Journey stage | responsive width candidates | eager | auto |
+| First linear/reduced-motion Journey media | responsive width candidates | eager | auto |
+| Later linear/reduced-motion Journey media | responsive width candidates | lazy | auto |
+| Works media | responsive width candidates | lazy | auto |
+| Gallery active stage | responsive width candidates | lazy | auto |
 | Gallery backdrop | thumbnail | lazy | low |
 | Gallery rail | thumbnail | lazy | low |
 | Gallery lightbox | high-density | interaction-only | lazy chunk |
 
-Only the Hero foreground may set `fetchPriority="high"`. Portrait ambience is
-the foreground shell's existing inline placeholder; it is not a second network
-image. Every rendered image keeps explicit intrinsic width and height.
+Only the Hero foreground may set `fetchPriority="high"`. The Profile and first
+Journey stage are discovered eagerly because they are the next two primary
+reading images, but remain `auto` priority so they do not compete as peers with
+the Hero. Portrait ambience is the foreground shell's existing inline
+placeholder; it is not a second network image. Every rendered image keeps
+explicit intrinsic width and height.
 
 The Hero foreground additionally has one responsive `<link rel="preload"
 as="image">` in `index.html`. The preload `href`, `imagesrcset`, `imagesizes`,
@@ -249,8 +259,9 @@ second network-backed `<img>` as the placeholder.
   React execution on a slow route.
 - Do not add a fractional image scale to hide seams; it unnecessarily resamples
   the artwork.
-- At the 1440×900 reference viewport, DPR 1 selects the 1720×968 Hero and DPR 2
-  selects the 3440×1936 Hero.
+- At the 1440×900 reference viewport, DPR 1 selects the 1920px candidate and DPR
+  2 selects the 2560px candidate. At 390×844, DPR 2 selects 960px and DPR 3
+  selects 1280px.
 - Keep Japanese title glyphs, face detail, and color balance free of obvious
   halos or aggressive denoising.
 - A different image requires verified provenance and product approval; larger
@@ -301,14 +312,14 @@ Do not implement custom pan/zoom math, focus trapping, or body scroll locking.
 
 Automated checks must assert:
 
-- ten source hashes, 30 derivative dimensions/hashes, and ten inline
+- ten source hashes, 50 derivative dimensions/hashes, and ten inline
   placeholder payloads;
 - variant dimensions and filenames in typed content;
 - Hero current source at desktop DPR 1/DPR 2 and 390px mobile DPR 3;
 - one same-origin responsive Hero preload whose candidates all exist in the
   Pages artifact;
-- one eager/high-priority Hero foreground, no second Hero image request, and
-  lazy offscreen images;
+- one eager/high-priority Hero foreground, eager/auto Profile and first Journey
+  stage discovery, no second Hero image request, and lazy distant images;
 - mobile Hero equals or exceeds the stable initial viewport, does not expose
   `#about`, and uses `contain` for the portrait foreground;
 - width-descriptor `srcset` plus realistic `sizes` on responsive images;
@@ -324,7 +335,7 @@ Automated checks must assert:
 - no Piapro work-page credit links inside `<main>`;
 - ten bottom source/license records and visible required creator names;
 - the `狂想β` work card uses the verified local official cover and its
-  source-native 480/800/1600 candidates;
+  source-native 480/960/1200/1440/1600 candidates;
 - lightbox high-density source, Zoom control, previous/next, synchronization,
   and Escape close;
 - existing viewport, 200% text, reduced-motion, contrast, and overflow gates.

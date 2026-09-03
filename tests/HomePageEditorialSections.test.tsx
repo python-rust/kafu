@@ -173,11 +173,12 @@ describe('homepage editorial sections', () => {
       name: 'Featured KAF editorial artwork fixture.',
     });
     expect(featuredImage).toHaveAttribute('loading', 'lazy');
+    expect(featuredImage).toHaveAttribute('fetchpriority', 'auto');
     expect(featuredImage).toHaveAttribute('width', '1600');
     expect(featuredImage).toHaveAttribute('height', '1000');
     expect(featuredImage).toHaveAttribute(
       'srcset',
-      `${works[0].visual.thumbnail.src} ${works[0].visual.thumbnail.width}w, ${works[0].visual.display.src} ${works[0].visual.display.width}w, ${works[0].visual.highDensity.src} ${works[0].visual.highDensity.width}w`,
+      `${works[0].visual.thumbnail.src} ${works[0].visual.thumbnail.width}w, ${works[0].visual.medium.src} ${works[0].visual.medium.width}w, ${works[0].visual.display.src} ${works[0].visual.display.width}w, ${works[0].visual.large.src} ${works[0].visual.large.width}w, ${works[0].visual.highDensity.src} ${works[0].visual.highDensity.width}w`,
     );
     expect(featuredImage).toHaveAttribute(
       'sizes',

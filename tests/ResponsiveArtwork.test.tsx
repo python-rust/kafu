@@ -95,7 +95,7 @@ describe('ResponsiveArtwork', () => {
     expect(container.querySelectorAll('img')).toHaveLength(1);
     expect(image).toHaveAttribute(
       'srcset',
-      `${artwork.thumbnail.src} ${artwork.thumbnail.width}w, ${artwork.display.src} ${artwork.display.width}w, ${artwork.highDensity.src} ${artwork.highDensity.width}w`,
+      `${artwork.thumbnail.src} ${artwork.thumbnail.width}w, ${artwork.medium.src} ${artwork.medium.width}w, ${artwork.display.src} ${artwork.display.width}w, ${artwork.large.src} ${artwork.large.width}w, ${artwork.highDensity.src} ${artwork.highDensity.width}w`,
     );
     expect(image).toHaveAttribute('sizes', '(max-width: 40rem) 100vw, 40rem');
 
@@ -125,7 +125,7 @@ describe('ResponsiveArtwork', () => {
 
   it('recognizes a complete cached image before paint without calling decode', () => {
     const decode = vi.fn().mockResolvedValue(undefined);
-    stubImageState({ complete: true, naturalWidth: 1720, decode });
+    stubImageState({ complete: true, naturalWidth: 1280, decode });
     const { container } = render(<ResponsiveArtwork source={artwork} />);
     const shell = container.querySelector('[data-artwork-id="slow-artwork"]');
 

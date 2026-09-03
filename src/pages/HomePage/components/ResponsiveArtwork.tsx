@@ -25,9 +25,11 @@ export interface ArtworkVariant {
 export interface ResponsiveArtworkSource {
   readonly id: string;
   readonly alt: string;
-  readonly display: ArtworkVariant;
-  readonly highDensity: ArtworkVariant;
   readonly thumbnail: ArtworkVariant;
+  readonly medium: ArtworkVariant;
+  readonly display: ArtworkVariant;
+  readonly large: ArtworkVariant;
+  readonly highDensity: ArtworkVariant;
   readonly placeholderDataUrl: string;
   readonly objectPosition?: string;
 }

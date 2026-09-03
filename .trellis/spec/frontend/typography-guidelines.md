@@ -1,170 +1,155 @@
 # Typography Guidelines
 
-> Font-family, loading, licensing, performance, and role contracts for the KAF
-> frontend.
+> System-font roles, Chinese/Japanese fallback order, and zero-WebFont
+> performance contracts for the KAF frontend.
 
 ---
 
 ## Scope
 
 Read this file before changing global family tokens, font dependencies,
-`@font-face` imports, Japanese proper-name handling, webfont loading/subsetting,
-or font license files.
+Japanese proper-name handling, font loading, or typography performance budgets.
 
-The product uses a restrained two-family Chinese system. Visual variety comes
-from clear reading and display roles, not from adding a novelty font to every
-section.
+The production site deliberately uses fonts already available on the visitor's
+device. First-time visitors must not download font files merely to read this
+single static page.
 
 ---
 
-## Approved Families
+## Zero-WebFont Contract
 
-```text
-@fontsource-variable/noto-sans-sc@5.3.0
-@fontsource-variable/noto-serif-sc@5.3.0
-```
+The application ships no WOFF, WOFF2, TTF, or OTF resource and imports no
+Fontsource package. This is an initial-load performance decision:
 
-Both are Noto CJK Simplified Chinese variable faces under SIL OFL 1.1.
+- CJK WebFonts can require many Unicode-range files and substantial transfer;
+- the page must leave constrained bandwidth available for its editorial images;
+- text must remain immediately renderable even on an unstable connection;
+- there is no brand-exclusive typeface that justifies a font download.
 
-### Reading/UI role
+Do not add a remote font stylesheet, local `@font-face`, font package, preload,
+or runtime font loader without a separate measured review. Such a review must
+show the exact production transfer/request cost, the visual role that system
+fonts cannot satisfy, glyph coverage, licensing, and the effect on first-visit
+image timing under the project's weak-network profile.
 
-`--font-sans` starts with `Noto Sans SC Variable` and owns body paragraphs,
-navigation, controls, descriptions, metadata, dates, milestones, and labels.
+---
 
-### Editorial display role
+## Semantic Font Roles
 
-`--font-display-zh` and `--font-display` start with
-`Noto Serif SC Variable` and own Hero identity, section headings, Journey
-titles, and major official-link identity. Prominent Journey years may use
-`--font-display-latin`, which resolves to the same serif face.
+`src/styles/tokens.css` is the only owner of the family stacks.
 
-### Japanese proper-name role
+### Reading and UI
 
-`--font-display-ja` keeps native Japanese Mincho families first:
+`--font-sans` owns paragraphs, navigation, controls, descriptions, metadata,
+dates, milestones, and labels:
 
 ```css
-'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP',
-'Noto Serif SC Variable', serif
+'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC',
+'Source Han Sans SC', system-ui, -apple-system, BlinkMacSystemFont,
+'Segoe UI', sans-serif
 ```
 
-Do not put the SC face ahead of available Japanese fonts for separately marked
-`lang="ja"` text. Current consumers are the Hero original-name line, album
-titles, Gallery active titles, and Gallery thumbnail titles.
+The order provides native Chinese faces on macOS and Windows, common installed
+CJK alternatives elsewhere, and a platform UI fallback.
+
+### Chinese editorial display
+
+`--font-display-zh` and `--font-display` own the Chinese Hero identity, section
+headings, Journey titles, and major official-link identity:
+
+```css
+'Songti SC', STSong, SimSun, 'Noto Serif CJK SC',
+'Source Han Serif SC', serif
+```
+
+### Japanese proper names
+
+`--font-display-ja` keeps Japanese Mincho families first for separately marked
+`lang="ja"` text:
+
+```css
+'Hiragino Mincho ProN', 'Yu Mincho', YuMincho,
+'Noto Serif JP', 'Noto Serif CJK JP', serif
+```
+
+Current consumers are the Hero original-name line, album titles, Gallery active
+titles, and Gallery thumbnail titles. Do not force a Simplified Chinese face
+ahead of available Japanese fonts for these strings.
+
+### Editorial Latin and numerals
+
+`--font-display-latin` owns prominent Journey years and similar editorial Latin
+content:
+
+```css
+'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua',
+Palatino, Georgia, 'Times New Roman', serif
+```
 
 ---
 
-## Import and Ownership
+## Rendering Contract
 
-Fontsource CSS is imported once in `src/main.tsx`, before project CSS:
-
-```ts
-import '@fontsource-variable/noto-sans-sc/wght.css';
-import '@fontsource-variable/noto-serif-sc/wght.css';
-```
-
-- Components and CSS Modules never import font packages directly.
-- Font URLs never appear in component CSS.
-- `src/styles/tokens.css` owns semantic family stacks.
-- Variable faces serve all approved weights; do not add static weight packages
-  beside them.
-- Remote font stylesheets/CDNs are not permitted for these roles.
-
----
-
-## Loading Contract
-
-- Keep Fontsource's `font-display: swap` behavior.
-- Keep default Unicode-range segmentation so the browser selects only fragments
-  containing characters used by the page.
-- Do not manually preload guessed CJK fragments.
-- Do not create a project-specific subset without separate glyph-coverage,
-  regeneration, naming, and license review.
-- All production font requests must resolve to the application origin.
-
-Current production-preview baseline after `document.fonts.ready`:
-
-```text
-font requests: 40
-transferred font bytes: 2,387,612
-formats: WOFF2 only
-origins: application origin only
-```
-
-Regression budget: no more than 60 WOFF2 requests and 3.5 MB transferred font
-bytes. This is a regression threshold, not permission to add fonts until it is
-exhausted.
-
----
-
-## Weight, Tracking, and Synthesis
-
-- Noto Sans SC Variable supports weights 100–900.
-- Noto Serif SC Variable supports weights 200–900.
-- Intermediate weights such as 550 and 650 are intentional variable weights.
-- Keep `font-synthesis: none` on the document to avoid manufactured faces.
-- Chinese display tracking must stay restrained, roughly `-0.02em` to
-  `-0.04em`; do not restore aggressive `-0.065em` compression.
+- Keep `font-synthesis: none` on the document.
+- Components and CSS Modules consume semantic tokens; they do not repeat family
+  stacks locally.
+- Preserve the Japanese-first `lang="ja"` role.
+- System fonts differ slightly by operating system. Preserve hierarchy,
+  readability, line-height, reflow, and clipping contracts instead of asserting
+  identical glyph geometry across platforms.
+- Intermediate weights such as 550 and 650 may resolve to the closest installed
+  face. Do not compensate by introducing a WebFont.
+- Chinese display tracking remains restrained, approximately `-0.02em` to
+  `-0.04em`.
 - Body text remains normal tracking with line-height around 1.7–1.9.
-- Font changes must preserve the size floors and ceilings in
-  `visual-system-guidelines.md`.
 
 ---
 
-## Licensing Contract
+## Performance Budget
 
-The shipped font software is covered by SIL Open Font License 1.1.
-
-Required files:
+Production and preview builds must contain:
 
 ```text
-THIRD_PARTY_NOTICES.md
-public/font-licenses/Noto-OFL-1.1.txt
+font requests: 0
+bundled font files: 0
+font transfer bytes: 0
 ```
 
-The notice records package versions and upstream references. Vite copies the
-license file into production output.
+`scripts/verify_static_build.py` rejects bundled font files. Browser coverage
+also inspects resource timing and rejects WOFF/WOFF2/TTF/OTF requests.
 
-Do not sell font files by themselves, remove copyright/license information,
-claim upstream endorsement, or add a personal-use/non-commercial-only family
-without an explicit deployment review.
-
----
-
-## Evaluating Another Font
-
-Before adding or replacing a family, document:
-
-1. authoritative upstream and exact version;
-2. redistribution/web-embedding license;
-3. Reserved Font Names and subsetting restrictions;
-4. Simplified Chinese/Japanese coverage;
-5. web formats and variable axes;
-6. real production-preview transfer and request count;
-7. which existing semantic role it replaces;
-8. why approved/system families cannot meet that role.
-
-Do not add a third family merely to decorate one label. Klee One and LXGW
-WenKai were reviewed for this iteration and deliberately not added because the
-incremental payload/licensing complexity was not justified by the sparse role.
+This budget concerns the application bundle. A platform may internally use its
+own installed fonts without a network request.
 
 ---
 
 ## Required Validation
 
-Run `mise run check` and `mise run e2e`.
+Run:
 
-Browser coverage must verify computed sans/display roles, loaded faces,
-same-origin WOFF2 resources, transfer/request budgets, deployed OFL text, and
-all existing 320px/mobile/200%-text/reduced-motion/overflow contracts.
+```bash
+mise run check
+mise run e2e
+python3 scripts/verify_static_build.py dist
+```
+
+Browser coverage must verify:
+
+- sans, Chinese display, Japanese proper-name, and Latin display tokens remain
+  assigned to the intended elements;
+- no font resource is requested;
+- desktop/mobile, 200% text, reduced-motion, and overflow checks stay green.
+
+---
 
 ## Common Mistakes
 
-- Importing the same package from multiple section files.
-- Loading static weights beside an approved variable face.
-- Adding a handwriting font to many labels merely to appear Japanese.
-- Forcing an SC font ahead of native Japanese fonts for `lang="ja"` names.
-- Judging CJK performance from unpacked NPM size instead of browser-selected
-  Unicode-range resources.
-- Using a remote font CDN despite the same-origin requirement.
-- Omitting license text from a static bundle that redistributes WOFF2 files.
+- Reintroducing a font package because one operating system's glyph shape looks
+  slightly different.
+- Adding a remote font CDN to avoid bundling files; it still consumes the
+  visitor's constrained network and adds another origin.
+- Copying complete family stacks into section CSS instead of using tokens.
+- Putting a Chinese face ahead of Japanese Mincho fallbacks for `lang="ja"`
+  names.
+- Testing only on a warm browser cache and missing first-visit font contention.
 
