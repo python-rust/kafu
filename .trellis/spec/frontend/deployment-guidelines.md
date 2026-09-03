@@ -64,7 +64,9 @@ scripts, logs, or documentation.
 - `mise run check` completes before deployment.
 - `scripts/verify_static_build.py` verifies artifact-root `index.html`,
   same-origin HTML/CSS resources, file existence, JavaScript/CSS entries, the
-  responsive Hero preload and all width candidates, and zero bundled WebFonts.
+  responsive Hero preload and all width candidates, zero bundled WebFonts, no
+  provenance-only source images, at most 64 KiB entry CSS, at most 400 KiB
+  entry JavaScript, and the generated WebP count/byte budget.
 - Wrangler is an exact project devDependency and is executed through pnpm, so
   local releases and GitHub Actions use the same lockfile-controlled version.
 - `pnpm-workspace.yaml` explicitly allows only Wrangler's required `esbuild`
@@ -100,6 +102,10 @@ origins:
   assets and require no additional origin;
 - the Hero uses one network-backed responsive image and its existing inline
   placeholder behavior;
+- after `window.load`, one page-owned low-priority queue warms browser-selected
+  same-origin WebP candidates in Profile -> Journey -> Works -> Gallery order;
+  it does not introduce a remote image service or download every responsive
+  encoding;
 - page-session loaded-state records remain memory-only and keyed by build-hashed
   asset URLs plus responsive selection context;
 - typography uses installed system fonts and issues no font request;

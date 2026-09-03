@@ -64,8 +64,11 @@ src/pages/HomePage/
 │   ├── ResponsiveArtwork.tsx
 │   ├── ResponsiveArtwork.module.css
 │   ├── artworkLoadCache.ts
+│   ├── artworkSizes.ts
+│   ├── artworkWarmupQueue.ts
 │   ├── SectionHeading.tsx
 │   └── SectionHeading.module.css
+├── homeArtworkWarmup.ts
 ├── HomePage.tsx
 └── sections/
     ├── SiteHeader.tsx
@@ -92,10 +95,15 @@ src/pages/HomePage/
 `components/` is page-local shared presentation, not a generic component
 bucket. Add a component there only when multiple homepage owners consume one
 stable semantic contract. Current examples are responsive artwork, its narrow
-page-session exact-request cache/preloader, the bottom source index, and section
+page-session exact-request cache/preloader, shared responsive-size expressions,
+the ordered browser warmup scheduler, the bottom source index, and section
 headings. `artworkLoadCache.ts` must remain coupled to `ResponsiveArtwork`; it
-does not own editorial content or general application caching. One-section
-integrations stay with their section:
+does not own editorial content or general application caching.
+
+`homeArtworkWarmup.ts` stays at the HomePage root because it maps page-specific
+content order into scheduler groups; it is neither a reusable component nor
+generic static content. `HomePage.tsx` owns only the start/cancel effect.
+One-section integrations stay with their section:
 `GalleryLightbox.tsx` is the lazy package/style adapter owned by
 `GallerySection.tsx`.
 

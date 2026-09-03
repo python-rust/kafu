@@ -2,6 +2,7 @@ import {
   ResponsiveArtwork,
   type ResponsiveArtworkSource,
 } from '../components/ResponsiveArtwork';
+import { PROFILE_ARTWORK_SIZES } from '../components/artworkSizes';
 import { SectionHeading } from '../components/SectionHeading';
 import styles from './KafProfileSection.module.css';
 
@@ -43,7 +44,7 @@ export function KafProfileSection({
               loading="eager"
               fetchPriority="auto"
               decoding="async"
-              sizes="(max-width: 44rem) calc(100vw - 2.5rem), (max-width: 88rem) 38vw, 32rem"
+              sizes={PROFILE_ARTWORK_SIZES}
             />
           </figure>
 

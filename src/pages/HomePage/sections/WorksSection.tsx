@@ -2,6 +2,10 @@ import {
   ResponsiveArtwork,
   type ResponsiveArtworkSource,
 } from '../components/ResponsiveArtwork';
+import {
+  FEATURED_WORK_ARTWORK_SIZES,
+  SUPPORTING_WORK_ARTWORK_SIZES,
+} from '../components/artworkSizes';
 import { SectionHeading } from '../components/SectionHeading';
 import styles from './WorksSection.module.css';
 
@@ -64,7 +68,7 @@ export function WorksSection({ works, title = '代表作品' }: WorksSectionProp
                     loading="lazy"
                     fetchPriority="auto"
                     decoding="async"
-                    sizes="(max-width: 48rem) calc(100vw - 2.5rem), (max-width: 88rem) 62vw, 52rem"
+                    sizes={FEATURED_WORK_ARTWORK_SIZES}
                   />
                 </div>
               </figure>
@@ -103,7 +107,7 @@ export function WorksSection({ works, title = '代表作品' }: WorksSectionProp
                         loading="lazy"
                         fetchPriority="auto"
                         decoding="async"
-                        sizes="(max-width: 34rem) calc(100vw - 2.5rem), (max-width: 48rem) 40vw, (max-width: 72rem) 46vw, (max-width: 88rem) 21vw, 18rem"
+                        sizes={SUPPORTING_WORK_ARTWORK_SIZES}
                       />
                     </div>
                   </figure>

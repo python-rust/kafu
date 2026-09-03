@@ -170,8 +170,8 @@ high-density candidate.
 | --- | --- | --- | --- |
 | Hero foreground | responsive display/high-density | eager | high |
 | Profile | responsive width candidates | eager | auto |
-| Active Journey stage | responsive width candidates | eager | auto |
-| First linear/reduced-motion Journey media | responsive width candidates | eager | auto |
+| Initial active Journey stage | responsive width candidates | lazy | low |
+| First linear/reduced-motion Journey media | responsive width candidates | lazy | low |
 | Later linear/reduced-motion Journey media | responsive width candidates | lazy | auto |
 | Works media | responsive width candidates | lazy | auto |
 | Gallery active stage | responsive width candidates | lazy | auto |
@@ -179,17 +179,79 @@ high-density candidate.
 | Gallery rail | thumbnail | lazy | low |
 | Gallery lightbox | high-density | interaction-only | lazy chunk |
 
-Only the Hero foreground may set `fetchPriority="high"`. The Profile and first
-Journey stage are discovered eagerly because they are the next two primary
-reading images, but remain `auto` priority so they do not compete as peers with
-the Hero. Portrait ambience is the foreground shell's existing inline
-placeholder; it is not a second network image. Every rendered image keeps
-explicit intrinsic width and height.
+Only the Hero foreground may set `fetchPriority="high"`. The Profile is the
+only non-Hero eager image. The initial Journey image stays lazy/low so it cannot
+compete as a peer with the closer Profile; the after-load warmup queue discovers
+it before more distant sections. Portrait ambience is the foreground shell's
+existing inline placeholder; it is not a second network image. Every rendered
+image keeps explicit intrinsic width and height.
 
 The Hero foreground additionally has one responsive `<link rel="preload"
 as="image">` in `index.html`. The preload `href`, `imagesrcset`, `imagesizes`,
 and `fetchpriority="high"` must describe the same candidates as the rendered
 Hero image and remain valid when production is served from the Cloudflare Pages root.
+
+### Ordered after-load warmup
+
+Native `loading="lazy"` remains on distant DOM images so the browser can react
+immediately when the reader jumps or scrolls. It is supplemented—not replaced—
+by one page-owned background warmup queue:
+
+```text
+window load / Hero preload complete
+  -> Profile
+  -> Journey chapters in chronological order
+  -> Works in rendered order
+  -> active Gallery stage
+  -> Gallery thumbnails in rail order
+  -> remaining Gallery stage images
+```
+
+Ownership is split deliberately:
+
+- `HomePage.tsx` starts and cancels the lifecycle;
+- `homeArtworkWarmup.ts` maps typed page content into the ordered groups above;
+- `components/artworkSizes.ts` is the single source of the `sizes` expressions
+  shared by rendered images and detached warmup requests;
+- `components/artworkWarmupQueue.ts` owns scheduling, concurrency, visibility,
+  failure continuation, and performance marks;
+- `artworkLoadCache.ts` owns exact-request deduplication and the detached
+  `Image` request itself.
+
+The queue contract is:
+
+- wait until `window.load` so the HTML-discovered Hero resource keeps the first
+  network opportunity;
+- yield through `requestIdleCallback` with a bounded timeout between groups,
+  falling back to `setTimeout` where idle callbacks are unavailable;
+- create detached `Image` requests with `loading="eager"`,
+  `decoding="async"`, and `fetchPriority="low"`;
+- finish one group before starting the next, preserving top-to-bottom section
+  priority; allow at most two requests inside a group on the normal path;
+- reduce concurrency to one when the optional Network Information API reports
+  Save-Data, slow-2g, 2g, or 3g; unsupported browsers use the conservative
+  two-request default and must still work;
+- pause new work while the document is hidden and resume when visible;
+- deduplicate by source role + `srcset` + `sizes` + viewport/DPR context;
+- continue after an individual preload failure so one asset cannot strand all
+  later assets; a later visible `<img>` remains able to retry normally;
+- expose `kafu-artwork-warmup-start` and
+  `kafu-artwork-warmup-complete` performance marks for browser verification;
+- cancel future scheduling on page unmount. An already-issued browser request
+  may finish and populate the HTTP cache.
+
+“Warm every page image” means every logical page visual at the candidate the
+browser selects for its actual role, plus Gallery thumbnails. It does **not**
+mean downloading all five responsive encodings or every lightbox-only
+high-density alternative. Loading all alternatives would waste bytes without
+making the rendered page more ready.
+
+The native DOM image keeps its normal demand priority. If a reader reaches a
+section before the background queue, the visible/lazy `<img>` may start first;
+the browser and exact-request cache then coalesce or reuse the same selected
+asset. Do not add scroll listeners, a fetch/blob image pipeline, a service
+worker, or a second set of `<link rel="preload">` entries to implement this
+policy.
 
 ### Wrong vs correct
 
@@ -318,8 +380,9 @@ Automated checks must assert:
 - Hero current source at desktop DPR 1/DPR 2 and 390px mobile DPR 3;
 - one same-origin responsive Hero preload whose candidates all exist in the
   Pages artifact;
-- one eager/high-priority Hero foreground, eager/auto Profile and first Journey
-  stage discovery, no second Hero image request, and lazy distant images;
+- one eager/high-priority Hero foreground, one eager/auto Profile, lazy/low
+  initial Journey discovery, no second Hero image request, and lazy distant
+  images;
 - mobile Hero equals or exceeds the stable initial viewport, does not expose
   `#about`, and uses `contain` for the portrait foreground;
 - width-descriptor `srcset` plus realistic `sizes` on responsive images;
@@ -329,8 +392,12 @@ Automated checks must assert:
   selection context does not reuse an incompatible state record;
 - an uncached Journey transition keeps the previous clear image while loading,
   and already-seen forward/backward transitions record no loading/LQIP state;
-- an offscreen browser-lazy load of the initial Journey image does not trigger
-  adjacent speculative downloads before Scrollama entry;
+- without scrolling, background warmup requests all logical responsive visuals
+  in section order and all Gallery thumbnails, while `window.scrollY` remains
+  zero;
+- a Journey transition reuses a warmup request already in flight rather than
+  creating a second transfer, and keeps the previous clear image until it
+  resolves;
 - thumbnail-only sources for Gallery rail/backdrop;
 - no Piapro work-page credit links inside `<main>`;
 - ten bottom source/license records and visible required creator names;

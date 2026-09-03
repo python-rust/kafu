@@ -1,4 +1,5 @@
-import { MotionConfig } from 'motion/react';
+import { domAnimation, LazyMotion, MotionConfig } from 'motion/react';
+import { useEffect } from 'react';
 
 import {
   galleryVisuals,
@@ -10,6 +11,8 @@ import {
   referenceSources,
   selectedWorks,
 } from '../../content/kaf';
+import { startArtworkWarmupQueue } from './components/artworkWarmupQueue';
+import { createHomeArtworkWarmupGroups } from './homeArtworkWarmup';
 import { GallerySection } from './sections/GallerySection';
 import { HeroSection } from './sections/HeroSection';
 import { JourneySection } from './sections/JourneySection';
@@ -28,26 +31,47 @@ const homeNavItems = [
 ] as const satisfies readonly SiteHeaderNavItem[];
 
 export function HomePage() {
+  useEffect(() => {
+    const linearJourney =
+      (typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+      typeof IntersectionObserver === 'undefined' ||
+      typeof ResizeObserver === 'undefined';
+    const controller = startArtworkWarmupQueue(
+      createHomeArtworkWarmupGroups({
+        profile: kafProfile,
+        chapters: journeyChapters,
+        works: selectedWorks,
+        galleryVisuals,
+        linearJourney,
+      }),
+    );
+
+    return () => controller.cancel();
+  }, []);
+
   return (
     <MotionConfig reducedMotion="user">
-      <div>
-        <SiteHeader navLabel="花谱观察站页面导航" navItems={homeNavItems} />
+      <LazyMotion features={domAnimation} strict>
+        <div>
+          <SiteHeader navLabel="花谱观察站页面导航" navItems={homeNavItems} />
 
-        <main>
-          <HeroSection visual={heroMedia} />
-          <KafProfileSection profile={kafProfile} />
-          <JourneySection chapters={journeyChapters} />
-          <WorksSection works={selectedWorks} />
-          <GallerySection visuals={galleryVisuals} />
-          <OfficialLinksSection links={officialLinks} />
-        </main>
+          <main>
+            <HeroSection visual={heroMedia} />
+            <KafProfileSection profile={kafProfile} />
+            <JourneySection chapters={journeyChapters} />
+            <WorksSection works={selectedWorks} />
+            <GallerySection visuals={galleryVisuals} />
+            <OfficialLinksSection links={officialLinks} />
+          </main>
 
-        <SiteFooter
-          projectLabel="花谱观察站"
-          mediaSources={kafMedia}
-          referenceSources={referenceSources}
-        />
-      </div>
+          <SiteFooter
+            projectLabel="花谱观察站"
+            mediaSources={kafMedia}
+            referenceSources={referenceSources}
+          />
+        </div>
+      </LazyMotion>
     </MotionConfig>
   );
 }

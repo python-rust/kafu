@@ -461,10 +461,10 @@ describe('JourneySection', () => {
     expect(screen.getAllByRole('img')).toHaveLength(6);
     expect(scrollamaHarness.factory).not.toHaveBeenCalled();
 
-    for (const [index, chapter] of chapters.entries()) {
+    for (const chapter of chapters) {
       expect(
         screen.getByRole('img', { name: chapter.primaryVisual.alt }),
-      ).toHaveAttribute('loading', index === 0 ? 'eager' : 'lazy');
+      ).toHaveAttribute('loading', 'lazy');
       expect(screen.getByText(chapter.summary[1])).toBeVisible();
     }
   });

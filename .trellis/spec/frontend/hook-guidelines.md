@@ -43,6 +43,11 @@ useEffect(() => {
 
 The same rule applies to event listeners, animation frames, observers, and other externally managed resources.
 
+Current page-level example: `HomePage.tsx` starts the ordered artwork warmup
+controller in one effect and returns `controller.cancel`. Scheduling mechanics
+stay in `artworkWarmupQueue.ts`; do not wrap this single-owner lifecycle in a
+custom hook merely to hide the effect.
+
 ---
 
 ## Data Fetching

@@ -17,6 +17,7 @@
 - React 19、TypeScript、Vite
 - Motion 与 Scrollama
 - Yet Another React Lightbox
+- 响应式 WebP 与按阅读顺序执行的低优先级图片预热
 - 系统中文无衬线与宋体字体栈，不下载额外 WebFont
 - Vitest、Testing Library、Playwright
 

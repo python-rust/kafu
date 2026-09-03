@@ -4,6 +4,13 @@ import type {
 } from './ResponsiveArtwork';
 
 export type ArtworkVariantRole = 'responsive' | 'highDensity' | 'thumbnail';
+export type ArtworkFetchPriority = 'auto' | 'high' | 'low';
+
+export interface ArtworkPreloadOptions {
+  readonly role?: ArtworkVariantRole;
+  readonly sizes?: string;
+  readonly fetchPriority?: ArtworkFetchPriority;
+}
 
 const loadedArtworkRequests = new Map<string, string>();
 const pendingArtworkLoads = new Map<string, Promise<string>>();
@@ -109,17 +116,34 @@ export function markArtworkElementLoaded(
 export function preloadResponsiveArtwork(
   source: ResponsiveArtworkSource,
   sizes: string,
-  fetchPriority: 'auto' | 'high' | 'low' = 'low',
+  fetchPriority: ArtworkFetchPriority = 'low',
+) {
+  return preloadArtwork(source, {
+    role: 'responsive',
+    sizes,
+    fetchPriority,
+  });
+}
+
+export function preloadArtwork(
+  source: ResponsiveArtworkSource,
+  {
+    role = 'responsive',
+    sizes,
+    fetchPriority = 'low',
+  }: ArtworkPreloadOptions = {},
 ) {
   if (typeof Image === 'undefined') {
     return Promise.reject(new Error('Image preloading is not available.'));
   }
 
-  const requestKey = artworkRequestKey(source, 'responsive', sizes);
+  const resolvedSizes = role === 'responsive' ? (sizes ?? '100vw') : undefined;
+  const selected = selectedVariant(source, role);
+  const requestKey = artworkRequestKey(source, role, resolvedSizes);
   const loadedUrl = loadedArtworkRequests.get(requestKey);
 
   if (loadedUrl !== undefined) {
-    return Promise.resolve(loadedUrl || absoluteArtworkUrl(source.display.src));
+    return Promise.resolve(loadedUrl || absoluteArtworkUrl(selected.src));
   }
 
   const existingRequest = pendingArtworkLoads.get(requestKey);
@@ -132,21 +156,24 @@ export function preloadResponsiveArtwork(
     const image = new Image();
 
     image.decoding = 'async';
+    image.loading = 'eager';
     image.fetchPriority = fetchPriority;
-    image.sizes = sizes;
-    image.srcset = responsiveArtworkSourceSet(source);
+    if (role === 'responsive') {
+      image.sizes = resolvedSizes ?? '100vw';
+      image.srcset = responsiveArtworkSourceSet(source);
+    }
     image.onload = () => {
       const resolvedUrl = markArtworkElementLoaded(image, requestKey);
       image.onload = null;
       image.onerror = null;
-      resolve(resolvedUrl || absoluteArtworkUrl(source.display.src));
+      resolve(resolvedUrl || absoluteArtworkUrl(selected.src));
     };
     image.onerror = () => {
       image.onload = null;
       image.onerror = null;
-      reject(new Error(`Unable to preload artwork: ${source.id}`));
+      reject(new Error(`Unable to preload ${role} artwork: ${source.id}`));
     };
-    image.src = source.display.src;
+    image.src = selected.src;
   }).finally(() => {
     pendingArtworkLoads.delete(requestKey);
   });

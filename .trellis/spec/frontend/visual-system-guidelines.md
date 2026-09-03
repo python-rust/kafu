@@ -222,6 +222,18 @@ It must not regress to eight equally weighted irregular cards.
 
 - Keep native document scrolling and semantic anchors.
 - Reuse Motion for keyed, low-frequency state transitions.
+- Load Motion through one strict page boundary:
+
+  ```tsx
+  <LazyMotion features={domAnimation} strict>
+    {/* sections use elements imported from motion/react-m */}
+  </LazyMotion>
+  ```
+
+  Section files import `* as m` from `motion/react-m` and render `m.div`,
+  `m.figure`, or `m.span`. Do not import the full `motion` component proxy; the
+  synchronous `domAnimation` feature bundle keeps the current opacity/transform
+  behavior without adding a second feature-chunk request to the initial page.
 - Use native IntersectionObserver for fixed-header page-location state.
 - Use `scrollama` as the single Journey-specific step-observation boundary; it
   owns IntersectionObserver/ResizeObserver setup and teardown for that section.
@@ -300,6 +312,8 @@ Also inspect the diff for:
 - accidental content URL, media, dimension, or provenance changes;
 - reintroduced eyebrow/template copy;
 - extra runtime dependencies;
+- a full `motion` proxy import or a Motion feature set larger than
+  `domAnimation` without a measured interaction requirement;
 - `useScroll`, `useTransform`, high-frequency listeners, or unbounded
   `will-change` without measured need.
 

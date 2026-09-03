@@ -79,9 +79,17 @@ Current examples:
 - `ResponsiveArtwork` owns width candidates, intrinsic dimensions, native-load
   reveal, placeholder/error feedback, fetch priority, alt text, and
   thumbnail/high-density role selection for Hero, Journey, Works, and Gallery.
-- `artworkLoadCache.ts` owns the page-session exact-request cache and responsive
-  adjacent preloader used by remounts and the Journey stage. It is not a generic
-  application cache or an HTTP-cache replacement.
+- `artworkLoadCache.ts` owns the page-session exact-request cache and detached
+  responsive/thumbnail preloader used by remounts, Journey transitions, and the
+  page warmup queue. It is not a generic application cache or an HTTP-cache
+  replacement.
+- `artworkSizes.ts` owns the exact responsive `sizes` expressions consumed by
+  both rendered sections and background warmup jobs. Do not duplicate those
+  strings in a scheduler.
+- `artworkWarmupQueue.ts` owns the reusable browser scheduling mechanics for
+  ordered, low-priority, bounded-concurrency image warmup. The page-specific
+  group order stays in `HomePage/homeArtworkWarmup.ts` rather than becoming a
+  generic queue configuration API.
 - `SectionHeading` owns the semantic `h2` and shared rule/scale. It deliberately
   has no eyebrow, preheader, or generic description prop.
 - `MediaSources` owns the single page-bottom creator/source/license index.
@@ -124,6 +132,22 @@ Scrollama in a generic app-wide hook while there is only one domain-specific
 consumer. Do not add a React wrapper merely to avoid one explicit lifecycle.
 If IntersectionObserver or ResizeObserver is unavailable, Journey uses its
 complete in-flow image/text fallback instead of initializing a partial runtime.
+
+For page image warmup:
+
+```text
+HomePage.tsx                  -> start/cancel lifecycle after mount
+homeArtworkWarmup.ts          -> Profile/Journey/Works/Gallery group order
+artworkSizes.ts               -> shared rendered/warmup selection contexts
+artworkWarmupQueue.ts         -> load/idle/visibility/concurrency scheduling
+artworkLoadCache.ts           -> exact request + browser Image preload
+```
+
+Keep this lifecycle as one page-owned effect. Do not extract a custom hook while
+there is one page owner, and do not let individual sections create competing
+page-wide queues. A section may still use its own narrow demand preloader, as
+Journey does for the active/adjacent chapter; both paths must converge through
+`artworkLoadCache.ts`.
 
 ---
 
@@ -168,4 +192,6 @@ the accessibility tree.
   responsive/lazy-loading pipeline with a fetch/blob wrapper for fake progress.
 - Do not add an image package merely for placeholder CSS when it cannot preserve
   the project's exact `srcset`/`sizes` request and cached-remount contracts.
+- Do not make each section independently “preload everything”; one page-owned
+  warmup plan must preserve reading order and use the shared scheduler/cache.
 - Do not move static styling into JSX just because inline styles are convenient.

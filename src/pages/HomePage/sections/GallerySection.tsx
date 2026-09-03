@@ -1,4 +1,5 @@
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { AnimatePresence, useReducedMotion } from 'motion/react';
+import * as m from 'motion/react-m';
 import { lazy, Suspense, useMemo, useState } from 'react';
 import type { Slide } from 'yet-another-react-lightbox';
 
@@ -6,6 +7,7 @@ import {
   ResponsiveArtwork,
   type ResponsiveArtworkSource,
 } from '../components/ResponsiveArtwork';
+import { GALLERY_STAGE_ARTWORK_SIZES } from '../components/artworkSizes';
 import { SectionHeading } from '../components/SectionHeading';
 import styles from './GallerySection.module.css';
 
@@ -76,7 +78,7 @@ export function GallerySection({
         data-testid="gallery-backdrop"
       >
         <AnimatePresence initial={false} mode="sync">
-          <motion.div
+          <m.div
             key={activeVisual.id}
             initial={shouldReduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -91,7 +93,7 @@ export function GallerySection({
               fetchPriority="low"
               decoding="async"
             />
-          </motion.div>
+          </m.div>
         </AnimatePresence>
       </div>
 
@@ -110,7 +112,7 @@ export function GallerySection({
             aria-label={`${activeVisual.title}，点击放大`}
           >
             <AnimatePresence initial={false} mode="wait">
-              <motion.span
+              <m.span
                 className={styles.stageVisual}
                 key={activeVisual.id}
                 initial={
@@ -127,9 +129,9 @@ export function GallerySection({
                   loading="lazy"
                   fetchPriority="auto"
                   decoding="async"
-                  sizes="(max-width: 56rem) calc(100vw - 2.5rem), (max-width: 88rem) 68vw, 58rem"
+                  sizes={GALLERY_STAGE_ARTWORK_SIZES}
                 />
-              </motion.span>
+              </m.span>
             </AnimatePresence>
             <span className={styles.expandIcon} aria-hidden="true">
               放大

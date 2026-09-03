@@ -213,15 +213,21 @@ describe('home page', () => {
     );
 
     expect(uniqueSources.size).toBeGreaterThanOrEqual(10);
-    expect(eagerImages).toHaveLength(3);
+    expect(eagerImages).toHaveLength(2);
     expect(
       eagerImages.map((image) => image.getAttribute('data-media-id')),
-    ).toEqual(['kaihou', 'wasurete-shimae', 'origin-ito']);
+    ).toEqual(['kaihou', 'wasurete-shimae']);
     expect(eagerImages[0]).toHaveAttribute('fetchpriority', 'high');
     expect(eagerImages[0]?.getAttribute('src')).toContain('kaihou-display');
     expect(eagerImages[0]?.getAttribute('srcset')).toContain('kaihou-high');
     expect(eagerImages[1]).toHaveAttribute('fetchpriority', 'auto');
-    expect(eagerImages[2]).toHaveAttribute('fetchpriority', 'auto');
+    const firstJourneyImage = images.find(
+      (image) =>
+        image.getAttribute('data-media-id') === 'origin-ito' &&
+        image.closest('#journey'),
+    );
+    expect(firstJourneyImage).toBeDefined();
+    expect(firstJourneyImage).toHaveAttribute('fetchpriority', 'low');
 
     for (const image of images) {
       expect(Number(image.getAttribute('width'))).toBeGreaterThan(0);

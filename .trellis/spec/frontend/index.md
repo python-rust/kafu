@@ -22,10 +22,10 @@ These files document the codebase as it exists now. Do not treat future possibil
 | [Interface Content Guidelines](./content-guidelines.md) | Visible-string jobs and anti-template copy constraints | Active |
 | [Hook Guidelines](./hook-guidelines.md) | Built-in hooks, cleanup, extraction threshold | Active |
 | [Chinese Localization & Storytelling](./localization-and-storytelling-guidelines.md) | Chinese audience, factual artist copy, profile, guided Journey, and discography | Active |
-| [Media Guidelines](./media-guidelines.md) | Responsive artwork, derivatives, attribution, and lightbox zoom | Active |
+| [Media Guidelines](./media-guidelines.md) | Responsive artwork, ordered background warmup, derivatives, attribution, and lightbox zoom | Active |
 | [State Management](./state-management.md) | Local React state ownership and escalation rules | Active |
 | [Typography Guidelines](./typography-guidelines.md) | System-font roles, CJK fallbacks, and zero-WebFont performance | Active |
-| [Visual System Guidelines](./visual-system-guidelines.md) | KAF art direction, type hierarchy, gallery, reflow, and motion | Active |
+| [Visual System Guidelines](./visual-system-guidelines.md) | KAF art direction, type hierarchy, gallery, reflow, and LazyMotion | Active |
 | [Quality Guidelines](./quality-guidelines.md) | mise workflow, lint/type/test/build requirements | Active |
 | [Type Safety](./type-safety.md) | Local types, stable contracts, assertion rules | Active |
 

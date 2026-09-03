@@ -1,4 +1,5 @@
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { AnimatePresence, useReducedMotion } from 'motion/react';
+import * as m from 'motion/react-m';
 import scrollama from 'scrollama';
 import { useEffect, useRef, useState } from 'react';
 
@@ -10,6 +11,10 @@ import {
   hasLoadedArtwork,
   preloadResponsiveArtwork,
 } from '../components/artworkLoadCache';
+import {
+  JOURNEY_LINEAR_ARTWORK_SIZES,
+  JOURNEY_STAGE_ARTWORK_SIZES,
+} from '../components/artworkSizes';
 import { SectionHeading } from '../components/SectionHeading';
 import styles from './JourneySection.module.css';
 
@@ -75,9 +80,6 @@ const stageTransition = {
   duration: 0.42,
   ease: [0.22, 1, 0.36, 1],
 } as const;
-const JOURNEY_STAGE_SIZES =
-  '(max-width: 64rem) 100vw, (max-width: 88rem) 46vw, 40rem';
-
 function getChapterAnchorId(id: string) {
   return `journey-${id}`;
 }
@@ -213,7 +215,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
     const activeVisualLoaded = hasLoadedArtwork(
       activeChapter.primaryVisual,
       'responsive',
-      JOURNEY_STAGE_SIZES,
+      JOURNEY_STAGE_ARTWORK_SIZES,
     );
 
     if (safeDisplayedVisualIndex === safeActiveIndex) {
@@ -236,7 +238,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
 
     void preloadResponsiveArtwork(
       activeChapter.primaryVisual,
-      JOURNEY_STAGE_SIZES,
+      JOURNEY_STAGE_ARTWORK_SIZES,
       'auto',
     ).then(
       () => {
@@ -279,7 +281,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
 
     void preloadResponsiveArtwork(
       adjacentChapter.primaryVisual,
-      JOURNEY_STAGE_SIZES,
+      JOURNEY_STAGE_ARTWORK_SIZES,
       'low',
     ).catch(() => {
       // Adjacent preloading is opportunistic; the active transition retries it.
@@ -326,7 +328,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
               <div className={styles.stageFrame}>
                 <div className={styles.visualStack}>
                   <AnimatePresence initial={false}>
-                    <motion.figure
+                    <m.figure
                       className={styles.stageVisual}
                       key={displayedChapter.id}
                       initial={{ opacity: 0, scale: 1.012 }}
@@ -337,13 +339,13 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                       <ResponsiveArtwork
                         source={displayedChapter.primaryVisual}
                         alt=""
-                        loading="eager"
-                        fetchPriority="auto"
+                        loading="lazy"
+                        fetchPriority="low"
                         decoding="async"
-                        sizes={JOURNEY_STAGE_SIZES}
+                        sizes={JOURNEY_STAGE_ARTWORK_SIZES}
                         onLoad={() => setDisplayedVisualReady(true)}
                       />
-                    </motion.figure>
+                    </m.figure>
                   </AnimatePresence>
                 </div>
 
@@ -362,7 +364,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                 ) : null}
 
                 <AnimatePresence initial={false} mode="wait">
-                  <motion.div
+                  <m.div
                     className={styles.stageMeta}
                     key={displayedChapter.id}
                     initial={{
@@ -381,7 +383,7 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                   >
                     <span>{displayedChapter.yearLabel}</span>
                     <strong>{displayedChapter.titleZh}</strong>
-                  </motion.div>
+                  </m.div>
                 </AnimatePresence>
 
                 <ol className={styles.stageProgress}>
@@ -423,10 +425,10 @@ export function JourneySection({ chapters }: JourneySectionProps) {
                       <figure className={styles.linearVisual}>
                         <ResponsiveArtwork
                           source={chapter.primaryVisual}
-                          loading={index === 0 ? 'eager' : 'lazy'}
-                          fetchPriority="auto"
+                          loading="lazy"
+                          fetchPriority={index === 0 ? 'low' : 'auto'}
                           decoding="async"
-                          sizes="(max-width: 88rem) calc(100vw - 2.5rem), 88rem"
+                          sizes={JOURNEY_LINEAR_ARTWORK_SIZES}
                         />
                       </figure>
                     ) : null}

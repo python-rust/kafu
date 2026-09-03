@@ -852,8 +852,7 @@ test('Journey keeps the previous clear image while an uncached next era transfer
 
   await openHome(page, { width: 1440, height: 900 });
   const stage = page.getByTestId('journey-sticky-stage');
-  await page.waitForTimeout(500);
-  expect(interceptedRequests).toBe(0);
+  await expect.poll(() => interceptedRequests).toBe(1);
 
   await activateJourneyStep(page, 0);
   await waitForJourneyVisual(page, 0);
@@ -861,7 +860,7 @@ test('Journey keeps the previous clear image while an uncached next era transfer
     'data-artwork-status',
     'loaded',
   );
-  await expect.poll(() => interceptedRequests).toBeGreaterThan(0);
+  expect(interceptedRequests).toBe(1);
 
   await activateJourneyStep(page, 1);
   await expect(stage).toHaveAttribute('data-active-index', '1');
@@ -1365,14 +1364,7 @@ test('reduced motion renders every Journey era and image in normal flow', async 
       .evaluateAll((images) =>
         images.map((image) => image.getAttribute('loading')),
       );
-    expect(journeyLoading).toEqual([
-      'eager',
-      'lazy',
-      'lazy',
-      'lazy',
-      'lazy',
-      'lazy',
-    ]);
+    expect(journeyLoading).toEqual(Array(6).fill('lazy'));
     await expect(page.locator('#journey').getByRole('tab')).toHaveCount(0);
     await expect(page.locator('#journey').getByRole('button')).toHaveCount(0);
 
@@ -1450,12 +1442,11 @@ test('image discovery and priority follow the page reading order', async ({
     })),
   );
   const eagerImages = imageLoading.filter((image) => image.loading === 'eager');
-  expect(eagerImages).toHaveLength(3);
+  expect(eagerImages).toHaveLength(2);
   expect(eagerImages.map((image) => image.src)).toEqual(
     expect.arrayContaining([
       expect.stringContaining('kaihou-display'),
       expect.stringContaining('wasurete-shimae-display'),
-      expect.stringContaining('origin-ito-display'),
     ]),
   );
   const highPriorityImages = imageLoading.filter(
@@ -1494,7 +1485,7 @@ test('image discovery and priority follow the page reading order', async ({
     page
       .getByTestId('journey-sticky-stage')
       .locator('img[data-media-variant="responsive"]'),
-  ).toHaveAttribute('fetchpriority', 'auto');
+  ).toHaveAttribute('fetchpriority', 'low');
   const workPriorities = await page
     .locator('#works img[data-media-variant="responsive"]')
     .evaluateAll((images) =>
@@ -1505,6 +1496,135 @@ test('image discovery and priority follow the page reading order', async ({
   await expect(
     page.locator('#visuals img[data-media-variant="responsive"]'),
   ).toHaveAttribute('fetchpriority', 'auto');
+});
+
+test('background artwork warmup completes in reading order without requiring scroll', async ({
+  browser,
+}) => {
+  const baseURL = test.info().project.use.baseURL;
+  if (typeof baseURL !== 'string') {
+    throw new Error('Playwright baseURL required');
+  }
+
+  const context = await browser.newContext({
+    baseURL,
+    deviceScaleFactor: 3,
+    viewport: { width: 390, height: 844 },
+  });
+  const page = await context.newPage();
+
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.getByRole('main').waitFor();
+  await page.waitForFunction(
+    () =>
+      performance.getEntriesByName('kafu-artwork-warmup-complete').length > 0,
+    undefined,
+    { timeout: 20_000 },
+  );
+
+  const audit = await page.evaluate(
+    (sourceIds) => {
+      const entries = performance
+        .getEntriesByType('resource')
+        .map((entry) => entry.toJSON())
+        .filter((entry) => {
+          const url = new URL(String(entry.name));
+          return (
+            url.origin === location.origin &&
+            /\/assets\/.*\.webp$/.test(url.pathname)
+          );
+        })
+        .sort((first, second) => first.startTime - second.startTime)
+        .map((entry) => {
+          const filename =
+            new URL(String(entry.name)).pathname.split('/').pop() ?? '';
+          const sourceId = sourceIds.find((id) =>
+            filename.startsWith(`${id}-`),
+          );
+
+          return {
+            filename,
+            sourceId: sourceId ?? '',
+            startTime: Math.round(entry.startTime),
+            transferSize: entry.transferSize || 0,
+          };
+        });
+
+      return {
+        scrollY: window.scrollY,
+        entries,
+        warmupStartMarks: performance.getEntriesByName(
+          'kafu-artwork-warmup-start',
+        ).length,
+        warmupCompleteMarks: performance.getEntriesByName(
+          'kafu-artwork-warmup-complete',
+        ).length,
+      };
+    },
+    [
+      'fable-chewing-disco',
+      'observation-past',
+      'transcendent-ufo',
+      'wasurete-shimae',
+      'kyousou-beta',
+      'magic-keshiki',
+      'tori-portrait',
+      'origin-ito',
+      'fukakai',
+      'kaihou',
+    ],
+  );
+
+  expect(audit.scrollY).toBe(0);
+  expect(audit.warmupStartMarks).toBe(1);
+  expect(audit.warmupCompleteMarks).toBe(1);
+
+  const responsiveRequestOrder = audit.entries
+    .filter((entry) => !entry.filename.includes('-thumb-'))
+    .map((entry) => entry.sourceId)
+    .filter((sourceId, index, values) => values.indexOf(sourceId) === index);
+  expect(responsiveRequestOrder).toEqual([
+    'kaihou',
+    'wasurete-shimae',
+    'origin-ito',
+    'observation-past',
+    'magic-keshiki',
+    'fable-chewing-disco',
+    'transcendent-ufo',
+    'kyousou-beta',
+    'tori-portrait',
+    'fukakai',
+  ]);
+
+  const thumbnailRequests = new Set(
+    audit.entries
+      .filter((entry) => entry.filename.includes('-thumb-'))
+      .map((entry) => entry.sourceId),
+  );
+  expect(thumbnailRequests).toEqual(
+    new Set([
+      'tori-portrait',
+      'wasurete-shimae',
+      'fukakai',
+      'origin-ito',
+      'observation-past',
+      'magic-keshiki',
+      'fable-chewing-disco',
+      'transcendent-ufo',
+    ]),
+  );
+  expect(audit.entries.every((entry) => entry.transferSize >= 0)).toBe(true);
+
+  await scrollToCenter(page, '#works');
+  await expect(
+    page.locator('#works [data-artwork-status="loaded"]'),
+  ).toHaveCount(5, { timeout: 2_000 });
+  await scrollToCenter(page, '#visuals');
+  await expect(
+    page.locator('#visuals [data-artwork-variant="responsive"]'),
+  ).toHaveAttribute('data-artwork-status', 'loaded', { timeout: 2_000 });
+
+  await context.close();
 });
 
 test('captures the responsive guided-Journey visual evidence', async ({

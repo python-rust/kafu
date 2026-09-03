@@ -208,6 +208,9 @@ copy where they identify real works/events.
   stage image is clear, preload only the adjacent era in the current scroll
   direction at low priority. Do not start this speculative request merely
   because browser lazy-loading fetched the offscreen first stage near the fold.
+  This rule governs Journey's local directional preloader; the page-owned
+  after-load warmup may already have the same exact request pending or cached,
+  in which case Journey must reuse it through `artworkLoadCache.ts`.
   A bounded Motion crossfade may briefly overlap the outgoing and incoming clear
   layers, but persistent previous/current/next image stacks are forbidden.
 

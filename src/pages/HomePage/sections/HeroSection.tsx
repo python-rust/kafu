@@ -1,4 +1,5 @@
-import { motion, useReducedMotion } from 'motion/react';
+import { useReducedMotion } from 'motion/react';
+import * as m from 'motion/react-m';
 
 import {
   ResponsiveArtwork,
@@ -38,7 +39,7 @@ export function HeroSection({
 
   return (
     <section className={styles.hero} id="top" aria-labelledby="hero-title">
-      <motion.figure
+      <m.figure
         className={styles.visual}
         initial={shouldAnimate ? { opacity: 0 } : false}
         animate={{ opacity: 1 }}
@@ -53,12 +54,12 @@ export function HeroSection({
           sizes="100vw"
           preservePlaceholder
         />
-      </motion.figure>
+      </m.figure>
 
       <div className={styles.scrim} aria-hidden="true" />
 
       <div className={styles.inner}>
-        <motion.div
+        <m.div
           className={styles.copy}
           initial={revealInitial}
           animate={{ opacity: 1, y: 0 }}
@@ -78,7 +79,7 @@ export function HeroSection({
               {secondaryLabel} <span aria-hidden="true">→</span>
             </a>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

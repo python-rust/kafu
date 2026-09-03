@@ -118,6 +118,11 @@ machine: uncached loading feedback, native-load reveal when `decode()` never
 settles, exact-request cached remounts, one semantic `<img>`, width candidates,
 selection-context changes, and failure fallback.
 
+`tests/ArtworkWarmupQueue.test.ts` owns the background scheduler contract:
+ordered group boundaries, bounded in-group concurrency, exact-request
+deduplication, distinct layout contexts, failure continuation, the concrete
+HomePage group plan, and reduced-motion Journey sizing.
+
 Prefer role/name queries over class selectors or implementation details.
 
 ### Playwright
@@ -143,8 +148,10 @@ revisits without LQIP/loading states, responsive Hero preload, 390px/DPR3
 candidate selection, 320×568 / 360×640 / 360×800 /
 390×844 / 430×932 portrait,
 768×1024 tablet, 844×390 landscape, `200%` text preferences, and
-  horizontal-overflow safety. It also verifies system sans/display font roles,
-  Japanese-first fallback order, and the zero-WebFont request/transfer budget.
+horizontal-overflow safety. It also verifies system sans/display font roles,
+Japanese-first fallback order, the zero-WebFont request/transfer budget, and a
+no-scroll background warmup that fetches responsive artwork in reading order
+and all Gallery thumbnails before marking completion.
 
 > **Responsive clipping gotcha**: `document.documentElement.scrollWidth` is not sufficient by itself. A section using `overflow: clip` or `overflow: hidden` can conceal an oversized child while the document still reports no horizontal overflow. For critical responsive layouts, also assert the horizontal bounding boxes of user-visible headings, copy, links, credits, and other essential content. This catches over-constrained CSS Grid gaps/tracks and similar clipped-content defects.
 
@@ -210,6 +217,13 @@ The provenance document is evidence for this project context, not a blanket lice
   candidate URL for the same artwork?
 - Does the Hero preload match the rendered candidate set and remain valid from
   the production site root?
+- Does the page warmup wait behind the Hero path, use low-priority detached
+  images, finish groups in Profile -> Journey -> Works -> Gallery order, bound
+  concurrency, pause while hidden, continue after errors, and reuse the same
+  `sizes` constants as rendered images?
+- Does “warm all images” mean one browser-selected candidate per logical page
+  role rather than every responsive encoding or lightbox-only high-density
+  file?
 - Does Journey use Scrollama only for discrete step entry, destroy the instance
   on cleanup, update offsets on layout/orientation changes, and avoid scroll or
   visual-viewport listeners?
@@ -217,13 +231,16 @@ The provenance document is evidence for this project context, not a blanket lice
   cached revisit avoids both stage-loading and artwork-placeholder states?
 - Is adjacent Journey preloading delayed until actual Scrollama entry and a
   clear displayed stage, directional, low priority, and limited to one neighbor
-  rather than all six images?
+  rather than all six images, while safely reusing any matching request already
+  issued by the separate page warmup queue?
 - Does compact Journey use a full-bleed stage flush with the occupied header,
   calculate its trigger from measured geometry, and preserve adequate reading
   space in portrait, landscape, and 200% text modes?
 - Did the change avoid eyebrow/preheader filler, leading-zero decoration, and interface narration?
 - If presentation repeats across sections, is it using the page-local shared component rather than drifting copies?
 - If an open-source package owns difficult interaction mechanics, is it isolated and lazy-loaded behind the owning section boundary?
+- Do Motion elements use the strict `LazyMotion` + `domAnimation` +
+  `motion/react-m` boundary rather than reintroducing the full `motion` proxy?
 - Does the change follow the visual-system palette, typography, layout, and motion contracts?
 - Do font changes use the approved system-font role tokens, preserve
   Japanese-first proper-name fallbacks, and keep the zero-WebFont budget?
