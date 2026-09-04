@@ -423,6 +423,30 @@ that legal/source context.
 Use the existing `yet-another-react-lightbox` dependency and its bundled Zoom
 plugin. The lazy `GalleryLightbox` adapter owns package imports and settings.
 
+### Inline Gallery viewport stability
+
+The full-section `.backdrop` is decorative, absolutely positioned, and keyed
+by the active visual for its Motion crossfade. It must declare:
+
+```css
+.backdrop {
+  overflow-anchor: none;
+}
+```
+
+This exclusion is intentionally narrower than the Gallery section. A transient
+backdrop descendant is not meaningful reading content and must never become the
+document scroll anchor; the real heading, stage, metadata, and thumbnail rail
+remain eligible for normal browser anchoring.
+
+Direct thumbnail selection must not capture/replay `window.scrollY`, blur or
+move focus, disable global smooth scrolling, or remove the approved Motion
+transition. The browser regression must vertically center the thumbnail rail,
+use a real pointer coordinate, change both a nearby and a horizontally distant
+visual, wait beyond the 420ms keyed exit, and assert exact `window.scrollY`
+equality. A test with only the bottom edge of the rail visible is insufficient:
+that geometry does not exercise the incorrect backdrop-anchor selection.
+
 Required behavior:
 
 - high-density slide source and intrinsic dimensions;
@@ -491,7 +515,10 @@ Automated checks must assert:
   transfer/WebGL failure, and explicit reduced-motion loading;
 - lightbox high-density source, Zoom control, previous/next, synchronization,
   and Escape close;
-- a partially visible Gallery rail selection leaves `window.scrollY` unchanged;
+- a vertically centered Gallery rail selection changes both a nearby and a
+  horizontally distant active image while leaving `window.scrollY` unchanged
+  after the keyed backdrop exit window, and the backdrop computes
+  `overflow-anchor: none`;
 - after starting an inline Gallery transition, opening a partially visible
   stage, navigating, and closing retains the package body lock while open,
   restores focus to the updated stage after close, and leaves `window.scrollY`

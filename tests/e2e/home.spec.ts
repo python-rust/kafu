@@ -996,42 +996,77 @@ test('gallery provides eight selectors and localized keyboard lightbox navigatio
   await expect(closeButton).toHaveCount(0);
 });
 
-test('gallery thumbnail selection preserves the reader viewport', async ({
+test('gallery thumbnail selection preserves the reader viewport across animated changes', async ({
   page,
 }) => {
   await openHome(page, { width: 390, height: 844 });
 
   const gallery = page.locator('#visuals');
   const thumbnailList = gallery.getByRole('list', { name: '选择图片' });
-  const target = thumbnailList.getByRole('button', {
-    name: '忘れてしまえ，显示此图',
-  });
 
   await thumbnailList.evaluate((list) => {
-    const absoluteTop = list.getBoundingClientRect().top + window.scrollY;
+    const rect = list.getBoundingClientRect();
+    const absoluteTop = rect.top + window.scrollY;
     window.scrollTo({
-      top: absoluteTop - window.innerHeight + 32,
+      top: absoluteTop - (window.innerHeight - rect.height) / 2,
       behavior: 'instant',
     });
     list.scrollLeft = 0;
   });
-  await expect(target).toBeInViewport();
-
-  const targetBox = await target.boundingBox();
-  if (!targetBox) {
-    throw new Error('Gallery thumbnail must be visible before pointer input.');
-  }
-
   const scrollYBeforeSelection = await page.evaluate(() => window.scrollY);
-  await page.mouse.click(targetBox.x + targetBox.width / 2, targetBox.y + 16);
 
-  await expect(
-    gallery.getByRole('button', { name: '忘れてしまえ，点击放大' }),
-  ).toBeVisible();
-  await page.waitForTimeout(500);
+  const selectThumbnail = async (title: string) => {
+    const target = thumbnailList.getByRole('button', {
+      name: `${title}，显示此图`,
+    });
+    await target.evaluate((button) => {
+      const list = button.closest('[aria-label="选择图片"]');
 
-  const scrollYAfterSelection = await page.evaluate(() => window.scrollY);
-  expect(scrollYAfterSelection).toBe(scrollYBeforeSelection);
+      if (!(list instanceof HTMLElement)) {
+        throw new Error('Gallery thumbnail rail is missing.');
+      }
+
+      const listRect = list.getBoundingClientRect();
+      const buttonRect = button.getBoundingClientRect();
+      list.scrollTo({
+        left:
+          list.scrollLeft +
+          buttonRect.left -
+          listRect.left -
+          (listRect.width - buttonRect.width) / 2,
+        behavior: 'instant',
+      });
+    });
+
+    const clickPoint = await target.evaluate((button) => {
+      const rect = button.getBoundingClientRect();
+      const x = Math.round(rect.left + rect.width / 2);
+      const y = Math.round(rect.top + Math.min(16, rect.height / 2));
+      const hitTarget = document.elementFromPoint(x, y);
+
+      return hitTarget === button || (hitTarget && button.contains(hitTarget))
+        ? { x, y }
+        : null;
+    });
+
+    if (!clickPoint) {
+      throw new Error(`${title} must have a visible pointer target.`);
+    }
+
+    await page.mouse.click(clickPoint.x, clickPoint.y);
+    await expect(
+      gallery.getByRole('button', { name: `${title}，点击放大` }),
+    ).toBeVisible();
+
+    // The defect happens when the 420ms keyed backdrop exit completes.
+    await page.waitForTimeout(600);
+    expect(await page.evaluate(() => window.scrollY)).toBe(
+      scrollYBeforeSelection,
+    );
+  };
+
+  await selectThumbnail('忘れてしまえ');
+  await selectThumbnail('ユーフォーを見にいこう');
 });
 
 test('gallery lightbox navigation preserves the reader viewport and restores focus', async ({
@@ -1120,6 +1155,10 @@ test('gallery reserves generated thumbnails for the rail and atmospheric backdro
   const backdropImage = gallery
     .getByTestId('gallery-backdrop')
     .locator('img[data-media-variant="thumbnail"]');
+  await expect(gallery.getByTestId('gallery-backdrop')).toHaveCSS(
+    'overflow-anchor',
+    'none',
+  );
   await expect(backdropImage).toHaveCount(1);
   await expect(backdropImage).toHaveAttribute('src', /-thumb-/);
 });
