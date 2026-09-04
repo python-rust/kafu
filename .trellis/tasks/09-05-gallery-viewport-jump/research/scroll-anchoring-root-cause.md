@@ -135,3 +135,23 @@ Use the standards-defined, owner-local CSS exclusion:
 
 Do not add scroll restoration code, focus suppression, a new carousel, or a new
 animation dependency.
+
+## Production delivery evidence
+
+- Implementation commit:
+  `9d7ee58caef691ebf76637b28481e882cdb256be`
+- Cloudflare Pages workflow run: `33904697907`
+- Workflow conclusion: success; checkout, policy verification, mise setup,
+  dependency installation, quality checks, static artifact verification,
+  Pages deployment, and production site/avatar verification all passed.
+- Production root returned HTTP 200 and served:
+  - CSS: `/assets/index-Dq5bwt8D.css`
+  - JavaScript: `/assets/index-pHn5BTUp.js`
+- The deployed CSS contains `overflow-anchor:none`.
+- The production verification sweep selected all eight thumbnails at each of
+  `390x844`, `430x932`, `768x1024`, and `1440x900` without changing
+  `window.scrollY`.
+- Production engine probes reported:
+  - Chromium: both nearby and distant selections, delta 0;
+  - Firefox 153: delta 0;
+  - WebKit 26.5: delta 0.

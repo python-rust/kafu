@@ -66,9 +66,9 @@ manual scroll restoration.
 - [x] `mise run check` and `mise run e2e` pass.
 - [x] The relevant Trellis frontend spec records the scroll-anchoring contract
       and the required regression geometry.
-- [ ] The task changes are committed and pushed to `main`; the manual Cloudflare
+- [x] The task changes are committed and pushed to `main`; the manual Cloudflare
       Pages workflow succeeds for that commit.
-- [ ] The deployed production site passes the same centered-rail pointer
+- [x] The deployed production site passes the same centered-rail pointer
       interaction check and serves the new build.
 
 ## Open Questions
