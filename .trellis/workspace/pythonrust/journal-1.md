@@ -533,3 +533,25 @@ Removed the Hero decode visibility deadlock, reused inline ambience instead of a
 ### Next Steps
 
 - No immediate follow-up; future Pages releases remain manual through deploy-pages.yml.
+
+
+## Session 19: Fix gallery viewport scroll anchoring
+
+**Date**: 2026-09-05
+**Task**: Fix gallery viewport scroll anchoring
+**Branch**: `main`
+
+### Summary
+
+Reproduced the remaining Visual Archive jump in production, identified the animated decorative backdrop as an incorrect scroll-anchor candidate, added a narrow overflow-anchor exclusion, strengthened centered-rail pointer regression coverage, updated the media spec, validated Chromium/Firefox/WebKit, and deployed successfully.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9d7ee58` | (see git log) |
+| `b22f7b1` | (see git log) |
+
+### Status
+
+[OK] **Completed**
