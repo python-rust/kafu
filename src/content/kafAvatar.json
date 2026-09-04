@@ -1,0 +1,36 @@
+{
+  "id": "kaf-fukuro-hatdown",
+  "title": "花谱 VRM 动态形象",
+  "version": "v1",
+  "format": "VRM 0.x",
+  "author": "mme",
+  "permissionSummary": "经模型作者授权用于本网站展示",
+  "byteSize": 49911472,
+  "byteSizeLabel": "47.6 MiB",
+  "sha256": "5fe890c94a7af1e5df13a212203cf3d79a7d9d429aaac9750aee151e5918dae3",
+  "sha256Prefix": "5fe890c94a7af1e5",
+  "mimeType": "model/gltf-binary",
+  "cacheControl": "public, max-age=31536000, immutable",
+  "bucketName": "kafu-runtime-assets",
+  "bindingName": "KAF_AVATAR_ASSETS",
+  "objectKey": "avatars/kaf/fukuro-hatdown/5fe890c94a7af1e5/kaf-fukuro-hatdown.vrm",
+  "publicPath": "/assets/models/kaf/v1/kaf-fukuro-hatdown-5fe890c94a7af1e5.vrm",
+  "manifestPath": "/assets/models/kaf/manifest.json",
+  "downloadFilename": "kaf-fukuro-hatdown-5fe890c94a7af1e5.vrm",
+  "sourcePath": ".local-assets/kaf-avatar/original/kaf_fukuro_hatdown.vrm",
+  "poster": {
+    "path": "src/assets/kaf/avatar/poster/kaf-fukuro-hatdown.webp",
+    "byteSize": 88532,
+    "sha256": "3af7e7efaffb36242f219dec4dd83f7460244307941861661294b8eef2dca580",
+    "width": 960,
+    "height": 1200
+  },
+  "camera": {
+    "targetY": 1.36,
+    "viewHeight": 1.22,
+    "distance": 2.2
+  },
+  "expressions": {
+    "blink": "blink"
+  }
+}

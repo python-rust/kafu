@@ -133,6 +133,29 @@ consumer. Do not add a React wrapper merely to avoid one explicit lifecycle.
 If IntersectionObserver or ResizeObserver is unavailable, Journey uses its
 complete in-flow image/text fallback instead of initializing a partial runtime.
 
+For the interactive avatar:
+
+```text
+KafAvatarSection.tsx         -> product copy, poster/loading/failure state,
+                                viewport/manual activation, public download links
+KafVrmStage.tsx              -> lazy Three.js + @pixiv/three-vrm lifecycle only
+kafAvatar.json/.ts           -> model URL/key/hash/camera/expression contract
+Three.js / three-vrm         -> GLB, MToon, humanoid, expression, look-at,
+                                and SpringBone runtime mechanics
+Pages Function               -> same-origin public streaming/download boundary
+```
+
+Keep the renderer behind `React.lazy`; neither Three.js nor `three-vrm` may enter
+the initial page chunk. `KafAvatarSection` owns low-frequency React state only.
+Per-frame bone/expression/renderer values stay inside `KafVrmStage` refs and the
+animation loop. Do not create a generic avatar framework, duplicate the VRM
+loader, or expose vendor objects to `HomePage`.
+
+The avatar poster is the one approved raw `<img>` exception inside a homepage
+section because it is a fallback for a WebGL surface, not an editorial artwork.
+It must preserve intrinsic dimensions, lazy loading, meaningful alt text before
+readiness, and empty alt text after the labeled canvas replaces it.
+
 For page image warmup:
 
 ```text
@@ -171,7 +194,9 @@ Current example:
 For primary page navigation, use `aria-current="location"` on the observed
 active section. Journey articles use semantic source order and `aria-labelledby`;
 the changing sticky stage is decorative and must not duplicate the chronology in
-the accessibility tree.
+the accessibility tree. The avatar keeps readable loading/failure status in an
+`aria-live` region, native buttons for manual load/retry, a labeled canvas after
+readiness, and a permanent static fallback when WebGL cannot initialize.
 
 ---
 
@@ -183,7 +208,8 @@ the accessibility tree.
 - Do not recreate a separate visual language for each homepage section; use the shared KAF semantic roles and let composition/media provide variation.
 - Do not add generic `eyebrow`, `overline`, `intro`, or `description` slots to a shared heading component; visible copy must pass the content job test.
 - Do not write raw `<img>` markup in a homepage section; extend the shared
-  responsive-artwork contract when a real media role is missing.
+  responsive-artwork contract when a real editorial media role is missing. The
+  documented avatar-poster/WebGL fallback is the only current exception.
 - Do not hand-build dialog focus trapping, Escape handling, swipe navigation, or body-scroll locking when the approved lightbox dependency already owns them.
 - Do not hand-build Journey step observation, scroll-direction tracking, or
   resize observation when Scrollama owns those mechanics.
@@ -195,3 +221,8 @@ the accessibility tree.
 - Do not make each section independently “preload everything”; one page-owned
   warmup plan must preserve reading order and use the shared scheduler/cache.
 - Do not move static styling into JSX just because inline styles are convenient.
+- Do not mount WebGL/VRM on initial page render, store per-frame values in React
+  state, leave animation running offscreen/in a hidden tab, or skip disposal in
+  React StrictMode cleanup.
+- Do not let LLM/TTS code manipulate vendor bone/expression objects directly;
+  future control enters through a small semantic avatar-driver boundary.

@@ -1,7 +1,7 @@
 # Static Deployment Guidelines
 
-> Cloudflare Pages, root-hosted builds, asset-origin, and one-click manual
-> release contracts for the KAF frontend.
+> Cloudflare Pages, R2-backed runtime assets, root-hosted builds, and one-click
+> manual release contracts for the KAF frontend.
 
 ---
 
@@ -41,7 +41,9 @@ making everything after the click deterministic and automated.
 ## Cloudflare project and credentials
 
 The Cloudflare Pages project is named `kafu` and uses Direct Upload through
-Wrangler. Its production hostname is `kafu-8bd.pages.dev`.
+Wrangler. Its production hostname is `kafu-8bd.pages.dev`. Run Pages commands
+from the repository root so Wrangler discovers `wrangler.toml`; do not pass a
+custom `--config` path because Pages rejects it.
 
 GitHub Actions reads:
 
@@ -72,7 +74,9 @@ scripts, logs, or documentation.
 - `pnpm-workspace.yaml` explicitly allows only Wrangler's required `esbuild`
   and `workerd` install scripts; do not broaden build-script approval without
   reviewing the new dependency and its install behavior.
-- The live production root must return HTTP success before the workflow passes.
+- `mise run check` includes the avatar asset-lock/repository-policy verifier.
+- The live production root, public avatar manifest, model HEAD response, and a
+  four-byte model range request must pass before the workflow succeeds.
 
 External GitHub Actions must be pinned to full 40-character commit SHAs. Keep a
 release comment beside each pin. Upgrading an Action requires resolving and
@@ -110,11 +114,95 @@ origins:
   asset URLs plus responsive selection context;
 - typography uses installed system fonts and issues no font request;
 - application JavaScript and CSS are hashed Vite assets;
+- the 49,911,472-byte VRM is stored in the private `kafu-runtime-assets` R2
+  bucket, but the browser reads it only through the versioned same-origin Pages
+  Function path under `/assets/models/kaf/`;
 - external media/social URLs remain user-initiated outbound links only.
 
 Do not move current images to a separate CDN merely because the hosting provider
 changed. Keeping required runtime assets same-origin avoids a second availability
 boundary.
+
+---
+
+## R2-backed avatar asset contract
+
+The KAF VRM is a large runtime asset, not a Pages static-build input:
+
+```text
+local-only source -> immutable R2 object -> private Pages binding
+                  -> public same-origin Pages Function URL -> browser/download client
+```
+
+The executable contract is distributed across these checked-in owners:
+
+- `src/content/kafAvatar.json` — canonical bucket, binding, object key, public
+  path, byte size, SHA-256, poster metadata, and model identity;
+- `src/content/kafAvatar.ts` — typed browser/Function projection and public
+  manifest builder;
+- `wrangler.toml` — Pages output directory plus `KAF_AVATAR_ASSETS` binding to
+  `kafu-runtime-assets`;
+  it must stay at the repository root because `wrangler pages deploy` does not
+  support a custom `--config` path;
+- `functions/assets/models/kaf/[[path]].ts` — exact-path public GET/HEAD proxy;
+- `scripts/kaf-avatar/publish_vrm_to_r2.py` — local verification, additive
+  upload, and streamed remote SHA-256 verification;
+- `scripts/verify_avatar_assets.py` — lock, poster, binding, and no-large-Git-
+  binary policy;
+- `scripts/verify_production_avatar.py` — production root/manifest/HEAD/range
+  smoke test.
+
+Required rules:
+
+- The VRM and Blender source remain under ignored `.local-assets/`; never commit
+  `.vrm`, `.blend`, the authoring archive, or source textures to normal Git or
+  Git LFS.
+- Object keys and public URLs include a SHA-256 prefix. Content changes create a
+  new key; do not overwrite a mutable `latest.vrm` object.
+- The current object key is
+  `avatars/kaf/fukuro-hatdown/5fe890c94a7af1e5/kaf-fukuro-hatdown.vrm`.
+- The public route is
+  `/assets/models/kaf/v1/kaf-fukuro-hatdown-5fe890c94a7af1e5.vrm`.
+- The Function is intentionally public and supports GET, HEAD, and one byte
+  range. It uses the private binding, streams bodies, rejects every unlisted
+  path, and emits immutable caching, length, type, ETag, and range metadata.
+- The public route may be linked from README and the generated JSON manifest so
+  repository visitors can reproduce/download the deployed model. Public
+  transport does not create a new downstream model license.
+- Do not configure a public R2 hostname or frontend CORS dependency for this
+  flow; the Pages route is the public boundary.
+
+### Publication order
+
+Model publication is separate from normal page deployment:
+
+```bash
+mise run avatar-publish
+mise run avatar-verify
+```
+
+The safe release order is:
+
+1. verify the local source against the lock;
+2. create the bucket if absent and upload the immutable object;
+3. stream the remote object back and verify byte size/SHA-256;
+4. commit the lock/public-path change;
+5. deploy Pages;
+6. run the production manifest, HEAD, and `bytes=0-3` checks.
+
+Never deploy code that references a new object key before that object has passed
+remote verification. Normal web deployments do not re-upload the unchanged
+model.
+
+### Credentials
+
+- Local model publication uses the authenticated Wrangler profile or an
+  equivalent least-privilege R2 write credential outside Git.
+- GitHub Actions continues to read `CLOUDFLARE_API_TOKEN` and
+  `CLOUDFLARE_ACCOUNT_ID`; its token must be able to deploy the Pages project
+  configuration containing the existing R2 binding.
+- No R2 credential is exposed to browser code or stored as a Pages runtime
+  secret; the Function receives the bucket through `wrangler.toml` binding.
 
 ---
 
@@ -138,6 +226,8 @@ After deployment:
 
 - confirm the workflow conclusion is `success`;
 - confirm `https://kafu-8bd.pages.dev/` returns HTTP success;
+- run `scripts/verify_production_avatar.py` and confirm the manifest, model HEAD,
+  immutable cache metadata, allow-list 404, and `glTF` range probe;
 - request representative hashed JavaScript, CSS, and image resources;
 - confirm the Hero preload and `srcset` candidates remain same-origin under
   `/assets/`;
@@ -150,6 +240,9 @@ After deployment:
 - A failed quality/build/artifact check never reaches Wrangler deployment.
 - Cloudflare keeps previous successful deployments available in deployment
   history if a later upload fails.
+- R2 objects are immutable release inputs. Keep an old object while any deployed
+  revision references it; rollback changes the Git-tracked lock/public URL and
+  redeploys Pages rather than overwriting an object.
 - Fix the source and rerun the manual workflow; do not commit `dist` or create a
   generated deployment branch.
 - Never force-push `main` to deploy.
@@ -167,6 +260,7 @@ mise run check
 mise run e2e
 python3 scripts/verify_static_build.py dist
 python3 scripts/verify_cloudflare_workflow.py .github/workflows/deploy-cloudflare-pages.yml
+python3 scripts/verify_production_avatar.py https://kafu-8bd.pages.dev
 ```
 
 Also perform a real production smoke check after changing the deployment path,

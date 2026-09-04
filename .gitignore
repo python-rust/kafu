@@ -9,3 +9,10 @@ test-results/
 !.vscode/extensions.json
 *.local
 *.log
+
+# Large local avatar authoring/runtime inputs are published through R2, not Git.
+.local-assets/
+*.blend
+src/assets/kaf/avatar/runtime/
+
+.wrangler/

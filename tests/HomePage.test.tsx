@@ -28,6 +28,7 @@ describe('home page', () => {
     expect(sectionIds).toEqual([
       'top',
       'about',
+      'avatar',
       'journey',
       'works',
       'visuals',
@@ -36,6 +37,7 @@ describe('home page', () => {
 
     for (const heading of [
       '认识花谱',
+      '动态形象',
       '成长轨迹',
       '代表作品',
       '视觉档案',
@@ -126,6 +128,7 @@ describe('home page', () => {
 
     const expectedAnchors = new Map([
       ['认识花谱', '#about'],
+      ['动态形象', '#avatar'],
       ['成长轨迹', '#journey'],
       ['代表作品', '#works'],
       ['视觉档案', '#visuals'],

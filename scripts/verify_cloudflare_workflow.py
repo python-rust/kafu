@@ -60,14 +60,16 @@ def main() -> int:
         "CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}",
         "CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}",
         "pnpm exec wrangler pages deploy dist --project-name kafu",
-        "https://kafu-8bd.pages.dev/",
+        "python3 scripts/verify_production_avatar.py",
+        "https://kafu-8bd.pages.dev",
+        "--attempts 8",
     )
     missing = [fragment for fragment in required_fragments if fragment not in workflow]
     if missing:
         raise SystemExit("Workflow is missing required policy fragments: " + repr(missing))
 
     print(
-        "Verified Cloudflare Pages workflow: manual-only trigger, main-only release, "
+        "Verified Cloudflare Pages workflow: manual-only trigger, main-only release, R2 avatar smoke check, "
         f"{len(action_references)} immutable Action pins"
     )
     return 0

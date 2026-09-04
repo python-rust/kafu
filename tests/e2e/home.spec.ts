@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
+import { kafAvatarAsset } from '../../src/content/kafAvatar';
+
 const targetViewports = [
   { width: 320, height: 568 },
   { width: 360, height: 640 },
@@ -14,6 +16,7 @@ const targetViewports = [
 
 const pageSections = [
   '#about',
+  '#avatar',
   '#journey',
   '#works',
   '#visuals',
@@ -259,6 +262,7 @@ test('desktop homepage uses factual artist copy and a complete five-album sequen
 
   for (const heading of [
     '认识花谱',
+    '动态形象',
     '成长轨迹',
     '代表作品',
     '视觉档案',
@@ -385,6 +389,7 @@ test('desktop homepage uses factual artist copy and a complete five-album sequen
       navFontSize: readFontSize('header nav a'),
       sectionHeadingSizes: [
         '#about h2',
+        '#avatar h2',
         '#journey h2',
         '#works h2',
         '#visuals h2',
@@ -534,6 +539,7 @@ test('fixed navigation keeps contrast and reports the current page location', as
   });
   for (const [selector, label] of [
     ['#about', '认识花谱'],
+    ['#avatar', '动态形象'],
     ['#journey', '成长轨迹'],
     ['#works', '代表作品'],
     ['#visuals', '视觉档案'],
@@ -551,6 +557,71 @@ test('fixed navigation keeps contrast and reports the current page location', as
     page.getByRole('heading', { level: 2, name: '代表作品' }),
   ).toBeInViewport();
   await expectAnchorBelowHeader(page, '代表作品');
+});
+
+test('dynamic avatar defers its model request and keeps a usable poster on failure', async ({
+  page,
+}) => {
+  let modelRequests = 0;
+  await page.route(`**${kafAvatarAsset.publicPath}`, async (route) => {
+    modelRequests += 1;
+    await route.fulfill({
+      status: 503,
+      contentType: 'text/plain; charset=utf-8',
+      body: 'test proxy unavailable',
+    });
+  });
+
+  await openHome(page, { width: 1440, height: 900 });
+
+  expect(modelRequests).toBe(0);
+  await expect(page.locator('#avatar')).toBeAttached();
+  await expect(
+    page.locator('#avatar').getByRole('img', { name: /花谱 VRM 模型预览/ }),
+  ).toBeAttached();
+
+  await scrollToCenter(page, '#avatar');
+  await expect.poll(() => modelRequests).toBe(1);
+  await expect(page.getByTestId('kaf-avatar-stage')).toHaveAttribute(
+    'data-status',
+    'error',
+  );
+  await expect(
+    page.locator('#avatar').getByRole('img', { name: /花谱 VRM 模型预览/ }),
+  ).toBeVisible();
+  await expect(
+    page.locator('#avatar').getByRole('button', { name: '重新加载' }),
+  ).toBeVisible();
+  await expect(
+    page.locator('#avatar').getByRole('link', { name: '下载 VRM 模型' }),
+  ).toHaveAttribute('href', kafAvatarAsset.publicPath);
+});
+
+test('reduced motion keeps the avatar static until the visitor explicitly loads it', async ({
+  page,
+}) => {
+  let modelRequests = 0;
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.route(`**${kafAvatarAsset.publicPath}`, async (route) => {
+    modelRequests += 1;
+    await route.fulfill({ status: 503, body: 'test proxy unavailable' });
+  });
+
+  await openHome(page, { width: 390, height: 844 });
+  await scrollToCenter(page, '#avatar');
+  await page.waitForTimeout(250);
+
+  expect(modelRequests).toBe(0);
+  const loadButton = page
+    .locator('#avatar')
+    .getByRole('button', { name: '加载动态形象' });
+  await expect(loadButton).toBeVisible();
+  await loadButton.click();
+  await expect.poll(() => modelRequests).toBe(1);
+  await expect(page.getByTestId('kaf-avatar-stage')).toHaveAttribute(
+    'data-status',
+    'error',
+  );
 });
 
 test('hero selects a right-sized responsive candidate across desktop and mobile DPR', async ({
@@ -1686,7 +1757,9 @@ test('background artwork warmup completes in reading order without requiring scr
   expect(audit.warmupCompleteMarks).toBe(1);
 
   const responsiveRequestOrder = audit.entries
-    .filter((entry) => !entry.filename.includes('-thumb-'))
+    .filter(
+      (entry) => entry.sourceId !== '' && !entry.filename.includes('-thumb-'),
+    )
     .map((entry) => entry.sourceId)
     .filter((sourceId, index, values) => values.indexOf(sourceId) === index);
   expect(responsiveRequestOrder).toEqual([
@@ -1704,7 +1777,9 @@ test('background artwork warmup completes in reading order without requiring scr
 
   const thumbnailRequests = new Set(
     audit.entries
-      .filter((entry) => entry.filename.includes('-thumb-'))
+      .filter(
+        (entry) => entry.sourceId !== '' && entry.filename.includes('-thumb-'),
+      )
       .map((entry) => entry.sourceId),
   );
   expect(thumbnailRequests).toEqual(

@@ -16,6 +16,7 @@ import { createHomeArtworkWarmupGroups } from './homeArtworkWarmup';
 import { GallerySection } from './sections/GallerySection';
 import { HeroSection } from './sections/HeroSection';
 import { JourneySection } from './sections/JourneySection';
+import { KafAvatarSection } from './sections/KafAvatarSection';
 import { KafProfileSection } from './sections/KafProfileSection';
 import { OfficialLinksSection } from './sections/OfficialLinksSection';
 import { SiteFooter } from './sections/SiteFooter';
@@ -24,6 +25,7 @@ import { WorksSection } from './sections/WorksSection';
 
 const homeNavItems = [
   { label: '认识花谱', href: '#about' },
+  { label: '动态形象', href: '#avatar' },
   { label: '成长轨迹', href: '#journey' },
   { label: '代表作品', href: '#works' },
   { label: '视觉档案', href: '#visuals' },
@@ -59,6 +61,7 @@ export function HomePage() {
           <main>
             <HeroSection visual={heroMedia} />
             <KafProfileSection profile={kafProfile} />
+            <KafAvatarSection />
             <JourneySection chapters={journeyChapters} />
             <WorksSection works={selectedWorks} />
             <GallerySection visuals={galleryVisuals} />

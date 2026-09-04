@@ -43,6 +43,7 @@ generic slogans.
 ```text
 Hero
 认识花谱        factual profile
+动态形象        authorized, downloadable browser VRM
 成长轨迹        guided scroll chronology
 代表作品        five original albums
 视觉档案
@@ -54,6 +55,7 @@ Footer / sources
 | --- | --- |
 | Hero | Identify the artist and provide direct destinations. |
 | 认识花谱 | State verified biography and profile facts. |
+| 动态形象 | Present the authorized VRM, public download/manifest, and graceful static fallback. |
 | 成长轨迹 | Guide the reader through six career eras in order. |
 | 代表作品 | Present the original-album sequence. |
 | 视觉档案 | Inspect the existing verified visual archive. |
@@ -268,6 +270,7 @@ Primary navigation remains:
 
 ```text
 认识花谱   -> #about
+动态形象   -> #avatar
 成长轨迹   -> #journey
 代表作品   -> #works
 视觉档案   -> #visuals
@@ -293,11 +296,15 @@ Approved motion:
 - existing Motion opacity/transform transition for the newly active Journey
   image and stage metadata;
 - Gallery state transitions already defined elsewhere;
+- the lazy avatar renderer's restrained idle/blink/gaze/SpringBone loop while
+  the section and document are visible;
 - persistent CSS transitions for navigation and active-step state.
 
 Forbidden motion:
 
 - biography activation based on scroll;
+- eager avatar loading, unrestricted camera movement, or rendering the avatar
+  while its section/document is hidden;
 - per-frame React scroll values, parallax, autoplay, or smooth-scroll
   interception;
 - hiding/delaying factual content for cinematic pacing;
@@ -333,6 +340,9 @@ Tests must verify:
   eager/high-priority image;
 - absence of banned explanatory/slogan copy;
 - static profile facts and absence of primer sticky/observer markup;
+- the `#avatar` section between profile and Journey, with public model identity,
+  author/permission summary, download/manifest links, lazy request boundary,
+  poster/error fallback, and reduced-motion explicit activation;
 - six semantic Journey steps in source order;
 - downward and upward scroll activation for early, middle, and final eras;
 - one sticky Journey image, no secondary image, and release before Works;

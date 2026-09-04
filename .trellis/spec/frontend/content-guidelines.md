@@ -144,9 +144,12 @@ Detailed naming and story rules live in
 
 - The unaffiliated, non-commercial fan-project disclaimer appears once in the
   footer. Do not repeat it in the header, Hero metadata, or every section.
-- Media attribution is consolidated in the page-bottom source area. Required
-  creator names remain visible; per-work source and license links remain in the
-  adjacent native disclosure.
+- Editorial-image attribution is consolidated in the page-bottom source area.
+  Required creator names remain visible; per-work source and license links remain
+  in the adjacent native disclosure.
+- The interactive/downloadable VRM section may show its creator and direct
+  authorization summary beside the download link. This is asset identity and
+  permission context, not a repeated site-wide disclaimer.
 - Never remove a source URL, credit, or license/provenance record merely to make
   a composition cleaner.
 
@@ -163,7 +166,10 @@ When copy hierarchy changes, tests must assert:
 - one factual profile instead of repeated question/slogan cards;
 - the one-footer disclaimer contract;
 - no image-source work-page links inside `<main>`;
-- visible bottom creator names and the complete source/license disclosure;
+- visible bottom editorial-image creator names and the complete source/license
+  disclosure;
+- visible avatar creator/permission metadata plus public model/manifest links,
+  without claiming that public transport grants an open license;
 - no reintroduction of `eyebrow` markup or decorative `data-rhythm` indexes in
   the homepage composition.
 

@@ -199,3 +199,35 @@ These derivatives improve display density and reduce browser enlargement. They d
 - Re-check the exact work page before materially changing distribution context or creating a new derivative.
 - Remove the corresponding local file and content reference if its source terms become incompatible.
 - The `狂想β` entry is a narrow reviewed exception requested for this non-commercial album listing. Do not treat it as blanket permission for other KAF/KAMITSUBAKI official images, campaign materials, album covers, social-media reposts, logos, screenshots, or wallpapers.
+
+## `avatar/kaf-fukuro-hatdown` VRM model
+
+- Work: fan-made KAF VRM model, internal title `kaf_fukuro_1`
+- Model creator / embedded author metadata: `mme`
+- Source input: `kaf_fukuro_hatdown.vrm`, supplied to the project owner outside the Git repository
+- Permission evidence: on 2026-09-05 the project owner confirmed that the model creator directly authorized use of this VRM on the current website; private conversation evidence is retained outside the public repository
+- Website usage: public rendering and download through the site's versioned Pages Function URL
+- Distribution architecture: the 49,911,472-byte VRM is stored in Cloudflare R2 and is not committed to Git or the Pages static artifact
+- Public model URL: https://kafu-8bd.pages.dev/assets/models/kaf/v1/kaf-fukuro-hatdown-5fe890c94a7af1e5.vrm
+- Public manifest URL: https://kafu-8bd.pages.dev/assets/models/kaf/manifest.json
+- SHA-256: `5fe890c94a7af1e5df13a212203cf3d79a7d9d429aaac9750aee151e5918dae3`
+- Model format: VRM 0.x / binary glTF
+- Embedded usage metadata: creator `mme`; commercial use disallowed; redistribution prohibited by the embedded default metadata. The creator's direct website-specific permission is the basis for this deployment and does not grant downstream users an additional license
+- Required public credit used by the site: `模型制作：mme`
+- Retrieval / permission confirmation date: 2026-09-05
+
+### Static poster derivative
+
+- Local path: `avatar/poster/kaf-fukuro-hatdown.webp`
+- Source: the VRM's embedded metadata thumbnail `kaf_chara_zhaimao.png`
+- Generation: `python3 scripts/kaf-avatar/extract_vrm_poster.py`
+- Processing: deterministic upper-body crop and Lanczos resize to 960×1200 WebP, quality 86
+- Byte size: 88,532
+- SHA-256: `3af7e7efaffb36242f219dec4dd83f7460244307941861661294b8eef2dca580`
+- Purpose: model-loading, reduced-motion, WebGL-unavailable, and error fallback
+
+The public download exists so visitors and repository users can reproduce the
+model version rendered by the site. It must not be described as an MIT-licensed
+or otherwise open-licensed model merely because the transport URL is public.
+The model creator's permission and KAMITSUBAKI's secondary-creation boundary
+continue to apply independently from this repository's source-code license.

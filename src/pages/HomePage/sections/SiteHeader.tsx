@@ -16,6 +16,7 @@ export interface SiteHeaderProps {
 
 export const defaultSiteHeaderNavItems = [
   { label: '认识花谱', href: '#about' },
+  { label: '动态形象', href: '#avatar' },
   { label: '成长轨迹', href: '#journey' },
   { label: '代表作品', href: '#works' },
   { label: '视觉档案', href: '#visuals' },

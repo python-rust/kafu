@@ -20,7 +20,12 @@ The owners are:
 - `src/pages/HomePage/components/ResponsiveArtwork.tsx` — the only homepage
   `<img>` contract;
 - `src/pages/HomePage/components/MediaSources.tsx` — page-bottom source index;
-- `src/pages/HomePage/sections/GalleryLightbox.tsx` — lazy lightbox/Zoom adapter.
+- `src/pages/HomePage/sections/GalleryLightbox.tsx` — lazy lightbox/Zoom adapter;
+- `src/content/kafAvatar.json` and `src/content/kafAvatar.ts` — immutable VRM
+  asset lock plus typed public-manifest projection;
+- `src/assets/kaf/avatar/poster/` — the small local model-loading fallback;
+- `functions/assets/models/kaf/[[path]].ts` — public same-origin R2 model proxy;
+- `scripts/kaf-avatar/` — local-only VRM publication and poster extraction.
 
 Do not bypass these owners with section-local image attributes or copied source
 metadata.
@@ -139,6 +144,65 @@ claim recovered detail.
 
 ---
 
+## R2-backed VRM and poster contract
+
+The interactive avatar is a different media role from the editorial image
+ladder:
+
+- the 49,911,472-byte `.vrm` is a local-only authoring/runtime input and is
+  published to the immutable, content-addressed R2 object declared by
+  `src/content/kafAvatar.json`;
+- the Pages static artifact and Git history must contain no `.vrm`, `.blend`,
+  source archive, or original model texture;
+- `KafAvatarSection` links the public same-origin Function route for both the
+  runtime loader and explicit visitor download;
+- the generated public manifest exposes model id, author, format, version, byte
+  size, SHA-256, and absolute download URL;
+- public accessibility supports reproducibility and download, but does not
+  convert the model into an MIT/CC/open-licensed asset or grant rights beyond
+  the creator's permission and the underlying character boundary.
+
+The local poster is the only avatar binary shipped by Vite. It is generated
+from the VRM's embedded metadata thumbnail by:
+
+```bash
+mise run avatar-poster
+```
+
+The poster contract is:
+
+- fixed 960×1200 WebP with locked byte size and SHA-256;
+- explicit intrinsic width/height and `loading="lazy"`;
+- visible before model activation, during transfer, on WebGL/load failure, and
+  for the reduced-motion/manual-load path;
+- hidden visually after the canvas is ready, with an empty alt value so it does
+  not duplicate the ready canvas label;
+- excluded from the responsive artwork candidate ladder and page-wide artwork
+  warmup queue.
+
+`KafAvatarSection` may render this one raw poster `<img>` because it is the
+fallback shell for a WebGL model, not a responsive editorial-artwork role.
+Every other homepage image remains owned by `ResponsiveArtwork`. Do not broaden
+this exception to ordinary section media.
+
+The model itself is activation-only:
+
+- do not request it in HTML preload, Hero loading, or page artwork warmup;
+- auto-activate only when the avatar section enters the bounded preload margin;
+- reduced-motion users receive the poster until they explicitly request the
+  model;
+- loading progress may be derived from the same-origin `Content-Length`, but the
+  model still remains one browser request and is parsed only after transfer;
+- model size optimization is independent deferred work; R2 storage is not a
+  reason to put a 47.6 MiB request on the initial critical path.
+
+Provenance for the model and poster lives in `src/assets/kaf/ATTRIBUTION.md`.
+Private permission conversations stay outside Git; the public record includes
+only the creator, date, confirmed website scope, URLs, hashes, and applicable
+usage boundary.
+
+---
+
 ## Responsive Rendering Contract
 
 All homepage images use `ResponsiveArtwork`. Raw `<img>` markup is confined to
@@ -178,6 +242,8 @@ high-density candidate.
 | Gallery backdrop | thumbnail | lazy | low |
 | Gallery rail | thumbnail | lazy | low |
 | Gallery lightbox | high-density | interaction-only | lazy chunk |
+| Avatar poster | fixed 960×1200 WebP | lazy | auto |
+| Avatar VRM | R2-backed binary | viewport/manual activation | auto |
 
 Only the Hero foreground may set `fetchPriority="high"`. The Profile is the
 only non-Hero eager image. The initial Journey image stays lazy/low so it cannot
@@ -337,8 +403,11 @@ The image-led page remains clean by consolidating attribution at the bottom:
 
 - Hero, Journey, Works, and Gallery do not render per-image credit rows;
 - required creator names remain visibly present in the footer source line;
-- `MediaSources` provides one native `<details>` list with all ten titles,
-  credits, work pages, and license references;
+- `MediaSources` provides one native `<details>` list with all ten editorial
+  image titles, credits, work pages, and license references;
+- the avatar section renders `模型制作：mme` beside its public download because
+  the model is an interactive/downloadable runtime asset rather than one of the
+  ten editorial images; the full record remains in `ATTRIBUTION.md`;
 - source and license metadata remain in `KafMedia` even when the disclosure is
   closed;
 - the unofficial/non-commercial disclaimer remains once in the footer.
@@ -386,8 +455,8 @@ forcing `window.scrollTo`; fix focus timing and covered-stage stability instead.
 
 Automated checks must assert:
 
-- ten source hashes, 50 derivative dimensions/hashes, and ten inline
-  placeholder payloads;
+- ten source hashes, 50 editorial derivative dimensions/hashes, ten inline
+  placeholder payloads, and one independently locked avatar poster;
 - variant dimensions and filenames in typed content;
 - Hero current source at desktop DPR 1/DPR 2 and 390px mobile DPR 3;
 - one same-origin responsive Hero preload whose candidates all exist in the
@@ -415,6 +484,11 @@ Automated checks must assert:
 - ten bottom source/license records and visible required creator names;
 - the `狂想β` work card uses the verified local official cover and its
   source-native 480/960/1200/1440/1600 candidates;
+- the avatar lock, poster hash/size, R2 binding, and no-tracked/no-dist
+  `.vrm`/`.blend` policy;
+- the public avatar manifest and exact-path GET/HEAD/range proxy contract;
+- no avatar-model request before viewport/manual activation, static poster on
+  transfer/WebGL failure, and explicit reduced-motion loading;
 - lightbox high-density source, Zoom control, previous/next, synchronization,
   and Escape close;
 - a partially visible Gallery rail selection leaves `window.scrollY` unchanged;

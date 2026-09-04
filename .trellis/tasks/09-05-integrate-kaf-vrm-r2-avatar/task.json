@@ -1,0 +1,28 @@
+{
+  "id": "integrate-kaf-vrm-r2-avatar",
+  "name": "integrate-kaf-vrm-r2-avatar",
+  "title": "集成 R2 托管的花谱 VRM 网页角色",
+  "description": "",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": "frontend",
+  "package": null,
+  "priority": "P2",
+  "creator": "pythonrust",
+  "assignee": "pythonrust",
+  "createdAt": "2026-09-05",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "planning_approved": "true"
+  }
+}

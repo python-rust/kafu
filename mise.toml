@@ -76,9 +76,26 @@ description = "Run Playwright end-to-end smoke tests"
 depends = ["install"]
 run = "playwright test"
 
+[tasks.avatar-check]
+description = "Verify the R2-backed avatar lock and repository binary policy"
+run = "python3 scripts/verify_avatar_assets.py"
+
+[tasks.avatar-publish]
+description = "Upload and verify the locked local VRM in Cloudflare R2"
+run = "python3 scripts/kaf-avatar/publish_vrm_to_r2.py"
+
+[tasks.avatar-verify]
+description = "Stream and verify the locked VRM from Cloudflare R2"
+run = "python3 scripts/kaf-avatar/publish_vrm_to_r2.py --verify-only"
+
+[tasks.avatar-poster]
+description = "Regenerate the local WebP poster from the local-only VRM"
+run = "python3 scripts/kaf-avatar/extract_vrm_poster.py"
+
 [tasks.check]
 description = "Run the local CI-quality validation suite"
 run = [
+  { task = "avatar-check" },
   { task = "format-check" },
   { task = "lint" },
   { task = "test" },

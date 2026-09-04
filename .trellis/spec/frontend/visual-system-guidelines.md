@@ -174,6 +174,50 @@ with section-local family names.
 
 ---
 
+## Dynamic Avatar Contract
+
+The `#avatar` section is a deliberate WebGL stage between factual profile and
+chronology. It is not a floating assistant, Hero replacement, generic 3D viewer,
+or full-screen game scene.
+
+### Composition
+
+- Use one fixed 4:5 stage and one adjacent editorial/metadata column on wide
+  screens; stack them in source order on compact screens.
+- Preserve a stable front-facing upper-body composition with an orthographic
+  camera. Do not expose orbit controls, zoom, or unrestricted model rotation.
+- Keep the existing warm-dark surfaces, flat borders, off-white type, and
+  limited KAF-pink actions; do not create a neon/cyber visual language around
+  the 3D model.
+- Keep room scenery, microphones, subtitles, or future controls separate from
+  the VRM asset so layout and accessibility remain normal HTML/CSS concerns.
+- The section includes direct download/manifest links and model metadata because
+  discoverability/reproducibility is a product requirement, not decorative
+  technical copy.
+
+### Runtime motion
+
+- Load the poster in normal lazy image flow; load the lazy Three.js/VRM chunk and
+  47.6 MiB model only within the bounded section activation margin or after an
+  explicit reduced-motion/manual action.
+- Update small head/chest/spine movement, blink, gaze, and SpringBone inside the
+  renderer loop. Do not drive per-frame values through React state.
+- Use restrained motion that preserves the Live2D-like front presentation;
+  large head turns, free-camera movement, or full-body performance require a
+  separately reviewed motion asset.
+- Stop the animation frame loop while the section is outside the viewport or the
+  document is hidden. Resume from a clamped timer delta to avoid a physics jump.
+- `prefers-reduced-motion` keeps a stable pose and does not automatically fetch
+  the model; a visitor may explicitly load the static WebGL pose.
+- WebGL initialization or model-transfer/parse failure leaves the poster,
+  readable status, retry action, and download link usable.
+- Canvas/poster crossfade may animate opacity only; no geometric loading shift.
+
+The current static presentation pose lowers the source model's T-pose upper arms
+programmatically. It does not modify or redistribute a derived VRM binary.
+
+---
+
 ## Gallery and Lightbox Contract
 
 The KAF visual archive uses one focal stage and one selectable thumbnail rail.
@@ -292,10 +336,13 @@ The browser suite must cover:
 - 14px recurring-text and 16px body floors;
 - section-heading ceiling;
 - dark-system contrast roles and primary-action contrast;
-- fixed-header worst-case contrast and five `aria-current` locations;
+- fixed-header worst-case contrast and six `aria-current` locations;
 - stable mobile Hero viewport coverage, no next-section exposure, one contained
   foreground with request-free inline ambience, and short-screen content fit;
 - factual profile layout with no sticky/observer state;
+- dynamic avatar section order, public metadata/download links, request deferral,
+  poster/error fallback, reduced-motion manual activation, and offscreen/hidden
+  rendering pause;
 - six Journey steps, downward/upward activation, sticky release before Works,
   stale-while-loading clear stage behavior, cached revisit transitions without
   LQIP/loading states, full-bleed compact media dock, <=1px header seam, measured
@@ -311,7 +358,8 @@ Also inspect the diff for:
 
 - accidental content URL, media, dimension, or provenance changes;
 - reintroduced eyebrow/template copy;
-- extra runtime dependencies;
+- extra runtime dependencies outside the reviewed lazy Three.js/
+  `@pixiv/three-vrm` boundary;
 - a full `motion` proxy import or a Motion feature set larger than
   `domAnimation` without a measured interaction requirement;
 - `useScroll`, `useTransform`, high-frequency listeners, or unbounded
@@ -343,3 +391,7 @@ Also inspect the diff for:
   step-entry changes are needed.
 - Writing a custom modal/lightbox despite an installed, tested open-source
   dialog/gesture implementation.
+- Mounting the 3D runtime in the Hero or page shell, making the model an eager
+  request, or letting it cover unrelated editorial content.
+- Treating R2 capacity as permission to ignore the model's transfer size or
+  continuous-rendering cost.

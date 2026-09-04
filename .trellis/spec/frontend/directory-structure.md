@@ -13,14 +13,17 @@ The current project does **not** use generic `components/` or `features/` bucket
 The current top-level source layout is:
 
 ```text
+functions/                # Cloudflare Pages Functions and runtime bindings
+scripts/                  # Reproducible media/deployment verification tooling
 src/
-├── assets/              # Local shipping media plus provenance records
-├── app/                 # Application shell and route composition
-├── content/             # Typed static editorial/product content
-├── pages/               # Route-level page composition
+├── assets/               # Local shipping media plus provenance records
+├── app/                  # Application shell and route composition
+├── content/              # Typed static editorial/runtime asset locks
+├── pages/                # Route-level page composition
 │   └── HomePage/
-├── styles/              # Global reset, design tokens, and base styles
-└── main.tsx             # Browser entry point and global providers
+├── styles/               # Global reset, design tokens, and base styles
+└── main.tsx              # Browser entry point and global providers
+wrangler.toml             # Checked-in Pages output and R2 binding contract
 ```
 
 Tests live outside `src/`:
@@ -105,7 +108,9 @@ content order into scheduler groups; it is neither a reusable component nor
 generic static content. `HomePage.tsx` owns only the start/cancel effect.
 One-section integrations stay with their section:
 `GalleryLightbox.tsx` is the lazy package/style adapter owned by
-`GallerySection.tsx`.
+`GallerySection.tsx`. `KafVrmStage.tsx` is the lazy Three.js/VRM adapter owned by
+`KafAvatarSection.tsx`; it must not move into a generic renderer directory while
+there is only one avatar surface.
 
 `KafProfileSection.tsx` is an independently owned route section. Its factual
 biography and profile attributes live in `src/content/kaf.ts`; the section has
@@ -124,7 +129,18 @@ section modules.
 
 Owns typed static content that is rendered by pages but should not be buried inside JSX. Use this for curated records whose values are independently reviewable, such as KAF works, visual metadata, or official outbound destinations.
 
-Current example: `src/content/kaf.ts` defines the homepage's selected works, visual metadata, and official links. The page imports those records and owns presentation only.
+Current examples:
+
+- `src/content/kaf.ts` defines the homepage's selected works, visual metadata,
+  and official links.
+- `src/content/kafAvatar.json` is the canonical, machine-readable lock for the
+  R2-backed VRM object, public route, size, SHA-256, poster, and camera defaults.
+- `src/content/kafAvatar.ts` projects that lock into typed frontend/Function
+  values and the public download manifest.
+
+The page imports those records and owns presentation only. Cloudflare Functions
+may import the same lock projection so the public allow-list cannot drift from
+the browser URL.
 
 ```ts
 export interface KafWork {
@@ -147,6 +163,9 @@ Current example:
 ```text
 src/assets/kaf/
 ├── ATTRIBUTION.md
+├── avatar/
+│   └── poster/
+│       └── kaf-fukuro-hatdown.webp
 ├── generated/
 │   ├── manifest.json
 │   ├── *-thumb.webp
@@ -163,9 +182,40 @@ src/assets/kaf/
 The original preview files are immutable provenance inputs. Generated display
 variants live only under `generated/`, are reproducible through
 `scripts/generate_kaf_media_variants.py`, and are indexed by the generated
-manifest. An asset whose reuse basis is unclear must not be added to the
-shipping tree. Removing a third-party asset also requires removing or updating
-its provenance entry and derivatives.
+manifest. The avatar poster is a small, reproducible fallback extracted from the
+local-only VRM; the VRM itself belongs in R2 and never under `src/assets/`.
+An asset whose reuse basis is unclear must not be added to the shipping tree.
+Removing a third-party asset also requires removing or updating its provenance
+entry and derivatives.
+
+### `functions/`
+
+Owns Cloudflare Pages runtime code that cannot be represented by the Vite static
+artifact. The current avatar route is deliberately narrow:
+
+```text
+functions/assets/models/kaf/[[path]].ts
+```
+
+It imports the shared avatar lock, exposes the public manifest plus one
+allow-listed immutable VRM path, and accesses R2 only through the
+`KAF_AVATAR_ASSETS` binding. Do not create a general file proxy or mirror the R2
+key in several Functions.
+
+### `scripts/kaf-avatar/`
+
+Owns local-only model publication and deterministic poster extraction. General
+repository/production checks stay at `scripts/verify_avatar_assets.py` and
+`scripts/verify_production_avatar.py`. Scripts may reference `.local-assets/`
+as developer input, but checked-in application code and CI must not require the
+local VRM.
+
+### `.local-assets/`
+
+This ignored directory owns authorized source archives, Blender projects, raw
+VRM files, private permission evidence, and local Wrangler persistence. It is
+not part of the source tree, Git history, or Pages artifact. Durable public
+facts belong in `ATTRIBUTION.md` and the avatar lock instead.
 
 ### `src/styles/`
 
@@ -187,8 +237,13 @@ Page-specific visual rules belong in colocated `*.module.css` files.
 4. Keep one-section third-party adapters with the owning section and lazy-load them when they are interaction-only.
 5. Keep curated static records in `src/content/` when they are independently reviewable product/content data rather than presentation markup.
 6. Keep shipping media under `src/assets/`; third-party media with licensing constraints must have provenance documentation in the owning asset directory.
-7. Keep application routing and provider composition under `src/app/` or `src/main.tsx`.
-8. Do not create broad shared directories until code is genuinely reused across more than one owner.
+7. Keep large runtime binaries outside Git/`src/assets/`; store their immutable
+   publication lock in `src/content/` and serve them through the owning runtime
+   boundary.
+8. Keep Pages Functions under `functions/`, local publication tooling under
+   `scripts/`, and credentials/source binaries under ignored `.local-assets/`.
+9. Keep application routing and provider composition under `src/app/` or `src/main.tsx`.
+10. Do not create broad shared directories until code is genuinely reused across more than one owner.
 
 ---
 
@@ -208,5 +263,7 @@ Page-specific visual rules belong in colocated `*.module.css` files.
 - `src/main.tsx` — browser entry point, global CSS imports, `BrowserRouter`, and `StrictMode`.
 - `src/app/App.tsx` — route composition only.
 - `src/content/kaf.ts` — typed KAF editorial records and outbound-source metadata.
-- `src/assets/kaf/ATTRIBUTION.md` — provenance and usage conditions for local KAF visuals.
+- `src/content/kafAvatar.json` — immutable R2 model/public-route lock.
+- `src/assets/kaf/ATTRIBUTION.md` — provenance and usage conditions for local KAF visuals and the R2-backed VRM.
+- `functions/assets/models/kaf/[[path]].ts` — exact-path public R2 proxy.
 - `src/pages/HomePage/HomePage.tsx` — route-level composition and page-local presentation.

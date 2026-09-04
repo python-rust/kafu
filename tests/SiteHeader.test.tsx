@@ -8,6 +8,7 @@ import {
 
 const navFixture = [
   { label: '认识花谱', href: '#about' },
+  { label: '动态形象', href: '#avatar' },
   { label: '成长轨迹', href: '#journey' },
   { label: '代表作品', href: '#works' },
   { label: '视觉档案', href: '#visuals' },
@@ -35,6 +36,9 @@ describe('SiteHeader', () => {
       within(navigation).getByRole('link', { name: '认识花谱' }),
     ).toHaveAttribute('href', '#about');
     expect(
+      within(navigation).getByRole('link', { name: '动态形象' }),
+    ).toHaveAttribute('href', '#avatar');
+    expect(
       within(navigation).getByRole('link', { name: '成长轨迹' }),
     ).toHaveAttribute('href', '#journey');
     expect(
@@ -48,17 +52,20 @@ describe('SiteHeader', () => {
     ).toHaveAttribute('href', '#links');
   });
 
-  it('ships the five required direct destinations as the stable default contract', () => {
+  it('ships the six required direct destinations as the stable default contract', () => {
     render(<SiteHeader />);
 
     const navigation = screen.getByRole('navigation', {
       name: '页面主要导航',
     });
 
-    expect(within(navigation).getAllByRole('link')).toHaveLength(5);
+    expect(within(navigation).getAllByRole('link')).toHaveLength(6);
     expect(
       within(navigation).getByRole('link', { name: '认识花谱' }),
     ).toHaveAttribute('href', '#about');
+    expect(
+      within(navigation).getByRole('link', { name: '动态形象' }),
+    ).toHaveAttribute('href', '#avatar');
     expect(
       within(navigation).getByRole('link', { name: '成长轨迹' }),
     ).toHaveAttribute('href', '#journey');

@@ -12,8 +12,8 @@ from urllib.parse import unquote, urlsplit
 
 MAX_ENTRY_CSS_BYTES = 64 * 1024
 MAX_ENTRY_JAVASCRIPT_BYTES = 400 * 1024
-EXPECTED_WEBP_COUNT = 50
-MAX_WEBP_BYTES = 4_500_000
+EXPECTED_WEBP_COUNT = 51
+MAX_WEBP_BYTES = 4_600_000
 
 
 class ResourceParser(HTMLParser):
@@ -211,6 +211,20 @@ def main() -> int:
         raise SystemExit(
             f"Entry JavaScript budget exceeded: {entry_javascript_bytes} > "
             f"{MAX_ENTRY_JAVASCRIPT_BYTES} bytes"
+        )
+
+    forbidden_large_assets = [
+        path
+        for pattern in ("*.vrm", "*.blend", "*.glb", "*.fbx")
+        for path in artifact_dir.rglob(pattern)
+    ]
+    if forbidden_large_assets:
+        raise SystemExit(
+            "Large avatar authoring/runtime binaries must be served from R2, not Pages: "
+            + ", ".join(
+                str(path.relative_to(artifact_dir))
+                for path in forbidden_large_assets
+            )
         )
 
     font_files = [

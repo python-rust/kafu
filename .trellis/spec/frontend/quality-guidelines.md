@@ -38,6 +38,10 @@ mise run lint
 mise run typecheck
 mise run check
 mise run e2e
+mise run avatar-check
+mise run avatar-publish
+mise run avatar-verify
+mise run avatar-poster
 ```
 
 `mise.toml` currently pins:
@@ -62,6 +66,9 @@ Do not document `pnpm run ...` as the normal project workflow. The package manag
 - Do not commit third-party images merely because they are publicly reachable; a shipping asset needs a verified reuse basis and provenance record.
 - Do not commit `dist`, create a generated deployment branch, or add an
   automatic production trigger for the current manual Cloudflare Pages release.
+- Do not commit `.vrm`, `.blend`, authoring archives, raw model textures, private
+  permission evidence, `.wrangler/`, or `.local-assets/`.
+- Do not treat a public model download URL as an open-source license grant.
 
 ---
 
@@ -85,13 +92,17 @@ Do not document `pnpm run ...` as the normal project workflow. The package manag
   color roles, type scale, responsive density, sticky content, or motion.
 - Follow [Static Deployment Guidelines](./deployment-guidelines.md) when
   changing GitHub Actions, Pages configuration, Vite base paths, BrowserRouter
-  basename, or production asset hosting.
+  basename, production asset hosting, R2 objects, or Pages bindings.
+- Run `mise run avatar-check` whenever avatar lock, poster, R2 route, or
+  repository binary policy changes. Run `mise run avatar-verify` after publishing
+  or before deploying a revision that newly references an R2 object.
 
 The current aggregate local gate in `mise.toml` is:
 
 ```toml
 [tasks.check]
 run = [
+  { task = "avatar-check" },
   { task = "format-check" },
   { task = "lint" },
   { task = "test" },
@@ -125,12 +136,26 @@ HomePage group plan, and reduced-motion Journey sizing.
 
 Prefer role/name queries over class selectors or implementation details.
 
+### R2 avatar and Pages Function
+
+`tests/KafAvatarContent.test.ts` owns content-addressed lock/public-manifest
+projection. `tests/KafAvatarProxy.test.ts` owns exact-path GET/HEAD, immutable
+metadata, byte-range, missing-object, and method rejection. `tests/KafAvatarSection.test.tsx`
+owns static fallback, public links, and explicit loading without browser
+observers.
+
+The production artifact verifier rejects avatar authoring/runtime binaries in
+`dist`. `scripts/verify_avatar_assets.py` rejects tracked VRM/Blend files and
+checks the lock, poster, and binding. `scripts/verify_production_avatar.py`
+verifies the deployed manifest, HEAD metadata, `bytes=0-3` GLB magic, and
+allow-list 404 without downloading the full model.
+
 ### Playwright
 
 Use for browser-level smoke behavior and routing whose environment matters.
 
 Current reference: `tests/e2e/home.spec.ts` loads `/` and verifies desktop/mobile
-Chinese identity, five fixed navigation locations, worst-case header contrast,
+Chinese identity, six fixed navigation locations, worst-case header contrast,
 anti-template/slogan absence, 14px/16px type floors, static factual profile,
 stable full-viewport mobile Hero coverage, portrait contained-artwork plus
 thumbnail ambience, no premature next-section exposure,
@@ -148,7 +173,8 @@ revisits without LQIP/loading states, responsive Hero preload, 390px/DPR3
 candidate selection, 320×568 / 360×640 / 360×800 /
 390×844 / 430×932 portrait,
 768×1024 tablet, 844×390 landscape, `200%` text preferences, and
-horizontal-overflow safety. It also verifies system sans/display font roles,
+horizontal-overflow safety, avatar request deferral/failure fallback, and the
+reduced-motion explicit-load path. It also verifies system sans/display font roles,
 Japanese-first fallback order, the zero-WebFont request/transfer budget, and a
 no-scroll background warmup that fetches responsive artwork in reading order
 and all Gallery thumbnails before marking completion.
@@ -251,7 +277,12 @@ The provenance document is evidence for this project context, not a blanket lice
 - Does every added third-party media file have a verified provenance entry and compatible usage basis?
 - If deployment changed, is the workflow manual-only and main-only, are Actions
   pinned to immutable SHAs, does the static artifact verifier pass, and does the
-  live Cloudflare Pages site render without external required runtime assets?
+  live Cloudflare Pages site plus same-origin R2 avatar proxy pass production
+  root/manifest/HEAD/range checks?
+- Does the avatar lock match the immutable R2 key/public URL/poster, while Git and
+  `dist` contain no `.vrm` or `.blend`?
+- Does the avatar remain lazy, pause offscreen/hidden, support reduced motion and
+  failure fallback, and dispose all Three.js/VRM resources?
 - Are props/types narrow and explicit?
 - Are user interactions semantic and keyboard accessible?
 - Were affected tests added or updated?
