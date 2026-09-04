@@ -925,6 +925,112 @@ test('gallery provides eight selectors and localized keyboard lightbox navigatio
   await expect(closeButton).toHaveCount(0);
 });
 
+test('gallery thumbnail selection preserves the reader viewport', async ({
+  page,
+}) => {
+  await openHome(page, { width: 390, height: 844 });
+
+  const gallery = page.locator('#visuals');
+  const thumbnailList = gallery.getByRole('list', { name: '选择图片' });
+  const target = thumbnailList.getByRole('button', {
+    name: '忘れてしまえ，显示此图',
+  });
+
+  await thumbnailList.evaluate((list) => {
+    const absoluteTop = list.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+      top: absoluteTop - window.innerHeight + 32,
+      behavior: 'instant',
+    });
+    list.scrollLeft = 0;
+  });
+  await expect(target).toBeInViewport();
+
+  const targetBox = await target.boundingBox();
+  if (!targetBox) {
+    throw new Error('Gallery thumbnail must be visible before pointer input.');
+  }
+
+  const scrollYBeforeSelection = await page.evaluate(() => window.scrollY);
+  await page.mouse.click(targetBox.x + targetBox.width / 2, targetBox.y + 16);
+
+  await expect(
+    gallery.getByRole('button', { name: '忘れてしまえ，点击放大' }),
+  ).toBeVisible();
+  await page.waitForTimeout(500);
+
+  const scrollYAfterSelection = await page.evaluate(() => window.scrollY);
+  expect(scrollYAfterSelection).toBe(scrollYBeforeSelection);
+});
+
+test('gallery lightbox navigation preserves the reader viewport and restores focus', async ({
+  page,
+}) => {
+  await openHome(page, { width: 390, height: 844 });
+
+  const gallery = page.locator('#visuals');
+  await gallery
+    .getByRole('list', { name: '选择图片' })
+    .getByRole('button', { name: '忘れてしまえ，显示此图' })
+    .click();
+  const stage = gallery.getByRole('button', {
+    name: '忘れてしまえ，点击放大',
+  });
+  await stage.evaluate((button) => {
+    const absoluteBottom =
+      button.getBoundingClientRect().bottom + window.scrollY;
+    window.scrollTo({
+      top: absoluteBottom - 180,
+      behavior: 'instant',
+    });
+  });
+
+  const scrollYBeforeOpen = await page.evaluate(() => window.scrollY);
+  const clickPoint = await stage.evaluate((button) => {
+    const rect = button.getBoundingClientRect();
+    const x = Math.round(rect.left + rect.width / 2);
+    const visibleTop = Math.max(0, Math.ceil(rect.top));
+    const visibleBottom = Math.min(window.innerHeight, Math.floor(rect.bottom));
+
+    for (let y = visibleBottom - 1; y >= visibleTop; y -= 4) {
+      const hitTarget = document.elementFromPoint(x, y);
+      if (hitTarget === button || (hitTarget && button.contains(hitTarget))) {
+        return { x, y };
+      }
+    }
+
+    return null;
+  });
+  if (!clickPoint) {
+    throw new Error('Gallery stage must have a visible pointer target.');
+  }
+  await page.mouse.click(clickPoint.x, clickPoint.y);
+
+  const closeButton = page.getByRole('button', { name: '关闭' });
+  await expect(closeButton).toBeVisible();
+  await expect(page.locator('body')).toHaveClass(/yarl__no_scroll/);
+
+  await page.keyboard.press('ArrowRight');
+  const selectedThumbnail = gallery.locator(
+    'button[aria-label="不可解，显示此图"]',
+  );
+  await expect(selectedThumbnail).toHaveAttribute('aria-pressed', 'true');
+  expect(await page.evaluate(() => window.scrollY)).toBe(scrollYBeforeOpen);
+
+  await page.keyboard.press('Escape');
+  await expect(closeButton).toHaveCount(0);
+  await expect(page.locator('body')).not.toHaveClass(/yarl__no_scroll/);
+
+  const updatedStage = gallery.getByRole('button', {
+    name: '不可解，点击放大',
+  });
+  await expect(updatedStage).toBeFocused();
+
+  // Cover delayed Motion completion as well as immediate focus restoration.
+  await page.waitForTimeout(500);
+  expect(await page.evaluate(() => window.scrollY)).toBe(scrollYBeforeOpen);
+});
+
 test('gallery reserves generated thumbnails for the rail and atmospheric backdrop', async ({
   page,
 }) => {

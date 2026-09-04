@@ -1,6 +1,6 @@
 import { AnimatePresence, useReducedMotion } from 'motion/react';
 import * as m from 'motion/react-m';
-import { lazy, Suspense, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { Slide } from 'yet-another-react-lightbox';
 
 import {
@@ -36,7 +36,13 @@ export function GallerySection({
 }: GallerySectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const stageButtonRef = useRef<HTMLButtonElement>(null);
+  const focusRestoreTimerRef = useRef<number | null>(null);
   const shouldReduceMotion = useReducedMotion();
+  // Lightbox-driven index changes happen behind an opaque portal. Apply them
+  // atomically so no hidden transition can outlive the dialog and move the
+  // element that receives focus when the dialog closes.
+  const shouldSkipGalleryMotion = Boolean(shouldReduceMotion) || lightboxOpen;
   const safeActiveIndex = Math.min(
     activeIndex,
     Math.max(visuals.length - 1, 0),
@@ -54,6 +60,15 @@ export function GallerySection({
     [visuals],
   );
 
+  useEffect(
+    () => () => {
+      if (focusRestoreTimerRef.current !== null) {
+        window.clearTimeout(focusRestoreTimerRef.current);
+      }
+    },
+    [],
+  );
+
   if (!activeVisual) {
     return null;
   }
@@ -64,6 +79,19 @@ export function GallerySection({
 
   const openLightbox = () => {
     setLightboxOpen(true);
+  };
+
+  const scheduleStageFocusRestore = () => {
+    if (focusRestoreTimerRef.current !== null) {
+      window.clearTimeout(focusRestoreTimerRef.current);
+    }
+
+    focusRestoreTimerRef.current = window.setTimeout(() => {
+      focusRestoreTimerRef.current = null;
+      // The lightbox fires `exited` immediately before its parent closes it.
+      // One task later, its portal, inert attributes, and body lock are gone.
+      stageButtonRef.current?.focus({ preventScroll: true });
+    }, 0);
   };
 
   return (
@@ -77,13 +105,19 @@ export function GallerySection({
         aria-hidden="true"
         data-testid="gallery-backdrop"
       >
-        <AnimatePresence initial={false} mode="sync">
+        <AnimatePresence
+          key={lightboxOpen ? 'covered' : 'inline'}
+          initial={false}
+          mode="sync"
+        >
           <m.div
             key={activeVisual.id}
-            initial={shouldReduceMotion ? false : { opacity: 0 }}
+            initial={shouldSkipGalleryMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={shouldReduceMotion ? { duration: 0 } : stageTransition}
+            transition={
+              shouldSkipGalleryMotion ? { duration: 0 } : stageTransition
+            }
           >
             <ResponsiveArtwork
               source={activeVisual}
@@ -104,6 +138,7 @@ export function GallerySection({
 
         <div className={styles.theatre}>
           <button
+            ref={stageButtonRef}
             className={styles.stageButton}
             type="button"
             onClick={openLightbox}
@@ -111,17 +146,21 @@ export function GallerySection({
             onPointerEnter={() => void loadGalleryLightbox()}
             aria-label={`${activeVisual.title}，点击放大`}
           >
-            <AnimatePresence initial={false} mode="wait">
+            <AnimatePresence
+              key={lightboxOpen ? 'covered' : 'inline'}
+              initial={false}
+              mode="wait"
+            >
               <m.span
                 className={styles.stageVisual}
                 key={activeVisual.id}
                 initial={
-                  shouldReduceMotion ? false : { opacity: 0, scale: 1.012 }
+                  shouldSkipGalleryMotion ? false : { opacity: 0, scale: 1.012 }
                 }
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.994 }}
                 transition={
-                  shouldReduceMotion ? { duration: 0 } : stageTransition
+                  shouldSkipGalleryMotion ? { duration: 0 } : stageTransition
                 }
               >
                 <ResponsiveArtwork
@@ -206,6 +245,7 @@ export function GallerySection({
             }}
             on={{
               view: ({ index }) => setActiveIndex(index),
+              exited: scheduleStageFocusRestore,
             }}
           />
         </Suspense>

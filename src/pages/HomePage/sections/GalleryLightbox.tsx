@@ -4,10 +4,23 @@ import Lightbox, {
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import 'yet-another-react-lightbox/styles.css';
 
-export default function GalleryLightbox(props: LightboxExternalProps) {
+export default function GalleryLightbox({
+  portal,
+  ...props
+}: LightboxExternalProps) {
   return (
     <Lightbox
       {...props}
+      portal={{
+        ...portal,
+        container: {
+          ...portal?.container,
+          // GallerySection restores focus after the portal has fully exited.
+          // Suppress the package's earlier focus restore, which can scroll a
+          // smooth-scrolling document while the covered stage is still changing.
+          onFocus: () => undefined,
+        },
+      }}
       plugins={[Zoom]}
       zoom={{
         maxZoomPixelRatio: 1.5,

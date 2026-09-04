@@ -364,9 +364,21 @@ Required behavior:
 - keyboard `+` / `-`, double-click/tap, pinch, and modifier-wheel zoom supplied
   by the plugin;
 - `scrollToZoom: false` so normal wheel/trackpad scrolling is not hijacked;
-- active Gallery selection remains synchronized through `on.view`.
+- active Gallery selection remains synchronized through `on.view`;
+- selecting an inline thumbnail changes only the active media and never changes
+  the document viewport;
+- opening the lightbox cancels any in-flight inline Gallery transition, and
+  lightbox-driven selection changes update the covered stage/backdrop without
+  Motion transitions, so hidden animation cannot outlive the dialog;
+- `GalleryLightbox` suppresses the package's pre-exit return-focus behavior and
+  `GallerySection` restores focus to the persistent stage button only after the
+  exit lifecycle, using `focus({ preventScroll: true })`;
+- closing after previous/next navigation preserves the exact document viewport
+  while retaining the package-owned body scroll lock.
 
 Do not implement custom pan/zoom math, focus trapping, or body scroll locking.
+Do not disable the package scroll lock or compensate for this interaction by
+forcing `window.scrollTo`; fix focus timing and covered-stage stability instead.
 
 ---
 
@@ -405,4 +417,9 @@ Automated checks must assert:
   source-native 480/960/1200/1440/1600 candidates;
 - lightbox high-density source, Zoom control, previous/next, synchronization,
   and Escape close;
+- a partially visible Gallery rail selection leaves `window.scrollY` unchanged;
+- after starting an inline Gallery transition, opening a partially visible
+  stage, navigating, and closing retains the package body lock while open,
+  restores focus to the updated stage after close, and leaves `window.scrollY`
+  unchanged after the former Motion window;
 - existing viewport, 200% text, reduced-motion, contrast, and overflow gates.
