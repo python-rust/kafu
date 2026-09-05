@@ -26,7 +26,7 @@
 
 ## Local evidence
 
-Pinned runtime: three 0.185.1, @pixiv/three-vrm 3.5.5, React 19.2.8. No information-dialog primitive is installed. The gallery's yet-another-react-lightbox owns image/zoom navigation, not structured asset metadata; do not repurpose its slide mechanics for this dialog.
+Planning baseline: three 0.185.1, @pixiv/three-vrm 3.5.5, React 19.2.8. No information-dialog primitive was installed at task start. The gallery's yet-another-react-lightbox owns image/zoom navigation, not structured asset metadata; do not repurpose its slide mechanics for this dialog. Implementation adds the exact locked `@radix-ui/react-dialog` 1.1.23 package behind its own lazy adapter.
 
 The locked VRM has `kaf_hair`, hat, cloth and sleeve spring groups; real joy/fun/blink morphs; custom Facial_Smile1–5. Angry/Sorrow have no binds. `neutral` is actually the author's surprise morph. Inspect live loaded expressions and screenshots before choosing smile names. Authored materials are MToon; lights must be tuned to these materials rather than replaced wholesale.
 

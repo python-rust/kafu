@@ -36,17 +36,18 @@
 ## 5. Deployment automation and production validation
 
 - [x] Update the deployment workflow/verifier for checked-in Wrangler config and production model proxy validation.
-- [ ] Confirm the existing GitHub Cloudflare token can deploy the binding; only request a token replacement if a real permission failure occurs.
-- [ ] Commit and push the implementation.
-- [ ] Trigger the manual Pages workflow and wait for success.
-- [ ] Verify production root, GET, HEAD, content type/length/cache, GLB magic, and visible browser rendering.
+- [x] Confirm the existing GitHub Cloudflare token can deploy the binding; only request a token replacement if a real permission failure occurs.
+- [x] Commit and push the implementation.
+- [x] Trigger the manual Pages workflow and wait for success.
+- [x] Verify production root, GET, HEAD, content type/length/cache, GLB magic, and visible browser rendering.
 
 ## 6. Specs, final review, and archive
 
 - [x] Update deployment/media/directory/quality specs with the actual R2 publication, binding, verification, rollback, provenance, and large-binary rules.
 - [x] Run the final Trellis quality review and inspect the complete diff.
-- [ ] Commit any spec/final fixes and ensure the working tree is clean.
-- [ ] Archive the task with completion evidence.
+- [x] Include spec/final fixes and completion evidence in the shared accepted-task closure commit.
+
+Archive this accepted task together with `09-05-avatar-presence-interaction` using the Trellis archive command after the closure commit. See `verification.md` for the verified release and refreshed acceptance evidence.
 
 ## Validation commands
 

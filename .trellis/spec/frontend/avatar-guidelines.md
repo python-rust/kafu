@@ -134,6 +134,11 @@ scroll lock. Return focus through `focus({ preventScroll: true })`; do not repai
 the viewport afterward with `scrollTo`. Keep title/description semantics, 44px
 controls, wrapping hashes, internal overflow and 320px/200% text support.
 
+Radix dispatches unmount autofocus on a deferred task after the content leaves
+the DOM. Browser probes must await `expect(trigger).toBeFocused()` rather than
+sample focus immediately after a hidden-dialog assertion; disappearance alone
+does not mean the return-focus lifecycle has completed.
+
 ## Verification
 
 Run `mise run check` and `mise run e2e`. The focused suites are

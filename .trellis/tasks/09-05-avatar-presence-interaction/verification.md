@@ -23,4 +23,13 @@ The asset lock, public URLs, character permission and model binary are unchanged
 
 ## Release gate
 
-Production acceptance for this work remains pending until the reviewed work commit is deployed and checked. Both tasks are archived only after that acceptance; the final archive/journal-only revision is then redeployed through the same manual workflow.
+Work commit `fbe5605b007a5db2df1abee7c55a404dd77bac58` was deployed successfully by manual workflow run `33943689832`. Production root, manifest, HEAD, range and allow-list probes passed. A real production browser confirmed:
+
+- expected entries `/assets/index-BYxEd-tF.js` and `/assets/index-CKetinkN.css`;
+- no initial VRM request, then exactly one request through the locked same-origin URL after viewport activation;
+- ready visible model, canonical metadata dialog, Escape close, restored trigger focus and unchanged document scroll position;
+- no page errors.
+
+The initial ad-hoc production probe sampled focus immediately after the dialog disappeared and failed before Radix's deferred autofocus callback. Installed Radix code confirmed the deferred callback. The probe now awaits the same focus assertion as the existing passing E2E test, and the entire production probe passed on rerun. No application change was needed; the timing contract is recorded in the avatar SPEC.
+
+Both tasks have passed their acceptance gates and are ready for archive. The final archive/journal-only revision is redeployed through the same manual workflow; GitHub Actions records that run against the final head SHA.

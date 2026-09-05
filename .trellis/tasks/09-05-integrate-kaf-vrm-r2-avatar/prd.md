@@ -35,18 +35,18 @@
 
 ## Acceptance Criteria
 
-- [ ] R2 bucket `kafu-runtime-assets` 已通过可重复命令建立，并配置为 Pages Function 的 `KAF_AVATAR_ASSETS` binding。
-- [ ] 原始 VRM 不在 Git tracked files、Git LFS 或 Pages `dist` 中。
-- [ ] VRM 已上传到带 SHA-256 前缀的不可变 R2 key，远端对象的字节数与完整内容 SHA-256 和仓库锁定信息一致。
-- [ ] 生产网页通过同源 Pages Function URL 成功加载模型；README/公开 manifest 同时提供该不可变下载 URL，访问者可以直接下载并校验模型；浏览器不直接请求 R2 公共域名。
-- [ ] Pages Function 对允许的 GET/HEAD 返回正确状态、内容类型、内容长度、ETag 与缓存策略，并对非法路径、缺失对象和非读取方法安全失败。
-- [ ] 首页在模型区域接近视口之前不下载 VRM；加载期间显示 poster，失败/WebGL 不可用/减少动态效果时保持可理解的静态体验。
-- [ ] 正常浏览器中人物可见，正面半身构图稳定，自动眨眼、轻微待机/视线和模型 SpringBone 正常更新。
-- [ ] 页面离开视口或进入后台时停止渲染循环，恢复可见后继续；卸载时完整释放动画帧、观察器和 Three.js/VRM 资源。
-- [ ] 模型作者授权摘要和来源记录已进入现有 `src/assets/kaf/ATTRIBUTION.md` 体系，页面继续保留非官方、非商业边界。
-- [ ] R2/Pages Function 的部署、发布、回滚和验证流程已写入 Trellis specs，并与实际脚本、配置和工作流一致。
-- [ ] `mise run check`、相关 E2E、静态构建验证与生产 smoke test 全部通过。
-- [ ] 任务完成后按 Trellis 要求更新 spec、提交改动并归档任务。
+- [x] R2 bucket `kafu-runtime-assets` 已通过可重复命令建立，并配置为 Pages Function 的 `KAF_AVATAR_ASSETS` binding。
+- [x] 原始 VRM 不在 Git tracked files、Git LFS 或 Pages `dist` 中。
+- [x] VRM 已上传到带 SHA-256 前缀的不可变 R2 key，远端对象的字节数与完整内容 SHA-256 和仓库锁定信息一致。
+- [x] 生产网页通过同源 Pages Function URL 成功加载模型；README/公开 manifest 同时提供该不可变下载 URL，访问者可以直接下载并校验模型；浏览器不直接请求 R2 公共域名。
+- [x] Pages Function 对允许的 GET/HEAD 返回正确状态、内容类型、内容长度、ETag 与缓存策略，并对非法路径、缺失对象和非读取方法安全失败。
+- [x] 首页在模型区域接近视口之前不下载 VRM；加载期间显示 poster，失败/WebGL 不可用/减少动态效果时保持可理解的静态体验。
+- [x] 正常浏览器中人物可见，正面半身构图稳定，自动眨眼、轻微待机/视线和模型 SpringBone 正常更新。
+- [x] 页面离开视口或进入后台时停止渲染循环，恢复可见后继续；卸载时完整释放动画帧、观察器和 Three.js/VRM 资源。
+- [x] 模型作者授权摘要和来源记录已进入现有 `src/assets/kaf/ATTRIBUTION.md` 体系，页面继续保留非官方、非商业边界。
+- [x] R2/Pages Function 的部署、发布、回滚和验证流程已写入 Trellis specs，并与实际脚本、配置和工作流一致。
+- [x] `mise run check`、相关 E2E、静态构建验证与生产 smoke test 全部通过。
+- [x] 任务完成后按 Trellis 要求更新 spec、提交改动并进入已验收任务的归档批次。
 
 ## Out of Scope
 

@@ -16,9 +16,12 @@ Eye movement is explicitly permitted. Do not preserve the earlier "eyeballs must
 - [x] Run focused unit/browser checks, then `mise run check` and `mise run e2e`.
 - [x] Review diff for license/data drift, performance, accessibility, cleanup and scope.
 - [x] Update executable frontend SPEC and validation evidence.
-- [ ] Commit and push the reviewed work for production acceptance before archive.
-- [ ] Dispatch `deploy-cloudflare-pages.yml` on main; verify exact deployed revision, root/assets/manifest/HEAD/range and live dialog.
-- [ ] Reconcile the older VRM/R2 task against its merged implementation and production evidence; update its durable SPEC contracts, then archive it after all shared gates pass.
-- [ ] Archive the current task, record the journal, push and redeploy the final bookkeeping revision without changing the verified application.
+- [x] Commit and push the reviewed work for production acceptance before archive.
+- [x] Dispatch `deploy-cloudflare-pages.yml` on main; verify exact deployed revision, root/assets/manifest/HEAD/range and live dialog.
+- [x] Reconcile the older VRM/R2 task against its merged implementation and production evidence; update its durable SPEC contracts for the shared archive batch.
+
+## Final release procedure
+
+All implementation acceptance gates have passed. Archive both accepted tasks, record the journal, then push and redeploy the final bookkeeping revision without changing the verified application. The final workflow run and its exact head SHA are the durable record of that post-archive redeployment; do not repeatedly rewrite archived task files just to include the latest bookkeeping SHA.
 
 Validation failures return to the owning implementation step. Do not archive on a failing gate. Use `mise` for every Node/pnpm command. Preserve unrelated files. The latest user request explicitly adds verification/SPEC/archive of the older integration task; do not republish the unchanged model or redo proven infrastructure work.
