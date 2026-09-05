@@ -19,3 +19,9 @@ Both old and corrected presentations used 19 draw calls and 150,740 triangles. T
 The source model is already in an A-pose. Forearms/wrists now keep authored rest instead of the previous large independent bends. Hands and sleeve openings were reviewed uncropped and from oblique angles. Skin matcap is removed only for exact face/body MToon material names and generated outlines; texture/color identities, hair/eyes/cloth and the immutable VRM remain unchanged. Existing mouth and expression behavior is unchanged.
 
 The avatar SPEC replaces the invalid bent-arm prescription and documents the material diagnosis, scoped adjustment, conservative pose and strengthened visual acceptance. Release uses the existing manual workflow; the live build and model/dialog checks must pass before reporting deployment complete.
+
+## Production acceptance
+
+Work commit `97fc3a8f0693b9bd36bd13ab4a81557f7cfe6e47` was deployed by successful manual workflow run `33945694706`. The production root/manifest/HEAD/range/allow-list verifier passed. The real production browser then verified the expected `/assets/index-BOnXxouK.js` and `/assets/index-CKetinkN.css`, deferred model activation, exactly one same-origin model request, a ready rendered model, the canonical metadata dialog, return focus and unchanged scroll position, with zero page errors.
+
+Production screenshots are retained under ignored `.local-assets/avatar-review/production-stage.png` and `production-dialog.png`. The archive/journal-only revision uses the same tested application content and is published through the same manual workflow after task completion; its exact commit/run remains recorded by GitHub Actions.

@@ -8,7 +8,9 @@
 - [x] Review uncropped hands, sleeves and lighting at rest/tracking extremes; record screenshots and renderer budget.
 - [x] Run `mise run check`, `mise run e2e`, static artifact / avatar / workflow checks and diff review.
 - [x] Update executable avatar SPEC and validation notes.
-- [ ] Commit, archive and journal after acceptance.
-- [ ] Push main, dispatch the existing manual deployment, wait for success and verify live build/model/dialog.
+- [x] Commit tested work (`97fc3a8`) and complete production acceptance before archive/journal.
+- [x] Push main, dispatch the existing manual deployment, wait for success and verify live build/model/dialog (`33945694706`).
+
+Local and production acceptance are complete. Final task archive/journal bookkeeping follows, then its unchanged application is redeployed at the final head.
 
 Use the existing checkout and workspace. Preserve unrelated worktrees and changes. A failing assertion returns to its owning code or test, not to bypassed verification. Do not repeat already-completed older tasks.
