@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 19
+- **Total Sessions**: 20
 - **Last Active**: 2026-09-05
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~557 | Active |
+| `journal-1.md` | ~579 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 20 | 2026-09-05 | Avatar presence and model disclosure | `fbe5605`, `19be17a` | `main` |
 | 19 | 2026-09-05 | Fix gallery viewport scroll anchoring | `9d7ee58`, `b22f7b1` | `main` |
 | 18 | 2026-08-30 | Fix cached artwork transitions and Hero reveal | `91bd7208ab6f575b767d28a2f76a0287198a7a09`, `5f266b2933324a9be87314018296748c005334a1`, `f101f816b2a8425d8a43dad5209e5e1fe88fc743` | `main` |
 | 17 | 2026-08-30 | Improve weak-network artwork loading | `377b0950d8b6fbeb99f13eb847aba350bf07ac72`, `39d774df3e45b6d245b653a656a775b22817d092`, `45b439f50355acf26367dfcfd2eddef4e1d7f0e8` | `main` |

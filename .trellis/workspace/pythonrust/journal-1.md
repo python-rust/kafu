@@ -555,3 +555,25 @@ Reproduced the remaining Visual Archive jump in production, identified the anima
 ### Status
 
 [OK] **Completed**
+
+
+## Session 20: Avatar presence and model disclosure
+
+**Date**: 2026-09-05
+**Task**: Avatar presence and model disclosure
+**Branch**: `main`
+
+### Summary
+
+Completed avatar lighting, gaze, expressions, motion and metadata dialog. Updated SPEC and archived both tasks. Passed 61 unit tests, 24 browser tests, real-model checks and full R2 hash verification. Production run 33943689832 and live browser checks passed. Final post-archive deployment follows.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fbe5605` | (see git log) |
+| `19be17a` | (see git log) |
+
+### Status
+
+[OK] **Completed**
