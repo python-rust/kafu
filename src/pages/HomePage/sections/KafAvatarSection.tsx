@@ -191,6 +191,19 @@ export function KafAvatarSection() {
                 <dd>{kafAvatarAsset.author}</dd>
               </div>
               <div>
+                <dt>作者主页</dt>
+                <dd>
+                  <a
+                    className={styles.metadataLink}
+                    href={kafAvatarAsset.authorBilibiliUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    作者的B站首页
+                  </a>
+                </dd>
+              </div>
+              <div>
                 <dt>授权</dt>
                 <dd>{kafAvatarAsset.permissionSummary}</dd>
               </div>

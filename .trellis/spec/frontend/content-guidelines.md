@@ -150,7 +150,8 @@ Detailed naming and story rules live in
 - The interactive/downloadable VRM section may show its creator and direct
   authorization summary beside the download link. This is asset identity and
   permission context, not a repeated site-wide disclaimer.
-- The avatar's normal content is limited to heading, creator, authorization,
+- The avatar's normal content is limited to heading, creator, the creator's
+  verified external profile link when one is available, authorization,
   download and the model-manifest button. Put format, size, hash and version in
   its accessible information dialog. Keep real loading/error/manual controls,
   but remove idle/ready narration and implementation-explaining paragraphs.
@@ -172,9 +173,9 @@ When copy hierarchy changes, tests must assert:
 - no image-source work-page links inside `<main>`;
 - visible bottom editorial-image creator names and the complete source/license
   disclosure;
-- visible avatar creator/permission metadata plus public model download and a
-  manifest-dialog button (the machine-readable manifest API remains available),
-  without claiming that public transport grants an open license;
+- visible avatar creator/profile/permission metadata plus public model download
+  and a manifest-dialog button (the machine-readable manifest API remains
+  available), without claiming that public transport grants an open license;
 - no reintroduction of `eyebrow` markup or decorative `data-rhythm` indexes in
   the homepage composition.
 

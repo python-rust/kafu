@@ -32,6 +32,14 @@ describe('KafAvatarSection', () => {
       screen.getByRole('img', { name: /花谱 VRM 模型预览/ }),
     ).toHaveAttribute('loading', 'lazy');
     expect(screen.getByText('mme', { exact: true })).toBeVisible();
+    expect(screen.getByRole('link', { name: '作者的B站首页' })).toHaveAttribute(
+      'href',
+      kafAvatarAsset.authorBilibiliUrl,
+    );
+    expect(screen.getByRole('link', { name: '作者的B站首页' })).toHaveAttribute(
+      'target',
+      '_blank',
+    );
     expect(screen.queryByText(kafAvatarAsset.sha256)).not.toBeInTheDocument();
     expect(screen.getByText(kafAvatarAsset.permissionSummary)).toBeVisible();
     expect(

@@ -141,10 +141,13 @@ Dispose GPU resources through the renderer and `VRMUtils.deepDispose` instead.
 
 ## Information dialog and copy
 
-The normal section contains its heading, model creator, permission summary,
-download link and “查看模型清单” button. Loading/error/manual controls are
-conditional operational feedback. Do not add prose describing the renderer,
-asset host, lazy-loading behavior, fixed composition or retained model features.
+The normal section contains its heading, model creator, the verified creator
+profile link, permission summary, download link and “查看模型清单” button. The
+current creator profile is the Bilibili URL stored in `kafAvatar.json`, rendered
+with the visible text `作者的B站首页` between creator and permission metadata.
+Loading/error/manual controls are conditional operational feedback. Do not add
+prose describing the renderer, asset host, lazy-loading behavior, fixed
+composition or retained model features.
 
 The manifest action opens a lazy `@radix-ui/react-dialog` adapter, not a JSON
 navigation. Use `createKafAvatarPublicManifest(window.location.origin)` and the

@@ -14,6 +14,9 @@ describe('KAF avatar asset lock', () => {
     expect(kafAvatarAsset.publicPath).toContain(kafAvatarAsset.sha256Prefix);
     expect(kafAvatarAsset.objectKey).toContain(kafAvatarAsset.sha256Prefix);
     expect(kafAvatarAsset.publicPath).not.toContain('r2.dev');
+    expect(kafAvatarAsset.authorBilibiliUrl).toBe(
+      'https://space.bilibili.com/16835958/lists/7978443',
+    );
   });
 
   it('publishes only reproducibility metadata and the same-origin download URL', () => {

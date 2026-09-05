@@ -141,6 +141,19 @@
   line-height: 1.55;
 }
 
+.metadataLink {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--color-kaf);
+  text-underline-offset: 0.28rem;
+  transition: color var(--duration-fast) ease;
+}
+
+.metadataLink:hover,
+.metadataLink:focus-visible {
+  color: var(--color-kaf-light);
+}
+
 .actions {
   display: flex;
   margin-top: 1.75rem;
