@@ -15,6 +15,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { useEffect, useRef } from 'react';
 
 import { kafAvatarAsset } from '../../../content/kafAvatar';
+import { applyKafSkinLighting } from './kafAvatarMaterials';
 import { createKafAvatarMotion, type KafAvatarMotion } from './kafAvatarMotion';
 import styles from './KafAvatarSection.module.css';
 
@@ -145,8 +146,8 @@ export default function KafVrmStage({
     );
     camera.lookAt(new Vector3(0, kafAvatarAsset.camera.targetY, 0));
 
-    scene.add(new HemisphereLight(0xfff4ee, 0x55435a, 0.55));
-    const keyLight = new DirectionalLight(0xfff4ee, 1.2);
+    scene.add(new HemisphereLight(0xfff4ee, 0x778091, 0.65));
+    const keyLight = new DirectionalLight(0xfff4ee, 1.6);
     scene.add(keyLight, keyLight.target);
 
     function resize(): void {
@@ -325,6 +326,7 @@ export default function KafVrmStage({
         });
 
         vrm = loadedVrm;
+        applyKafSkinLighting(vrm.materials ?? []);
         // Official runtime optimizations preserve rendered geometry and the
         // authored expressions while removing unused vertex/morph work.
         VRMUtils.removeUnnecessaryVertices(vrm.scene);
@@ -354,7 +356,7 @@ export default function KafVrmStage({
         keyLight.target.position.y -= lightScale * 0.15;
         keyLight.position
           .copy(keyLight.target.position)
-          .add(new Vector3(-0.35, 1.75, -0.65).multiplyScalar(lightScale));
+          .add(new Vector3(-0.55, 1.8, -0.9).multiplyScalar(lightScale));
 
         if (headPosition && hipsPosition && headPosition.y > hipsPosition.y) {
           const torsoHeight = headPosition.y - hipsPosition.y;

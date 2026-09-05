@@ -146,14 +146,16 @@ export function createKafAvatarMotion(vrm: VRM, random = Math.random) {
     rotate('leftShoulder', 0, 0, breath * 0.01);
     rotate('rightShoulder', 0, 0, -breath * 0.008);
 
-    // Bend the elbows toward the torso and offset the wrists, rather than
-    // rotating straight T-pose arms downward as one rigid segment.
-    rotate('leftUpperArm', 0.06, 0.3, 1.03 + breath * 0.012);
-    rotate('rightUpperArm', -0.08, -0.18, -0.92 - breath * 0.01);
-    rotate('leftLowerArm', 0, 0.5, 1.25 + sway * 0.025);
-    rotate('rightLowerArm', 0.1, -0.5, -1.43 - tilt * 0.025);
-    rotate('leftHand', -0.08 + breath * 0.018, 0.08, -0.1);
-    rotate('rightHand', 0.06 - breath * 0.018, -0.1, 0.08);
+    // This model is authored in an A-pose, not a T-pose. Its loose sleeve
+    // chains follow the upper arms, not the independently bent elbows. Keep
+    // forearms/wrists at authored rest and lower the whole arm only slightly.
+    const armDrop = 0.4 + breath * 0.006;
+    rotate('leftUpperArm', 0, 0, armDrop);
+    rotate('rightUpperArm', 0, 0, -armDrop);
+    rotate('leftLowerArm', 0, 0, 0);
+    rotate('rightLowerArm', 0, 0, 0);
+    rotate('leftHand', 0, 0, 0);
+    rotate('rightHand', 0, 0, 0);
   }
 
   function updateExpressions() {

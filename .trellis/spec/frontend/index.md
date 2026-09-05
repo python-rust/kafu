@@ -26,7 +26,7 @@ These files document the codebase as it exists now. Do not treat future possibil
 | [State Management](./state-management.md) | Local React state ownership and escalation rules | Active |
 | [Typography Guidelines](./typography-guidelines.md) | System-font roles, CJK fallbacks, and zero-WebFont performance | Active |
 | [Visual System Guidelines](./visual-system-guidelines.md) | KAF art direction, type hierarchy, gallery, reflow, and LazyMotion | Active |
-| [Avatar Presentation](./avatar-guidelines.md) | Overhead lighting, bounded motion, VRM expressions, lifecycle, and model dialog | Active |
+| [Avatar Presentation](./avatar-guidelines.md) | Skin/material lighting, sleeve-safe poses, bounded motion, VRM expressions, lifecycle, and model dialog | Active |
 | [Quality Guidelines](./quality-guidelines.md) | mise workflow, lint/type/test/build requirements | Active |
 | [Type Safety](./type-safety.md) | Local types, stable contracts, assertion rules | Active |
 

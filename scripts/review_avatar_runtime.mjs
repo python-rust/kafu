@@ -39,7 +39,10 @@ try {
           vrm.scene.traverse(node => { if (node.isMesh) geometries.add(node.geometry); });
           return { vertices: [...geometries].reduce((sum, geometry) => sum + geometry.attributes.position.count, 0), maxMorphTargets: Math.max(...[...geometries].map(geometry => geometry.morphAttributes.position?.length ?? 0)) };
         };
-        window.__avatarReview = { vrm, scene, camera, renderer, beforeOptimization: geometryStats(), geometryStats, get motion() { return motion; } };`,
+        const sourceSkinMaterials = (vrm.materials ?? [])
+          .filter(material => /^kaf_(face|body)(?: \\(Outline\\))?$/.test(material.name))
+          .map(material => ({ material, matcap: material.matcapFactor.clone(), toony: material.shadingToonyFactor, shift: material.shadingShiftFactor }));
+        window.__avatarReview = { vrm, scene, camera, renderer, sourceSkinMaterials, beforeOptimization: geometryStats(), geometryStats, get motion() { return motion; } };`,
       ),
     });
   });
@@ -69,6 +72,13 @@ try {
         after: window.__avatarReview.geometryStats(),
       },
       joints: vrm.springBoneManager.joints.size,
+      skinMatcaps: window.__avatarReview.sourceSkinMaterials.map(
+        ({ material, matcap }) => ({
+          name: material.name,
+          original: matcap.toArray(),
+          current: material.matcapFactor.toArray(),
+        }),
+      ),
       lights: scene.children
         .filter((child) => child.isLight)
         .map((light) => ({
@@ -84,6 +94,11 @@ try {
   });
   assert.equal(initial.lookAt, false);
   assert.equal(initial.lights.length, 2);
+  assert.equal(initial.skinMatcaps.length, 4);
+  for (const material of initial.skinMatcaps) {
+    assert.deepEqual(material.original, [1, 1, 1]);
+    assert.deepEqual(material.current, [0, 0, 0]);
+  }
 
   const canvas = page.getByTestId('kaf-vrm-canvas');
   const box = await canvas.boundingBox();
@@ -289,13 +304,101 @@ try {
       (bind) => bind.hasPositionTarget && bind.weight === 1,
     ),
   );
-  assert(modelEvidence.poses.leftHand[2] < modelEvidence.poses.hips[2]);
-  assert(modelEvidence.poses.rightHand[2] < modelEvidence.poses.hips[2]);
+  for (const [side, sign] of [
+    ['left', -1],
+    ['right', 1],
+  ]) {
+    const hand = modelEvidence.poses[`${side}Hand`];
+    const elbow = modelEvidence.poses[`${side}LowerArm`];
+    assert(
+      hand[1] < elbow[1] - 0.1,
+      'Hand must stay below its elbow, not folded into the sleeve',
+    );
+    assert(
+      (hand[0] - elbow[0]) * sign > 0.04,
+      'Forearm must extend away from the torso',
+    );
+  }
   assert(
     initial.geometry.after.maxMorphTargets <
       initial.geometry.before.maxMorphTargets,
   );
   assert(initial.geometry.after.vertices < initial.geometry.before.vertices);
+
+  // Bone positions alone missed the previous sleeve penetration. Capture the
+  // complete posed model at tracking extrema; human review of garment/hand
+  // silhouettes is required. The production camera remains unchanged.
+  await page.evaluate(() => {
+    const { camera } = window.__avatarReview;
+    window.__avatarReview.bustCamera = camera.clone();
+    const aspect = camera.right / camera.top;
+    camera.position.y = 0.74;
+    camera.top = 0.78;
+    camera.bottom = -0.78;
+    camera.left = -0.78 * aspect;
+    camera.right = 0.78 * aspect;
+    camera.updateProjectionMatrix();
+    camera.updateMatrixWorld();
+  });
+  const poseEvidence = [];
+  for (const [label, x, y, frames, viewYaw = 0] of [
+    ['initial', 0, 0, 0],
+    ['rest', 0, 0, 180],
+    ['left', -1, 0, 180],
+    ['right', 1, 0, 180],
+    ['upper-left', -1, 1, 180],
+    ['upper-right', 1, 1, 180],
+    ['lower-left', -1, -1, 180],
+    ['lower-right', 1, -1, 180],
+    ['oblique-left', -1, 0, 180, -0.45],
+    ['oblique-right', 1, 0, 180, 0.45],
+  ]) {
+    const hands = await page.evaluate(
+      ([x, y, frames, viewYaw]) => {
+        const { vrm, motion, scene, camera, renderer } = window.__avatarReview;
+        const distance = Math.abs(window.__avatarReview.bustCamera.position.z);
+        camera.position.set(
+          distance * Math.sin(viewYaw),
+          0.74,
+          -distance * Math.cos(viewYaw),
+        );
+        camera.lookAt(0, 0.74, 0);
+        motion.reset();
+        vrm.update(0);
+        vrm.springBoneManager.reset();
+        motion.setPointer(x, y);
+        for (let i = 0; i < frames; i++) {
+          motion.update(1 / 60);
+          vrm.update(1 / 60);
+        }
+        vrm.scene.updateMatrixWorld(true);
+        renderer.render(scene, camera);
+        return ['left', 'right'].map((side) => {
+          const hand = vrm.humanoid.getRawBoneNode(`${side}Hand`);
+          const elbow = vrm.humanoid.getRawBoneNode(`${side}LowerArm`);
+          return {
+            side,
+            hand: hand.getWorldPosition(hand.position.clone()).toArray(),
+            elbow: elbow.getWorldPosition(elbow.position.clone()).toArray(),
+          };
+        });
+      },
+      [x, y, frames, viewYaw],
+    );
+    for (const { side, hand, elbow } of hands) {
+      assert(hand[1] < elbow[1] - 0.1);
+      assert((hand[0] - elbow[0]) * (side === 'left' ? -1 : 1) > 0.04);
+    }
+    poseEvidence.push({ label, hands });
+    await page
+      .getByTestId('kaf-avatar-stage')
+      .screenshot({ path: `${output}/safe-pose-${label}.png` });
+  }
+  await page.evaluate(() => {
+    const r = window.__avatarReview;
+    r.camera.copy(r.bustCamera);
+    r.camera.updateMatrixWorld();
+  });
 
   for (const expression of [
     'rest',
@@ -321,12 +424,10 @@ try {
   }
 
   const comparison = await page.evaluate(async () => {
-    const { vrm, renderer, camera, scene, motion } = window.__avatarReview;
-    const { AmbientLight, DirectionalLight } =
-      await import('/node_modules/three/build/three.module.js');
+    const { vrm, renderer, camera, scene, motion, sourceSkinMaterials } =
+      window.__avatarReview;
     motion.reset();
     vrm.update(0);
-    const currentLights = scene.children.filter((child) => child.isLight);
     const sample = () => {
       const durations = [];
       for (let i = 0; i < 45; i++) {
@@ -345,29 +446,51 @@ try {
       };
     };
     const current = sample();
-    currentLights.forEach((light) => scene.remove(light));
-    const ambient = new AmbientLight(0xffffff, 1.65);
-    const key = new DirectionalLight(0xfff7f9, 2.25);
-    key.position.set(-1.6, 2.7, -2.4);
-    key.target.position.set(0, 1.25, 0);
-    const fill = new DirectionalLight(0xb9dce8, 0.55);
-    fill.position.set(2.4, 1.4, -1.2);
-    fill.target.position.set(0, 1.2, 0);
-    scene.add(ambient, key, key.target, fill, fill.target);
-    const originalLighting = sample();
+    const hemi = scene.children.find((light) => light.isHemisphereLight);
+    const key = scene.children.find((light) => light.isDirectionalLight);
+    hemi.intensity = 0.55;
+    hemi.groundColor.setHex(0x55435a);
+    key.intensity = 1.2;
     motion.reset();
     vrm.update(0);
+    const head = vrm.humanoid
+      .getRawBoneNode('head')
+      .getWorldPosition(key.position.clone());
+    const hips = vrm.humanoid
+      .getRawBoneNode('hips')
+      .getWorldPosition(key.position.clone());
+    key.position.copy(key.target.position).add(
+      head
+        .clone()
+        .set(-0.35, 1.75, -0.65)
+        .multiplyScalar(head.y - hips.y),
+    );
+    for (const { material, matcap, toony, shift } of sourceSkinMaterials) {
+      material.matcapFactor.copy(matcap);
+      material.shadingToonyFactor = toony;
+      material.shadingShiftFactor = shift;
+    }
+    const previousPresentation = sample();
+    motion.reset();
+    vrm.update(0);
+    vrm.springBoneManager.reset();
+    vrm.update(0);
     renderer.render(scene, camera);
-    return { current, originalLighting };
+    return { current, previousPresentation };
   });
   await page
     .getByTestId('kaf-avatar-stage')
-    .screenshot({ path: `${output}/original-lighting.png` });
-  assert.equal(comparison.current.calls, comparison.originalLighting.calls);
+    .screenshot({ path: `${output}/previous-presentation.png` });
+  assert.equal(comparison.current.calls, comparison.previousPresentation.calls);
+  assert.equal(
+    comparison.current.triangles,
+    comparison.previousPresentation.triangles,
+  );
   assert.deepEqual(errors, []);
   const result = {
     modelEvidence,
     initial,
+    poseEvidence,
     pointer: { before, left, right, up, down },
     frameTimes,
     comparison,

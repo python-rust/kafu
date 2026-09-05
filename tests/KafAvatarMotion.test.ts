@@ -169,18 +169,39 @@ describe('KAF avatar presence', () => {
     }).not.toThrow();
   });
 
-  it('keeps bent asymmetric arms and resets owned poses without drift', () => {
+  it('keeps sleeve-compatible forearms and wrists at authored rest without drift', () => {
     const { vrm, motion, expressions } = fixture();
-    const arm = vrm.humanoid.getNormalizedBoneNode('leftLowerArm')!;
-    const rest = arm.quaternion.clone();
-    expect(
-      Math.abs(new Euler().setFromQuaternion(rest, 'YXZ').z),
-    ).toBeGreaterThan(1);
+    const forearms = [
+      'leftLowerArm',
+      'rightLowerArm',
+      'leftHand',
+      'rightHand',
+    ] as const;
     for (let i = 0; i < 20; i++) {
-      motion.setPointer(1, 1);
-      advance(motion, 3);
+      motion.setPointer(i % 2 === 0 ? 1 : -1, i % 3 === 0 ? -1 : 1);
+      for (let frame = 0; frame < 180; frame++) {
+        motion.update(1 / 60);
+        for (const name of forearms) {
+          const bone = vrm.humanoid.getNormalizedBoneNode(name)!;
+          expect(bone.quaternion.toArray()).toEqual([0, 0, 0, 1]);
+        }
+        for (const side of ['left', 'right'] as const) {
+          const arm = vrm.humanoid.getNormalizedBoneNode(`${side}UpperArm`)!;
+          const angles = new Euler().setFromQuaternion(arm.quaternion, 'YXZ');
+          expect(Math.abs(angles.x)).toBeLessThan(1e-7);
+          expect(Math.abs(angles.y)).toBeLessThan(1e-7);
+          expect(angles.z * (side === 'left' ? 1 : -1)).toBeGreaterThanOrEqual(
+            0.394 - 1e-7,
+          );
+          expect(Math.abs(angles.z)).toBeLessThanOrEqual(0.406 + 1e-7);
+        }
+      }
       motion.reset();
-      expect(arm.quaternion.angleTo(rest)).toBeLessThan(1e-7);
+      for (const name of forearms) {
+        expect(
+          vrm.humanoid.getNormalizedBoneNode(name)!.quaternion.toArray(),
+        ).toEqual([0, 0, 0, 1]);
+      }
       expect(
         expressions.expressions.every((expression) => expression.weight === 0),
       ).toBe(true);

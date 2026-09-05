@@ -215,9 +215,10 @@ or full-screen game scene.
   readable status, retry action, and download link usable.
 - Canvas/poster crossfade may animate opacity only; no geometric loading shift.
 
-The runtime pose bends the source model's arms asymmetrically and uses existing
-SpringBones for secondary motion. It does not modify or redistribute a derived
-VRM binary. Lighting, pointer bounds, expression compatibility, StrictMode-safe
+The runtime pose lowers the source A-pose slightly, keeps forearms/wrists at
+authored rest for sleeve clearance, and uses existing SpringBones for secondary
+motion. It does not modify or redistribute a derived VRM binary. Skin-only MToon
+adjustments, lighting, pointer bounds, expression compatibility, StrictMode-safe
 cleanup, and dialog mechanics are specified in [Avatar Presentation](./avatar-guidelines.md).
 
 ---

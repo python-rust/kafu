@@ -10,6 +10,7 @@
 | `KafAvatarSection.tsx` | Poster, viewport/manual activation, loading/failure feedback, dialog state |
 | `KafVrmStage.tsx` | Lazy Three.js/VRM loading, camera/light rig, pointer events, render/cleanup lifecycle |
 | `kafAvatarMotion.ts` | Section-specific bounded normalized poses and available-expression scheduling |
+| `kafAvatarMaterials.ts` | Idempotent, asset-scoped skin matcap/toon correction at load time |
 | `KafAvatarManifestDialog.tsx` | Lazy Radix Dialog adapter and canonical model metadata |
 | `kafAvatar.json` / `.ts` | Immutable asset identity and public-manifest projection |
 
@@ -33,12 +34,30 @@ only optimize the loaded scene; never export or re-upload a modified VRM.
 - Position the key relative to actual head/hips coordinates. A directional
   light points from its position toward its target; rotating the light object
   is not a substitute.
-- Current reference intensities are hemisphere `0.55` and key `1.2`; key offset
-  is `(-0.35, 1.75, -0.65) * torsoHeight` from a target slightly below the head.
+- Current reference intensities are hemisphere `0.65` and key `1.6`; key offset
+  is `(-0.55, 1.8, -0.9) * torsoHeight` from a target slightly below the head.
+  The fill uses warm sky `0xfff4ee` and muted ground `0x778091`.
 - Do not restore a strong omnidirectional wash or two bright frontal lights.
   Do not compensate with emission, Bloom, full-scene shadows or postprocessing.
 - Review the real locked model when changing these values; material names and
   model dimensions are not interchangeable with a generic sample avatar.
+
+### Skin hotspot correction
+
+The locked VRM0 face/body use `_SphereAdd` (`skin.exr`), imported as a unit-strength
+camera-space matcap. With the authored rim-light mix of zero, it contributes
+even when scene lights are off. Moving/dimming a directional light cannot remove
+that additive nose/neck hotspot. Diagnose diffuse, matcap and emission separately.
+
+`applyKafSkinLighting(materials: readonly Material[]): void` runs once after load.
+It accepts only `MToonMaterial` instances named `kaf_face`, `kaf_body`, or their
+exact ` (Outline)` variants. Set `matcapFactor` to zero, `shadingToonyFactor` to
+`0.6`, and `shadingShiftFactor` to `-0.1`. These public uniform properties remove
+the skin glare and soften its shading transition without replacing shaders/maps
+or darkening every material. Repeated calls must not accumulate changes or mark
+the material for shader recompilation. Missing/unrelated materials are skipped.
+Preserve eye, hair and clothing material parameters, diffuse/shade colors, texture
+identity, geometry, and the immutable asset. Do not export the adjusted scene.
 
 ## Motion contract
 
@@ -61,9 +80,13 @@ motion.reset();          // restore owned rest poses, relaxed arms, zero express
   Clamp excursions and relax on pointer leave/cancel and activity pause.
 - Touch remains native page scrolling; do not capture the pointer or prevent
   default touch/wheel behavior. Missing optional bones are skipped.
-- Keep an asymmetric bent-elbow/wrist rest pose and restrained idle movement.
-  New props or externally sourced performance animations require separate
-  asset/provenance review.
+- This model is authored in an A-pose, not a T-pose. Its loose sleeve chains
+  follow upper arms independently of elbow bends. Keep forearms and wrists at
+  their authored rest rotations. Upper-arm Z offsets are mirrored
+  `±(0.4 + sin(time * 1.45) * 0.006)` radians, with no added X/Y twist.
+  Do not restore the former large independent forearm bend or palms-up gesture:
+  wrist coordinates alone failed to detect visible sleeve penetration.
+  New props or externally sourced performance animations require separate review.
 - Drive gaze through `VRMLookAt.yaw/pitch` in degrees, never raw eye bones.
   The gaze damping rate is `12`, head rate `7.5`, body rate `3.5`, so the eyes
   respond first and the torso follows. Input limits including idle are
@@ -142,7 +165,7 @@ does not mean the return-focus lifecycle has completed.
 ## Verification
 
 Run `mise run check` and `mise run e2e`. The focused suites are
-`KafAvatarMotion.test.ts`, `KafVrmStage.test.tsx`, `KafAvatarSection.test.tsx`, and
+`KafAvatarMotion.test.ts`, `KafAvatarMaterials.test.ts`, `KafVrmStage.test.tsx`, `KafAvatarSection.test.tsx`, and
 `e2e/avatar-manifest.spec.ts`.
 
 Assertions must cover bounded/frame-rate-independent motion, no accumulated pose
@@ -151,6 +174,10 @@ suppression, gaze bounds/direction/damping/reset and missing-look-at fallback,
 same-canvas StrictMode replay, abort/disposal, conditional copy, canonical popup
 data, lazy loading, keyboard focus containment, Escape/close return focus,
 unchanged page position, body lock and narrow/large-text reflow.
+Material tests must verify the exact skin/outline allow-list, uniform values,
+unchanged material/map/color identities, idempotence and unrelated/missing inputs.
+Pose tests must preserve neutral forearm/wrist offsets and bounded mirrored upper
+arms throughout motion and reset, rather than assert an aesthetically large bend.
 
 For real-model changes, run `mise exec -- node scripts/review_avatar_runtime.mjs`
 against a settled `mise run dev -- --host 127.0.0.1 --port 5173`. It uses only the
@@ -162,7 +189,12 @@ dependency may require one initial dev prebundle/reload before review.
 
 Compare draw calls/triangles and CPU submission time under the same conditions.
 The real-model probe also verifies that optimization reduces vertex/morph
-storage, preserves the curved-eye binding, and places the bent hands in front
-of the torso rather than behind it.
+storage and preserves the curved-eye binding. Pose acceptance additionally needs
+uncropped, settled front and oblique renders with both hands visible at rest and
+tracking extremes; the hands must emerge through cuff openings without crossing
+sleeve sides or the coat. Do not change the production camera or hide meshes to
+mask an intersection. Bone bounds are guardrails, not a cloth-collision proof.
+Lighting comparisons must keep the pose/camera identical and distinguish the
+skin material correction from the changed scene light rig.
 RAF cadence in a headless/browser-throttled environment is not evidence of the
 frame rate on every user's GPU. Do not claim a universal FPS from this probe.
