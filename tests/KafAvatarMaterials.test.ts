@@ -79,16 +79,18 @@ describe('KAF cloth lighting', () => {
 
       applyKafClothLighting([material]);
 
-      expect(material.matcapFactor.toArray()).toEqual([0.45, 0.45, 0.45]);
-      expect(material.shadingToonyFactor).toBe(0.9);
-      expect(material.shadingShiftFactor).toBe(-0.2);
+      expect(material.matcapFactor.toArray()).toEqual([0.4, 0.4, 0.4]);
+      expect(material.shadingToonyFactor).toBe(0.68);
+      expect(material.shadingShiftFactor).toBe(-0.12);
       expect(material.map).toBe(map);
       expect(material.matcapTexture).toBe(matcap);
       expect(material.color.equals(originalColor)).toBe(true);
       expect(material.shadeColorFactor.equals(originalShade)).toBe(true);
       const version = material.version;
       applyKafClothLighting([material, material]);
-      expect(material.matcapFactor.toArray()).toEqual([0.45, 0.45, 0.45]);
+      expect(material.matcapFactor.toArray()).toEqual([0.4, 0.4, 0.4]);
+      expect(material.shadingToonyFactor).toBe(0.68);
+      expect(material.shadingShiftFactor).toBe(-0.12);
       expect(material.version).toBe(version);
 
       material.dispose();

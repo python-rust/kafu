@@ -68,10 +68,13 @@ scene or head lighting to compensate.
 
 `applyKafClothLighting(materials: readonly Material[]): void` accepts only
 `MToonMaterial` instances named `kaf_cloth` or the exact `kaf_cloth (Outline)`
-variant and sets `matcapFactor` to `(0.45, 0.45, 0.45)`. Preserve the authored
-`basic_1.exr` texture, base/shade colors, `shadingToonyFactor` and
-`shadingShiftFactor`. The adjustment is one-time and idempotent; it must not
-change skin, eye or hair materials and must not add render passes.
+variant and sets `matcapFactor` to `(0.4, 0.4, 0.4)`,
+`shadingToonyFactor` to `0.68`, and `shadingShiftFactor` to `-0.12`. This moves
+the garment's shading behavior toward the already-approved softer skin
+presentation without flattening it into the skin settings themselves. Preserve
+the authored `basic_1.exr` texture plus base/shade colors. The adjustment is
+one-time and idempotent; it must not change skin, eye or hair materials and
+must not add render passes.
 
 ## Motion contract
 
@@ -193,8 +196,8 @@ data, lazy loading, keyboard focus containment, Escape/close return focus,
 unchanged page position, body lock and narrow/large-text reflow.
 Material tests must verify the exact skin/outline allow-list, uniform values,
 unchanged material/map/color identities, idempotence and unrelated/missing inputs.
-They must also verify the cloth-only `0.45` matcap factor while preserving the
-cloth map and toon parameters.
+They must also verify the cloth-only `0.4` matcap factor and the softer
+`0.68/-0.12` toon transition while preserving the cloth map and colors.
 Pose tests must preserve neutral forearm/wrist offsets and bounded mirrored upper
 arms throughout motion and reset, rather than assert an aesthetically large bend.
 

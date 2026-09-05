@@ -43,6 +43,8 @@ export function applyKafClothLighting(materials: readonly Material[]): void {
     // the garment read much brighter/glossier than the face under the same
     // scene light. Keep the authored texture and toon shading; only reduce the
     // additive matcap contribution so fabric stays darker without going flat.
-    material.matcapFactor.setRGB(0.45, 0.45, 0.45);
+    material.matcapFactor.setRGB(0.4, 0.4, 0.4);
+    material.shadingToonyFactor = 0.68;
+    material.shadingShiftFactor = -0.12;
   }
 }
