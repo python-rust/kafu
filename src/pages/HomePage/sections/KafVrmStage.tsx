@@ -15,7 +15,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { useEffect, useRef } from 'react';
 
 import { kafAvatarAsset } from '../../../content/kafAvatar';
-import { applyKafSkinLighting } from './kafAvatarMaterials';
+import {
+  applyKafClothLighting,
+  applyKafSkinLighting,
+} from './kafAvatarMaterials';
 import { createKafAvatarMotion, type KafAvatarMotion } from './kafAvatarMotion';
 import styles from './KafAvatarSection.module.css';
 
@@ -327,6 +330,7 @@ export default function KafVrmStage({
 
         vrm = loadedVrm;
         applyKafSkinLighting(vrm.materials ?? []);
+        applyKafClothLighting(vrm.materials ?? []);
         // Official runtime optimizations preserve rendered geometry and the
         // authored expressions while removing unused vertex/morph work.
         VRMUtils.removeUnnecessaryVertices(vrm.scene);

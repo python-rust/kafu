@@ -8,6 +8,8 @@ const skinMaterialNames = new Set([
   'kaf_body (Outline)',
 ]);
 
+const clothMaterialNames = new Set(['kaf_cloth', 'kaf_cloth (Outline)']);
+
 /** One-time presentation adjustment for the locked KAF model, not an asset edit. */
 export function applyKafSkinLighting(materials: readonly Material[]): void {
   for (const material of materials) {
@@ -24,5 +26,23 @@ export function applyKafSkinLighting(materials: readonly Material[]): void {
     material.matcapFactor.setRGB(0, 0, 0);
     material.shadingToonyFactor = 0.6;
     material.shadingShiftFactor = -0.1;
+  }
+}
+
+/** Reduce the locked outfit's additive matcap sheen without altering its maps. */
+export function applyKafClothLighting(materials: readonly Material[]): void {
+  for (const material of materials) {
+    if (
+      !(material instanceof MToonMaterial) ||
+      !clothMaterialNames.has(material.name)
+    ) {
+      continue;
+    }
+
+    // The source `basic_1.exr` matcap is authored at full strength and makes
+    // the garment read much brighter/glossier than the face under the same
+    // scene light. Keep the authored texture and toon shading; only reduce the
+    // additive matcap contribution so fabric stays darker without going flat.
+    material.matcapFactor.setRGB(0.6, 0.6, 0.6);
   }
 }

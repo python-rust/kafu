@@ -2,7 +2,10 @@ import { MToonMaterial } from '@pixiv/three-vrm';
 import { MeshStandardMaterial, Texture } from 'three';
 import { describe, expect, it } from 'vitest';
 
-import { applyKafSkinLighting } from '../src/pages/HomePage/sections/kafAvatarMaterials';
+import {
+  applyKafClothLighting,
+  applyKafSkinLighting,
+} from '../src/pages/HomePage/sections/kafAvatarMaterials';
 
 describe('KAF skin lighting', () => {
   it('removes only the skin matcap contribution without replacing materials or textures', () => {
@@ -58,6 +61,55 @@ describe('KAF skin lighting', () => {
     expect(() => applyKafSkinLighting([foreignMaterial])).not.toThrow();
     expect(foreignMaterial).not.toHaveProperty('matcapFactor');
     expect(() => applyKafSkinLighting([])).not.toThrow();
+    foreignMaterial.dispose();
+  });
+});
+
+describe('KAF cloth lighting', () => {
+  it('reduces only the cloth matcap strength while preserving authored shading and maps', () => {
+    for (const name of ['kaf_cloth', 'kaf_cloth (Outline)']) {
+      const map = new Texture();
+      const matcap = new Texture();
+      const material = new MToonMaterial({ map, matcapTexture: matcap });
+      material.name = name;
+      material.shadingToonyFactor = 0.9;
+      material.shadingShiftFactor = -0.2;
+      const originalColor = material.color.clone();
+      const originalShade = material.shadeColorFactor.clone();
+
+      applyKafClothLighting([material]);
+
+      expect(material.matcapFactor.toArray()).toEqual([0.6, 0.6, 0.6]);
+      expect(material.shadingToonyFactor).toBe(0.9);
+      expect(material.shadingShiftFactor).toBe(-0.2);
+      expect(material.map).toBe(map);
+      expect(material.matcapTexture).toBe(matcap);
+      expect(material.color.equals(originalColor)).toBe(true);
+      expect(material.shadeColorFactor.equals(originalShade)).toBe(true);
+      const version = material.version;
+      applyKafClothLighting([material, material]);
+      expect(material.matcapFactor.toArray()).toEqual([0.6, 0.6, 0.6]);
+      expect(material.version).toBe(version);
+
+      material.dispose();
+      map.dispose();
+      matcap.dispose();
+    }
+  });
+
+  it('preserves skin, eyes, hair and non-MToon materials', () => {
+    for (const name of ['kaf_face', 'kaf_body', 'kaf_eye', 'kaf_hair']) {
+      const material = new MToonMaterial();
+      material.name = name;
+      applyKafClothLighting([material]);
+      expect(material.matcapFactor.toArray()).toEqual([1, 1, 1]);
+      material.dispose();
+    }
+
+    const foreignMaterial = new MeshStandardMaterial({ name: 'kaf_cloth' });
+    expect(() => applyKafClothLighting([foreignMaterial])).not.toThrow();
+    expect(foreignMaterial).not.toHaveProperty('matcapFactor');
+    expect(() => applyKafClothLighting([])).not.toThrow();
     foreignMaterial.dispose();
   });
 });

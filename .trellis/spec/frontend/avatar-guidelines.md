@@ -10,7 +10,7 @@
 | `KafAvatarSection.tsx` | Poster, viewport/manual activation, loading/failure feedback, dialog state |
 | `KafVrmStage.tsx` | Lazy Three.js/VRM loading, camera/light rig, pointer events, render/cleanup lifecycle |
 | `kafAvatarMotion.ts` | Section-specific bounded normalized poses and available-expression scheduling |
-| `kafAvatarMaterials.ts` | Idempotent, asset-scoped skin matcap/toon correction at load time |
+| `kafAvatarMaterials.ts` | Idempotent, asset-scoped skin and outfit matcap correction at load time |
 | `KafAvatarManifestDialog.tsx` | Lazy Radix Dialog adapter and canonical model metadata |
 | `kafAvatar.json` / `.ts` | Immutable asset identity and public-manifest projection |
 
@@ -58,6 +58,20 @@ or darkening every material. Repeated calls must not accumulate changes or mark
 the material for shader recompilation. Missing/unrelated materials are skipped.
 Preserve eye, hair and clothing material parameters, diffuse/shade colors, texture
 identity, geometry, and the immutable asset. Do not export the adjusted scene.
+
+### Outfit sheen correction
+
+The locked `kaf_cloth` material uses `_SphereAdd` (`basic_1.exr`) at full
+matcap strength. Under the approved head/skin light rig this leaves the garment
+noticeably brighter and glossier than the intended fabric read. Do not dim the
+scene or head lighting to compensate.
+
+`applyKafClothLighting(materials: readonly Material[]): void` accepts only
+`MToonMaterial` instances named `kaf_cloth` or the exact `kaf_cloth (Outline)`
+variant and sets `matcapFactor` to `(0.6, 0.6, 0.6)`. Preserve the authored
+`basic_1.exr` texture, base/shade colors, `shadingToonyFactor` and
+`shadingShiftFactor`. The adjustment is one-time and idempotent; it must not
+change skin, eye or hair materials and must not add render passes.
 
 ## Motion contract
 
@@ -179,6 +193,8 @@ data, lazy loading, keyboard focus containment, Escape/close return focus,
 unchanged page position, body lock and narrow/large-text reflow.
 Material tests must verify the exact skin/outline allow-list, uniform values,
 unchanged material/map/color identities, idempotence and unrelated/missing inputs.
+They must also verify the cloth-only `0.6` matcap factor while preserving the
+cloth map and toon parameters.
 Pose tests must preserve neutral forearm/wrist offsets and bounded mirrored upper
 arms throughout motion and reset, rather than assert an aesthetically large bend.
 
