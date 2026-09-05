@@ -14,6 +14,7 @@ import { SectionHeading } from '../components/SectionHeading';
 import styles from './KafAvatarSection.module.css';
 
 const KafVrmStage = lazy(() => import('./KafVrmStage'));
+const KafAvatarManifestDialog = lazy(() => import('./KafAvatarManifestDialog'));
 
 type LoadStatus = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -24,13 +25,13 @@ function formatLoadStatus(
 ): string {
   switch (status) {
     case 'idle':
-      return '动态形象将在接近视口时加载。';
+      return '';
     case 'loading':
       return progress === null
         ? '正在加载动态形象…'
         : `正在加载动态形象 ${Math.round(progress * 100)}%`;
     case 'ready':
-      return '动态形象已加载。';
+      return '';
     case 'error':
       return errorMessage ?? '动态形象暂时无法加载。';
   }
@@ -38,6 +39,7 @@ function formatLoadStatus(
 
 export function KafAvatarSection() {
   const sectionRef = useRef<HTMLElement>(null);
+  const manifestTriggerRef = useRef<HTMLButtonElement>(null);
   const shouldReduceMotion = useReducedMotion() === true;
   const [supportsIntersectionObserver] = useState(
     () => typeof IntersectionObserver === 'function',
@@ -48,6 +50,8 @@ export function KafAvatarSection() {
   const [status, setStatus] = useState<LoadStatus>('idle');
   const [progress, setProgress] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [manifestOpen, setManifestOpen] = useState(false);
+  const [manifestRequested, setManifestRequested] = useState(false);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -154,7 +158,7 @@ export function KafAvatarSection() {
                 <KafVrmStage
                   key={attempt}
                   modelUrl={kafAvatarAsset.publicPath}
-                  isActive={isInViewport}
+                  isActive={isInViewport && !manifestOpen}
                   motionEnabled={
                     !shouldReduceMotion && supportsIntersectionObserver
                   }
@@ -166,7 +170,7 @@ export function KafAvatarSection() {
             ) : null}
 
             <div className={styles.stageStatus} aria-live="polite">
-              <span>{statusText}</span>
+              {statusText ? <span>{statusText}</span> : null}
               {showManualLoad ? (
                 <button type="button" onClick={startLoading}>
                   加载动态形象
@@ -181,38 +185,16 @@ export function KafAvatarSection() {
           </div>
 
           <div className={styles.content}>
-            <p className={styles.lead}>
-              这件网页角色保留了花谱模型原有的卡通材质、表情与头发物理，在浏览器中以固定的正面半身构图呈现。
-            </p>
-            <p className={styles.description}>
-              模型接近本区域时才会从 Cloudflare R2
-              加载。页面离开视口或进入后台后会暂停渲染；无法使用 WebGL
-              时，仍保留静态预览。
-            </p>
-
             <dl className={styles.metadata}>
               <div>
                 <dt>模型制作</dt>
                 <dd>{kafAvatarAsset.author}</dd>
               </div>
               <div>
-                <dt>格式</dt>
-                <dd>{kafAvatarAsset.format}</dd>
-              </div>
-              <div>
-                <dt>文件大小</dt>
-                <dd>{kafAvatarAsset.byteSizeLabel}</dd>
-              </div>
-              <div>
                 <dt>授权</dt>
                 <dd>{kafAvatarAsset.permissionSummary}</dd>
               </div>
             </dl>
-
-            <p className={styles.checksum}>
-              <span>SHA-256</span>
-              <code>{kafAvatarAsset.sha256}</code>
-            </p>
 
             <div className={styles.actions}>
               <a
@@ -222,21 +204,32 @@ export function KafAvatarSection() {
               >
                 下载 VRM 模型
               </a>
-              <a
+              <button
+                ref={manifestTriggerRef}
+                type="button"
                 className={styles.secondaryAction}
-                href={kafAvatarAsset.manifestPath}
+                aria-haspopup="dialog"
+                aria-expanded={manifestOpen}
+                onClick={() => {
+                  setManifestRequested(true);
+                  setManifestOpen(true);
+                }}
               >
                 查看模型清单
-              </a>
+              </button>
             </div>
-
-            <p className={styles.credit}>
-              模型制作：{kafAvatarAsset.author}
-              。经作者授权用于本非官方、非商业粉丝网站。
-            </p>
           </div>
         </div>
       </div>
+      {manifestRequested ? (
+        <Suspense fallback={null}>
+          <KafAvatarManifestDialog
+            open={manifestOpen}
+            onOpenChange={setManifestOpen}
+            triggerRef={manifestTriggerRef}
+          />
+        </Suspense>
+      ) : null}
     </section>
   );
 }

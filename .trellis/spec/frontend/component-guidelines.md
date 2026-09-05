@@ -139,6 +139,8 @@ For the interactive avatar:
 KafAvatarSection.tsx         -> product copy, poster/loading/failure state,
                                 viewport/manual activation, public download links
 KafVrmStage.tsx              -> lazy Three.js + @pixiv/three-vrm lifecycle only
+kafAvatarMotion.ts           -> section-local normalized pose/expression driver
+KafAvatarManifestDialog.tsx  -> lazy Radix Dialog + canonical manifest projection
 kafAvatar.json/.ts           -> model URL/key/hash/camera/expression contract
 Three.js / three-vrm         -> GLB, MToon, humanoid, expression, look-at,
                                 and SpringBone runtime mechanics
@@ -155,6 +157,11 @@ The avatar poster is the one approved raw `<img>` exception inside a homepage
 section because it is a fallback for a WebGL surface, not an editorial artwork.
 It must preserve intrinsic dimensions, lazy loading, meaningful alt text before
 readiness, and empty alt text after the labeled canvas replaces it.
+
+The model-information dialog is a separate lazy adapter, not a gallery slide or
+global modal framework. Reuse Radix for focus/Escape/body lock and the existing
+content projection for metadata. See [Avatar Presentation](./avatar-guidelines.md)
+for its copy, lifecycle, return-focus and real-model verification contracts.
 
 For page image warmup:
 

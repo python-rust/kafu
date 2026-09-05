@@ -85,7 +85,7 @@ The renderer uses:
 - a fixed lighting setup;
 - programmatic idle motion on head/chest bones with small amplitudes;
 - periodic blink through the model expression manager;
-- low-amplitude gaze changes through eye bones when available;
+- low-amplitude gaze changes through the existing VRM look-at applier when available, not direct raw-eye writes;
 - `vrm.update(delta)` every active frame.
 
 The animation loop runs only when all are true:

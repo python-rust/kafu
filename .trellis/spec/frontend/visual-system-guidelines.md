@@ -191,30 +191,34 @@ or full-screen game scene.
   the 3D model.
 - Keep room scenery, microphones, subtitles, or future controls separate from
   the VRM asset so layout and accessibility remain normal HTML/CSS concerns.
-- The section includes direct download/manifest links and model metadata because
-  discoverability/reproducibility is a product requirement, not decorative
-  technical copy.
+- The section shows creator/permission and direct download/manifest actions.
+  Technical metadata belongs in the accessible information dialog, not adjacent
+  explanatory prose. See [Avatar Presentation](./avatar-guidelines.md).
 
 ### Runtime motion
 
 - Load the poster in normal lazy image flow; load the lazy Three.js/VRM chunk and
   47.6 MiB model only within the bounded section activation margin or after an
   explicit reduced-motion/manual action.
-- Update small head/chest/spine movement, blink, gaze, and SpringBone inside the
-  renderer loop. Do not drive per-frame values through React state.
+- Update bounded head/neck/chest/spine and relaxed-arm movement, gaze, expressions
+  and SpringBone inside the renderer loop. Use the existing VRM look-at applier
+  for restrained eye response. Do not drive per-frame values through React state.
 - Use restrained motion that preserves the Live2D-like front presentation;
   large head turns, free-camera movement, or full-body performance require a
   separately reviewed motion asset.
-- Stop the animation frame loop while the section is outside the viewport or the
-  document is hidden. Resume from a clamped timer delta to avoid a physics jump.
+- Stop the animation frame loop while the section is outside the viewport, the
+  document is hidden, or the model-information dialog is open. Resume from a
+  clamped timer delta to avoid a physics jump.
 - `prefers-reduced-motion` keeps a stable pose and does not automatically fetch
   the model; a visitor may explicitly load the static WebGL pose.
 - WebGL initialization or model-transfer/parse failure leaves the poster,
   readable status, retry action, and download link usable.
 - Canvas/poster crossfade may animate opacity only; no geometric loading shift.
 
-The current static presentation pose lowers the source model's T-pose upper arms
-programmatically. It does not modify or redistribute a derived VRM binary.
+The runtime pose bends the source model's arms asymmetrically and uses existing
+SpringBones for secondary motion. It does not modify or redistribute a derived
+VRM binary. Lighting, pointer bounds, expression compatibility, StrictMode-safe
+cleanup, and dialog mechanics are specified in [Avatar Presentation](./avatar-guidelines.md).
 
 ---
 

@@ -296,8 +296,9 @@ Approved motion:
 - existing Motion opacity/transform transition for the newly active Journey
   image and stage metadata;
 - Gallery state transitions already defined elsewhere;
-- the lazy avatar renderer's restrained idle/blink/gaze/SpringBone loop while
-  the section and document are visible;
+- the lazy avatar renderer's restrained pose/gaze/expression/pointer/SpringBone loop
+  while the section/document are visible and its manifest dialog is closed;
+  see [Avatar Presentation](./avatar-guidelines.md) for bounded gaze and pose contracts;
 - persistent CSS transitions for navigation and active-step state.
 
 Forbidden motion:
@@ -341,7 +342,7 @@ Tests must verify:
 - absence of banned explanatory/slogan copy;
 - static profile facts and absence of primer sticky/observer markup;
 - the `#avatar` section between profile and Journey, with public model identity,
-  author/permission summary, download/manifest links, lazy request boundary,
+  author/permission summary, download and manifest-dialog actions, lazy request boundary,
   poster/error fallback, and reduced-motion explicit activation;
 - six semantic Journey steps in source order;
 - downward and upward scroll activation for early, middle, and final eras;

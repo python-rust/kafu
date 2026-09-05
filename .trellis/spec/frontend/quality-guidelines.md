@@ -141,8 +141,12 @@ Prefer role/name queries over class selectors or implementation details.
 `tests/KafAvatarContent.test.ts` owns content-addressed lock/public-manifest
 projection. `tests/KafAvatarProxy.test.ts` owns exact-path GET/HEAD, immutable
 metadata, byte-range, missing-object, and method rejection. `tests/KafAvatarSection.test.tsx`
-owns static fallback, public links, and explicit loading without browser
-observers.
+owns static fallback, concise attribution, canonical manifest disclosure, public
+download, and explicit loading without browser observers. Motion/StrictMode
+regressions live in `KafAvatarMotion.test.ts` and `KafVrmStage.test.tsx`; dialog
+focus, scroll preservation and narrow/large-text reflow live in
+`e2e/avatar-manifest.spec.ts`. See [Avatar Presentation](./avatar-guidelines.md)
+for the optional local-model performance and expression-binding probe.
 
 The production artifact verifier rejects avatar authoring/runtime binaries in
 `dist`. `scripts/verify_avatar_assets.py` rejects tracked VRM/Blend files and

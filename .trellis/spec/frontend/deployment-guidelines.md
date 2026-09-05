@@ -172,6 +172,49 @@ Required rules:
 - Do not configure a public R2 hostname or frontend CORS dependency for this
   flow; the Pages route is the public boundary.
 
+### Public API and failure matrix
+
+Read the Function and `tests/KafAvatarProxy.test.ts` before changing this API.
+The entry point is `onRequest({ request, env }): Promise<Response>`;
+`env.KAF_AVATAR_ASSETS` is the private bucket binding. The manifest projection is
+`createKafAvatarPublicManifest(origin: string): KafAvatarPublicManifest` and
+contains `id`, `title`, `version`, `format`, `author`, `permissionSummary`,
+`byteSize`, `sha256`, and an absolute same-origin `downloadUrl`. Neither the
+private bucket name nor an access credential belongs in that public projection.
+
+| Request / state | Current response contract |
+| --- | --- |
+| Manifest GET / HEAD | `200`, JSON / no body; `max-age=300, must-revalidate`; no bucket lookup |
+| Locked model GET / HEAD | `200`, streamed body / metadata only; locked MIME, actual length and quoted ETag |
+| Model GET with one valid byte range | `206`; bounded/open-ended/suffix range; actual `Content-Range` and partial length |
+| Exact `If-None-Match` match | `304`, no body |
+| Unknown path / missing object | `404`, `no-store` |
+| Non-GET/HEAD method | `405`, `Allow: GET, HEAD`, `no-store` |
+| Malformed, multiple, empty or out-of-bounds range | `416`, `Content-Range: bytes */<locked size>` |
+| Stored size differs from the lock | `502`, `no-store`; do not stream an unexpected object |
+
+HEAD intentionally returns full metadata rather than a partial-range body. This
+is a single-asset proxy, not a general RFC-complete range/conditional server;
+do not promise multipart ranges or arbitrary R2-key access.
+
+Good: download the locked same-origin URL and verify its SHA-256. Base: use HEAD
+and `bytes=0-3` to verify production without transferring the full model. Bad:
+publish an arbitrary-key proxy, buffer the full model in the Function, or treat
+the public download as an open-license grant.
+
+```ts
+// Wrong: exposes an arbitrary private storage key supplied by a visitor.
+bucket.get(new URL(request.url).searchParams.get('key'));
+
+// Correct: exact public-path allow-list before the fixed immutable object read.
+if (pathname !== kafAvatarAsset.publicPath) return notFound();
+return createModelResponse(request, env.KAF_AVATAR_ASSETS);
+```
+
+Regression coverage must assert the matrix above, manifest field/origin
+consistency and no bucket lookup for invalid paths; production checks assert
+the deployed manifest, HEAD, four-byte `glTF` response and allow-list 404.
+
 ### Publication order
 
 Model publication is separate from normal page deployment:

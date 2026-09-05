@@ -1,13 +1,10 @@
 import { VRM, VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import {
-  AmbientLight,
   Box3,
   DirectionalLight,
-  Euler,
+  HemisphereLight,
   MathUtils,
-  Object3D,
   OrthographicCamera,
-  Quaternion,
   Scene,
   SRGBColorSpace,
   Timer,
@@ -18,6 +15,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { useEffect, useRef } from 'react';
 
 import { kafAvatarAsset } from '../../../content/kafAvatar';
+import { createKafAvatarMotion, type KafAvatarMotion } from './kafAvatarMotion';
 import styles from './KafAvatarSection.module.css';
 
 interface KafVrmStageProps {
@@ -31,11 +29,6 @@ interface KafVrmStageProps {
 
 interface RuntimeController {
   refresh(): void;
-}
-
-interface RestBonePose {
-  readonly node: Object3D;
-  readonly quaternion: Quaternion;
 }
 
 async function fetchModelBuffer(
@@ -76,57 +69,6 @@ async function fetchModelBuffer(
   return buffer;
 }
 
-function createRestBonePose(
-  vrm: VRM,
-  name: 'head' | 'chest' | 'spine',
-): RestBonePose | null {
-  const node = vrm.humanoid.getNormalizedBoneNode(name);
-
-  return node
-    ? {
-        node,
-        quaternion: node.quaternion.clone(),
-      }
-    : null;
-}
-
-function applyLocalRotation(
-  pose: RestBonePose | null,
-  euler: Euler,
-  workQuaternion: Quaternion,
-): void {
-  if (!pose) {
-    return;
-  }
-
-  workQuaternion.setFromEuler(euler);
-  pose.node.quaternion.copy(pose.quaternion).multiply(workQuaternion);
-}
-
-function resetBonePose(pose: RestBonePose | null): void {
-  if (pose) {
-    pose.node.quaternion.copy(pose.quaternion);
-  }
-}
-
-function applyPresentationPose(vrm: VRM): void {
-  const leftUpperArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
-  const rightUpperArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
-  const rotation = new Quaternion();
-
-  if (leftUpperArm) {
-    rotation.setFromEuler(new Euler(0, 0, 0.72));
-    leftUpperArm.quaternion.multiply(rotation);
-  }
-
-  if (rightUpperArm) {
-    rotation.setFromEuler(new Euler(0, 0, -0.72));
-    rightUpperArm.quaternion.multiply(rotation);
-  }
-
-  vrm.update(0);
-}
-
 export default function KafVrmStage({
   modelUrl,
   isActive,
@@ -162,8 +104,7 @@ export default function KafVrmStage({
     const camera = new OrthographicCamera(-1, 1, 1, -1, 0.01, 20);
     const timer = new Timer();
     timer.connect(document);
-    const lookTarget = new Object3D();
-    const workQuaternion = new Quaternion();
+    const projectedHead = new Vector3();
     let renderer: WebGLRenderer;
 
     try {
@@ -174,6 +115,7 @@ export default function KafVrmStage({
         powerPreference: 'high-performance',
       });
     } catch (error) {
+      timer.dispose();
       callbacksRef.current.onError(
         error instanceof Error
           ? error
@@ -187,13 +129,8 @@ export default function KafVrmStage({
     let cameraTargetY = kafAvatarAsset.camera.targetY;
     let cameraTargetZ = 0;
     let cameraViewHeight = kafAvatarAsset.camera.viewHeight;
-    let headPose: RestBonePose | null = null;
-    let chestPose: RestBonePose | null = null;
-    let spinePose: RestBonePose | null = null;
+    let motion: KafAvatarMotion | null = null;
     let animationFrame: number | null = null;
-    let elapsed = 0;
-    let nextBlinkAt = 2.4;
-    let blinkStartedAt: number | null = null;
     let disposed = false;
     let documentVisible = document.visibilityState !== 'hidden';
     let resizeObserver: ResizeObserver | null = null;
@@ -208,18 +145,9 @@ export default function KafVrmStage({
     );
     camera.lookAt(new Vector3(0, kafAvatarAsset.camera.targetY, 0));
 
-    scene.add(lookTarget);
-    scene.add(new AmbientLight(0xffffff, 1.65));
-
-    const keyLight = new DirectionalLight(0xfff7f9, 2.25);
-    keyLight.position.set(-1.6, 2.7, -2.4);
-    keyLight.target.position.set(0, 1.25, 0);
+    scene.add(new HemisphereLight(0xfff4ee, 0x55435a, 0.55));
+    const keyLight = new DirectionalLight(0xfff4ee, 1.2);
     scene.add(keyLight, keyLight.target);
-
-    const fillLight = new DirectionalLight(0xb9dce8, 0.55);
-    fillLight.position.set(2.4, 1.4, -1.2);
-    fillLight.target.position.set(0, 1.2, 0);
-    scene.add(fillLight, fillLight.target);
 
     function resize(): void {
       const width = Math.max(1, Math.round(canvas.clientWidth));
@@ -245,92 +173,40 @@ export default function KafVrmStage({
       }
     }
 
-    function setBlinkWeight(weight: number): void {
-      vrm?.expressionManager?.setValue(
-        kafAvatarAsset.expressions.blink,
-        MathUtils.clamp(weight, 0, 1),
-      );
-    }
-
-    function updateBlink(delta: number): void {
-      if (blinkStartedAt === null && elapsed >= nextBlinkAt) {
-        blinkStartedAt = elapsed;
-      }
-
-      if (blinkStartedAt === null) {
-        setBlinkWeight(0);
-        return;
-      }
-
-      const duration = 0.18;
-      const progress = (elapsed - blinkStartedAt) / duration;
-
-      if (progress >= 1) {
-        blinkStartedAt = null;
-        nextBlinkAt = elapsed + 3.2 + (Math.sin(elapsed * 0.71) + 1) * 1.45;
-        setBlinkWeight(0);
-        return;
-      }
-
-      const weight = Math.sin(Math.PI * MathUtils.clamp(progress, 0, 1));
-      setBlinkWeight(weight * weight);
-
-      // Keep the expression manager advancing even when the render loop has a
-      // heavily clamped delta after a background-tab resume.
-      void delta;
-    }
-
-    function updateMotion(delta: number): void {
-      if (!vrm) {
-        return;
-      }
-
-      elapsed += delta;
-      const breath = Math.sin(elapsed * 1.42);
-      const headYaw = Math.sin(elapsed * 0.43) * 0.026;
-      const headPitch = Math.sin(elapsed * 0.31 + 0.8) * 0.012;
-      const headRoll = Math.sin(elapsed * 0.24 + 1.4) * 0.009;
-
-      applyLocalRotation(
-        headPose,
-        new Euler(headPitch, headYaw, headRoll, 'YXZ'),
-        workQuaternion,
-      );
-      applyLocalRotation(
-        chestPose,
-        new Euler(breath * 0.004, -headYaw * 0.22, breath * 0.003, 'YXZ'),
-        workQuaternion,
-      );
-      applyLocalRotation(
-        spinePose,
-        new Euler(breath * 0.002, headYaw * 0.12, -breath * 0.002, 'YXZ'),
-        workQuaternion,
-      );
-
-      lookTarget.position.set(
-        cameraTargetX + Math.sin(elapsed * 0.29) * cameraViewHeight * 0.075,
-        cameraTargetY +
-          cameraViewHeight * 0.14 +
-          Math.sin(elapsed * 0.21) * cameraViewHeight * 0.028,
-        camera.position.z,
-      );
-
-      updateBlink(delta);
-      vrm.update(delta);
-    }
-
     function resetMotion(): void {
-      resetBonePose(headPose);
-      resetBonePose(chestPose);
-      resetBonePose(spinePose);
-      setBlinkWeight(0);
-      lookTarget.position.set(
-        cameraTargetX,
-        cameraTargetY + cameraViewHeight * 0.14,
-        camera.position.z,
-      );
+      motion?.reset();
+      vrm?.update(0);
       vrm?.springBoneManager?.reset();
       vrm?.update(0);
+    }
+
+    function releasePointer(): void {
+      motion?.releasePointer();
+    }
+
+    function handlePointerMove(event: PointerEvent): void {
+      if (!shouldAnimate() || event.pointerType === 'touch') return;
+      const head = vrm?.humanoid.getRawBoneNode('head');
+      if (!head) return;
+
+      const rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      head.getWorldPosition(projectedHead).project(camera);
+      const headX = (projectedHead.x + 1) * 0.5;
+      const headY = (1 - projectedHead.y) * 0.5;
+      const x = (event.clientX - rect.left) / rect.width;
+      const y = (event.clientY - rect.top) / rect.height;
+
+      // A screen-space head region avoids raycasting the full skinned mesh on
+      // every pointer event. The camera stays fixed; touch scrolling is native.
+      if (Math.abs(x - headX) > 0.42 || Math.abs(y - headY) > 0.3) {
+        releasePointer();
+        return;
+      }
+      motion?.setPointer(
+        MathUtils.clamp((x - headX) / 0.3, -1, 1),
+        MathUtils.clamp((headY - y) / 0.24, -1, 1),
+      );
     }
 
     function shouldAnimate(): boolean {
@@ -368,7 +244,8 @@ export default function KafVrmStage({
 
       timer.update(timestamp);
       const delta = Math.min(timer.getDelta(), 0.05);
-      updateMotion(delta);
+      motion?.update(delta);
+      vrm?.update(delta);
       renderer.render(scene, camera);
       animationFrame = requestAnimationFrame(frame);
     }
@@ -385,7 +262,9 @@ export default function KafVrmStage({
         }
       } else {
         stopLoop();
-        renderStill();
+        releasePointer();
+        if (!activityRef.current.motionEnabled && documentVisible)
+          renderStill();
       }
     }
 
@@ -397,6 +276,11 @@ export default function KafVrmStage({
     }
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    canvas.addEventListener('pointermove', handlePointerMove, {
+      passive: true,
+    });
+    canvas.addEventListener('pointerleave', releasePointer);
+    canvas.addEventListener('pointercancel', releasePointer);
 
     if (typeof ResizeObserver === 'function') {
       resizeObserver = new ResizeObserver(resize);
@@ -441,10 +325,15 @@ export default function KafVrmStage({
         });
 
         vrm = loadedVrm;
-        applyPresentationPose(vrm);
-        headPose = createRestBonePose(vrm, 'head');
-        chestPose = createRestBonePose(vrm, 'chest');
-        spinePose = createRestBonePose(vrm, 'spine');
+        // Official runtime optimizations preserve rendered geometry and the
+        // authored expressions while removing unused vertex/morph work.
+        VRMUtils.removeUnnecessaryVertices(vrm.scene);
+        VRMUtils.combineSkeletons(vrm.scene);
+        motion = createKafAvatarMotion(vrm);
+        // Register the authored Blink_Smile target before removing unused
+        // morphs, or that otherwise-unbound expression would be lost.
+        VRMUtils.combineMorphs(vrm);
+        vrm.update(0);
         scene.add(vrm.scene);
         vrm.scene.updateMatrixWorld(true);
 
@@ -456,6 +345,16 @@ export default function KafVrmStage({
         const rawHips = vrm.humanoid.getRawBoneNode('hips');
         const headPosition = rawHead?.getWorldPosition(new Vector3());
         const hipsPosition = rawHips?.getWorldPosition(new Vector3());
+
+        const lightScale =
+          headPosition && hipsPosition
+            ? Math.max(0.1, headPosition.y - hipsPosition.y)
+            : Math.max(0.1, boundsSize.y * 0.35);
+        keyLight.target.position.copy(headPosition ?? boundsCenter);
+        keyLight.target.position.y -= lightScale * 0.15;
+        keyLight.position
+          .copy(keyLight.target.position)
+          .add(new Vector3(-0.35, 1.75, -0.65).multiplyScalar(lightScale));
 
         if (headPosition && hipsPosition && headPosition.y > hipsPosition.y) {
           const torsoHeight = headPosition.y - hipsPosition.y;
@@ -492,14 +391,6 @@ export default function KafVrmStage({
             Math.max(kafAvatarAsset.camera.distance, boundsSize.z + 1),
         );
         camera.lookAt(cameraTargetX, cameraTargetY, cameraTargetZ);
-        lookTarget.position.set(
-          cameraTargetX,
-          cameraTargetY + cameraViewHeight * 0.14,
-          camera.position.z,
-        );
-        if (vrm.lookAt) {
-          vrm.lookAt.target = lookTarget;
-        }
         vrm.springBoneManager?.reset();
         resize();
         renderStill();
@@ -527,6 +418,9 @@ export default function KafVrmStage({
       stopLoop();
       resizeObserver?.disconnect();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      canvas.removeEventListener('pointermove', handlePointerMove);
+      canvas.removeEventListener('pointerleave', releasePointer);
+      canvas.removeEventListener('pointercancel', releasePointer);
       window.removeEventListener('resize', resize);
       runtimeRef.current = null;
 
@@ -541,7 +435,8 @@ export default function KafVrmStage({
       timer.dispose();
       renderer.renderLists.dispose();
       renderer.dispose();
-      renderer.forceContextLoss();
+      // StrictMode replays this effect on the same canvas. Forcing context
+      // loss here poisons the next renderer before that canvas is detached.
     };
   }, [modelUrl]);
 

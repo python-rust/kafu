@@ -1,0 +1,122 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  padding: 1rem;
+  overflow-y: auto;
+  place-items: center;
+  background: rgb(7 5 8 / 82%);
+}
+
+.panel {
+  width: min(100%, 42rem);
+  min-width: 0;
+  max-height: calc(100svh - 2rem);
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  overflow-y: auto;
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-bg-soft);
+  color: var(--color-text);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display-zh);
+  font-size: var(--type-card-title);
+  line-height: 1.4;
+}
+
+.close,
+.download {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--color-line-strong);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--type-body-small);
+  font-weight: 650;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+.close {
+  flex-shrink: 0;
+}
+
+.close:hover {
+  border-color: var(--color-kaf-light);
+}
+
+.description {
+  margin: 1rem 0 1.5rem;
+  color: var(--color-text-muted);
+  font-size: var(--type-body);
+  line-height: 1.7;
+}
+
+.metadata {
+  margin: 0;
+  border-top: 1px solid var(--color-line);
+}
+
+.metadata div {
+  display: grid;
+  padding-block: 0.85rem;
+  border-bottom: 1px solid var(--color-line);
+  grid-template-columns: minmax(5rem, 0.25fr) minmax(0, 1fr);
+  gap: 0.5rem 1.25rem;
+}
+
+.metadata dt {
+  color: var(--color-text-faint);
+  font-size: var(--type-label);
+  line-height: 1.8;
+}
+
+.metadata dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: var(--type-body);
+  line-height: 1.7;
+}
+
+.metadata code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--type-label);
+}
+
+.permission {
+  margin: 1.5rem 0;
+  color: var(--color-text-muted);
+  font-size: var(--type-label);
+  line-height: 1.8;
+}
+
+.download {
+  border-color: var(--color-kaf);
+  background: var(--color-kaf);
+}
+
+.download:hover {
+  background: var(--color-kaf-deep);
+}
+
+@media (max-width: 28rem) {
+  .metadata div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

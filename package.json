@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@pixiv/three-vrm": "3.5.5",
+    "@radix-ui/react-dialog": "1.1.23",
     "motion": "13.1.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",

@@ -26,6 +26,7 @@ These files document the codebase as it exists now. Do not treat future possibil
 | [State Management](./state-management.md) | Local React state ownership and escalation rules | Active |
 | [Typography Guidelines](./typography-guidelines.md) | System-font roles, CJK fallbacks, and zero-WebFont performance | Active |
 | [Visual System Guidelines](./visual-system-guidelines.md) | KAF art direction, type hierarchy, gallery, reflow, and LazyMotion | Active |
+| [Avatar Presentation](./avatar-guidelines.md) | Overhead lighting, bounded motion, VRM expressions, lifecycle, and model dialog | Active |
 | [Quality Guidelines](./quality-guidelines.md) | mise workflow, lint/type/test/build requirements | Active |
 | [Type Safety](./type-safety.md) | Local types, stable contracts, assertion rules | Active |
 
@@ -45,6 +46,7 @@ Before changing frontend code:
 8. For KAF image/VRM imports, variants, R2 publication, source links, derivatives, or lightbox behavior, read [Media Guidelines](./media-guidelines.md).
 9. For font families, system fallback order, WebFont policy, or Japanese proper-name roles, read [Typography Guidelines](./typography-guidelines.md).
 10. For page visuals, type scale, responsive layout, gallery behavior, or motion, read [Visual System Guidelines](./visual-system-guidelines.md) before editing section CSS/animation behavior.
+    For avatar lighting, poses, expressions, pointer handling, or manifest disclosure, also read [Avatar Presentation](./avatar-guidelines.md).
 11. Use `mise run ...` tasks for project commands so the pinned Node/pnpm toolchain is used.
 12. Before adding third-party media, verify its usage terms and add durable provenance metadata alongside the asset set.
 
