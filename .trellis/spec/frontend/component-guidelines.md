@@ -137,9 +137,10 @@ For the interactive avatar:
 
 ```text
 KafAvatarSection.tsx         -> product copy, poster/loading/failure state,
-                                viewport/manual activation, public download links
+                                viewport/manual activation, creator/download links
 KafVrmStage.tsx              -> lazy Three.js + @pixiv/three-vrm lifecycle only
 kafAvatarMotion.ts           -> section-local normalized pose/expression driver
+kafAvatarMaterials.ts        -> one-time asset-scoped MToon presentation tuning
 KafAvatarManifestDialog.tsx  -> lazy Radix Dialog + canonical manifest projection
 kafAvatar.json/.ts           -> model URL/key/hash/camera/expression contract
 Three.js / three-vrm         -> GLB, MToon, humanoid, expression, look-at,

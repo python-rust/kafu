@@ -191,7 +191,8 @@ or full-screen game scene.
   the 3D model.
 - Keep room scenery, microphones, subtitles, or future controls separate from
   the VRM asset so layout and accessibility remain normal HTML/CSS concerns.
-- The section shows creator/permission and direct download/manifest actions.
+- The section shows creator, the verified creator profile, permission, and
+  direct download/manifest actions.
   Technical metadata belongs in the accessible information dialog, not adjacent
   explanatory prose. See [Avatar Presentation](./avatar-guidelines.md).
 
@@ -217,9 +218,10 @@ or full-screen game scene.
 
 The runtime pose lowers the source A-pose slightly, keeps forearms/wrists at
 authored rest for sleeve clearance, and uses existing SpringBones for secondary
-motion. It does not modify or redistribute a derived VRM binary. Skin-only MToon
-adjustments, lighting, pointer bounds, expression compatibility, StrictMode-safe
-cleanup, and dialog mechanics are specified in [Avatar Presentation](./avatar-guidelines.md).
+motion. It does not modify or redistribute a derived VRM binary. Asset-scoped
+skin/outfit MToon adjustments, lighting, pointer bounds, expression
+compatibility, StrictMode-safe cleanup, and dialog mechanics are specified in
+[Avatar Presentation](./avatar-guidelines.md).
 
 ---
 

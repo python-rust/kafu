@@ -405,9 +405,10 @@ The image-led page remains clean by consolidating attribution at the bottom:
 - required creator names remain visibly present in the footer source line;
 - `MediaSources` provides one native `<details>` list with all ten editorial
   image titles, credits, work pages, and license references;
-- the avatar section renders `模型制作：mme` beside its public download because
-  the model is an interactive/downloadable runtime asset rather than one of the
-  ten editorial images; the full record remains in `ATTRIBUTION.md`;
+- the avatar section renders `模型制作：mme`, the verified creator Bilibili
+  profile (`作者的B站首页`), and its public download because the model is an
+  interactive/downloadable runtime asset rather than one of the ten editorial
+  images; the full record remains in `ATTRIBUTION.md`;
 - source and license metadata remain in `KafMedia` even when the disclosure is
   closed;
 - the unofficial/non-commercial disclaimer remains once in the footer.

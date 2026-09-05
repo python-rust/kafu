@@ -342,8 +342,9 @@ Tests must verify:
 - absence of banned explanatory/slogan copy;
 - static profile facts and absence of primer sticky/observer markup;
 - the `#avatar` section between profile and Journey, with public model identity,
-  author/permission summary, download and manifest-dialog actions, lazy request boundary,
-  poster/error fallback, and reduced-motion explicit activation;
+  author, verified creator profile, permission summary, download and
+  manifest-dialog actions, lazy request boundary, poster/error fallback, and
+  reduced-motion explicit activation;
 - six semantic Journey steps in source order;
 - downward and upward scroll activation for early, middle, and final eras;
 - one sticky Journey image, no secondary image, and release before Works;
