@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 20
+- **Total Sessions**: 21
 - **Last Active**: 2026-09-05
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~579 | Active |
+| `journal-1.md` | ~600 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 21 | 2026-09-05 | Correct avatar sleeve penetration and skin hotspots | `97fc3a8` | `main` |
 | 20 | 2026-09-05 | Avatar presence and model disclosure | `fbe5605`, `19be17a` | `main` |
 | 19 | 2026-09-05 | Fix gallery viewport scroll anchoring | `9d7ee58`, `b22f7b1` | `main` |
 | 18 | 2026-08-30 | Fix cached artwork transitions and Hero reveal | `91bd7208ab6f575b767d28a2f76a0287198a7a09`, `5f266b2933324a9be87314018296748c005334a1`, `f101f816b2a8425d8a43dad5209e5e1fe88fc743` | `main` |

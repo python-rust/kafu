@@ -577,3 +577,24 @@ Completed avatar lighting, gaze, expressions, motion and metadata dialog. Update
 ### Status
 
 [OK] **Completed**
+
+
+## Session 21: Correct avatar sleeve penetration and skin hotspots
+
+**Date**: 2026-09-05
+**Task**: Correct avatar sleeve penetration and skin hotspots
+**Branch**: `main`
+
+### Summary
+
+Restored authored forearm/wrist alignment with a conservative A-pose arm drop. Isolated and removed skin matcap hotspots with scoped MToon uniforms; preserved mouth behavior and immutable VRM. Passed 63 unit tests, 24 browser tests, full/oblique model review and production run 33945694706. Updated SPEC and archived the repair task; final bookkeeping revision uses the same application build.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `97fc3a8` | (see git log) |
+
+### Status
+
+[OK] **Completed**
